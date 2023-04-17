@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Advent+Pro:wght@700&display=swap');
+
+.home{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    position: relative;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.home-title
+{
+    font-weight:bold;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items:baseline;
+
+    padding-right: 0px;
+}
+
+.home-title span{font-size: 30px;margin-right: 10px;}
+
+.home-title .week-span{
+    cursor: pointer;
+    font-size: 40px;
+    margin-left: 10px;
+    font-family: 'Advent Pro';
+}
+
+.home>:first-child{
+    margin-bottom: 0px;
+}
+
+.home>*{
+    margin-bottom: 15px;
+}
+
+.home-app-conteiner{
+    display: grid;
+    justify-content: center;
+    gap: 30px 40px;
+    margin-top: 10px;
+}
+.home-user-conteiner{
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.home-blur-dark-pre
+{
+    transition: filter 0.4s ease-in-out;
+}
+
+.home-blur-dark
+{
+    filter: blur(2px) brightness(60%);
+}
+
+.home-scale-app{
+    scale: 1.1;
+}
+
+.home-info-filler
+{
+    width: 100%;
+    height: 275px;
+}
+
+
+@keyframes show{
+    0% {height:0px;overflow:hidden;}
+    100%{overflow: hidden;}
+}
+.home-button-effect{
+    transition: all 0.2s ease-in-out;
+    animation: show 0.2s ease-in;
+}
+
+/**/
+
+.home-user-conteiner img{
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+}

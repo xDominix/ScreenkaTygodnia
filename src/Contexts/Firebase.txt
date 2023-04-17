@@ -1,0 +1,23 @@
+FIREBASE EXPANSION
+
+--
+
+import {db} from "./firebase-config"
+import {collection, getDocs } from "firebase/firestore"
+
+const postCollectionRef =  collection(db,"posts")
+
+--
+
+const weekCollectionRef =  collection(db,"weeks")
+
+const data = await getDocs(weekCollectionRef);
+console.log(data.docs.map((doc) => ({...doc.data(), id: doc.id})));
+
+-
+
+btw jak to bedzie dzialac:
+week context oddzielny od teamcontext
+czy
+post context wewnatrz usercontext 
+?

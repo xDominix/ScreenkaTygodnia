@@ -1,0 +1,95 @@
+.pre-post .nickname
+{
+    display: flex;
+    align-items: center;
+}
+
+.pre-post .circle
+{
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    margin: 5px;
+}
+
+.post{
+    position: relative;
+    border-radius: 20px;/*takie jakie nickname src*/
+
+    padding: 10px;
+}
+
+.post .date
+{
+    position: absolute;
+    top:0px;
+    right:0px;
+    font-size: 15px;
+    padding: 0px 10px;
+    opacity: 0.2;
+}
+
+.post .head
+{
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px;
+}
+
+.post .head>:nth-child(2)
+{
+    text-align: center;
+    width: 100%;
+}
+
+.post .pre-body
+{
+    position: relative;
+
+    overflow: hidden;
+    height: 200px;
+    transition: height ease-in-out 1s;
+}
+
+/*MINI POST*/
+
+.mini-post-pre, .mini-post
+{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.mini-post-pre>:first-child{margin: 0px 10px;}
+
+.mini-post{
+    height: 100%;
+    overflow: hidden;
+    padding:10px 0px;
+    box-sizing: border-box;
+    border-bottom: 1px rgba(255,255,255, 0.1) solid;
+}
+
+.mini-post>*{margin-right: 10px;}
+
+.mini-post>:last-child{
+    margin-left: auto;
+}
+
+.mini-post .text
+{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mini-post .text>:last-child
+{
+    overflow: auto;
+    white-space:nowrap;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}

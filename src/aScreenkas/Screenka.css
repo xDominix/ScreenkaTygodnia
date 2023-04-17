@@ -1,0 +1,15 @@
+.Screenka{
+    height: 100%;
+    overflow: auto;
+}
+
+.Screenka>h1, .Screenka>h2, .Screenka>h3, .Screenka>h4, .Screenka>footer
+{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.Screenka>footer
+{
+    text-align: center;
+}
