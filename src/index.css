@@ -66,6 +66,10 @@ div#root{overflow: auto;}
 {
   background-color: #474747;
 }
+.bcolor-blue
+{
+  background-color: rgba(99, 153, 253, 0.6);
+}
 
 input, textarea{
   background-color: rgba(0, 0, 0, 0.15);
@@ -204,4 +208,14 @@ button[disabled]{
 .fromdown{
     animation-name: fromdown;
     animation-duration: 0.6s;
+}
+
+@keyframes default-animation {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.default-animation{
+  animation-name: default-animation;
+  animation-duration: 1s;
 }

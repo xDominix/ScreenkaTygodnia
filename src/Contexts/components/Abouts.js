@@ -4,6 +4,7 @@ import BottomTab from './BottomTab';
 import { ButtonUpload } from '../../Components/Buttons';
 import InputField from '../../Components/InputField';
 import { shortFullname } from '../../aFunctions';
+import useUnload from '../../Components/useUnload';
 
 export const AboutAppMini = ({app,onClose,totalUploads}) => {
    
@@ -19,6 +20,8 @@ export const AboutApp = ({app,noTickets,onClose}) => {
     const contentRef = useRef();
     const contextRef = useRef();
 
+    useUnload(e => { e.preventDefault();   e.returnValue = ''; });
+      
     const handleUpload=()=>{
         console.log("Uploading...")
         console.log(contentRef.current.value);

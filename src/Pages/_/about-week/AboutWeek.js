@@ -1,6 +1,6 @@
 import "./AboutWeek.css"
 import React, { useContext, useEffect, useState } from 'react';
-import { Day, WeekDay } from "../../../Objects/Day";
+import { Day, WeekDay } from "../../../Objects/Day/Day";
 import { getMonday , isDayToday, MonthNames} from "../../../aFunctions";
 import { BottomTabContext } from "../../../Contexts/BottomTabContext";
 
@@ -12,9 +12,10 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
 
     useEffect(()=>{
         let res =  [ Day.ClearMind,Day.DeadLine ]
-        if(week.oh_preview_off !== true) res.push(Day.OhPreview)
-        if(week.throw_back_off !== true) res.push(Day.ThrowBack)
-        if(week.one_shot_off !== true) res.push(Day.OneShot)
+        
+        const days = [Day.OhPreview, Day.ThrowBack, Day.OneShot].filter((day) => !week.isDayOff(day));
+        days.forEach(day => { res.push(day) });
+
         week.special_days.forEach(special_day => {
             res.push(special_day.toDay())
          });

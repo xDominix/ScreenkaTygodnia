@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../Contexts/AuthContext';
 import { MiniPost } from '../../Objects/Post/Post';
 import "./Uploads.css"
-import { TimeFor } from '../../Objects/Day';
+import { TimeFor } from '../../Objects/TimeFor';
 import Loading from '../Loading';
 import NothingToShow from '../NothingToShow';
 import { MAX_TICKETS } from '../../aFunctions';
@@ -20,11 +20,11 @@ const Uploads = () => {
     useEffect(()=>{
         if(type==="day") {
             if(!TimeFor.DayUploads()) navigate("/")
-            getMyDayUploads().then(posts=>posts==null?navigate("/"):posts).then(posts=>setPosts(posts))
+            getMyDayUploads().then(posts=>posts==null?navigate("/"):setPosts(posts))
         } 
         else if(type==="week") {
             if(!TimeFor.WeekUploads()) navigate("/")
-            getMyWeekUploads().then(posts=>posts==null?navigate("/"):posts).then(posts=>setPosts(posts))
+            getMyWeekUploads().then(posts=>posts==null?navigate("/"):setPosts(posts));
         }
         else navigate("/")
     },[])

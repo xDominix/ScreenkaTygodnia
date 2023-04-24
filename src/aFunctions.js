@@ -1,6 +1,10 @@
 //CONSTS
 export const MAX_TICKETS = 3;
+export const ADMIN = false;
 export const NOW = new Date();
+
+//MINI CONSTS
+export const HIDE_APP_UPLOADER = true;
 
 //PATH
 export const getPath=(file)=>{
@@ -31,9 +35,9 @@ export const MonthNames = ["January", "February", "March", "April", "May", "June
 "July", "August", "September", "October", "November", "December"
 ];
 
-export const isDayToday=(dayIndex)=>{ return (new Date().getDay()+6)%7 === dayIndex;}
+export const isDayToday=(dayIndex)=>{ return (NOW.getDay()+6)%7 === dayIndex;}
 
-export const dayIndexToday=()=>{ return (new Date().getDay()+6)%7 }
+export const dayIndexToday=()=>{ return (NOW.getDay()+6)%7 }
 
 export function getMonday(d) {
     d = new Date(d);
@@ -53,11 +57,12 @@ export function weekEqual(date1, date2) {
 }
 
 const isBetweenHour = (fromHour,toHour)=>{
-    let hour=new Date().getHours();
+    let hour=NOW.getHours();
     return fromHour<=hour && hour<toHour;
 }
 
 export const isTime=(weekIndex,fromHour,toHour) =>{
+    if(weekIndex==null) return isBetweenHour(fromHour,toHour);
     if(!isDayToday(weekIndex)) return false;
     if(!isBetweenHour(fromHour,toHour)) return false;
     return true;
@@ -77,9 +82,21 @@ export const datesWeekDelta = (date1,date2)=>{
     return Math.floor(dayDelta/7);
 }
 
+export const isLessThenMinutes = (date,minutes)=>{
+    var diff = NOW - date;
+    if(diff<0) return false;
+    var diffMinutes = Math.floor((diff/1000)/60);
+    return minutes >= diffMinutes;
+}
+
 //STRING
 export const shortFullname= (fullname)=>{
     let splits = fullname.split(" ");
     splits = splits.map((split,i)=>{return i===0?split:(split.charAt(0)+".")})
     return splits.join(" ");
+}
+
+//RANDOM
+export const randomElement = (array)=>{
+    return array[Math.floor(Math.random() * array.length)];
 }

@@ -1,15 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Post from '../Objects/Post/Post';
 import "./Screenka.css"
 
 const WEEK_NAME = "First Week";
 
-const ScreenkaT0 = ({onLoad}) => {
-   
-    useEffect(()=>{
-        const timeout = setTimeout(()=> onLoad(WEEK_NAME),1000);
-        return ()=>clearTimeout(timeout);
-    },[onLoad])
+const ScreenkaTDEMO = ({}) => {
 
     return ( 
     <div className='Screenka noscroll'>
@@ -18,8 +13,9 @@ const ScreenkaT0 = ({onLoad}) => {
         <Post id="dsnanaaiaocsn" user_fullname="Dominik Jędraszek"/>
         <h2>To co dzis przygotowalismy jest genialne!</h2>
         <Post id="dsnasddsxccsn" user_fullname="Dominik Jędraszek"/> 
+        <Post id="123123" user_fullname="Tola Bajka"/>
         <footer style={{marginTop:"50px"}}>Screenka Tygodnia ®</footer>
     </div> );
 }
  
-export default ScreenkaT0;
+export default ScreenkaTDEMO;

@@ -3,33 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom/dist';
 import ScreenkaT0 from '../../aScreenkas/ScreenkaT0';
 import { AuthContext } from '../../Contexts/AuthContext';
-import { PostContext } from '../../Contexts/PostContext';
 import { TeamContext } from '../../Contexts/TeamContext';
-import { TimeFor } from '../../Objects/Day';
+import { TimeFor } from '../../Objects/TimeFor';
 import NothingToShow from '../NothingToShow';
+import ScreenkaTDEMO from '../../aScreenkas/ScreenkaTDEMO';
 
 const Screenka = () => {
     const {team_id} = useParams();
    
     const navigate = useNavigate();
 
-    const {getMe,setMyScreenkaView,amIScreenkaView} = useContext(AuthContext)
-    const {setHideIfAppsState} = useContext(PostContext)
+    const {getMe,setMyScreenkaView,amIScreenkaView,setHideIfAppsState} = useContext(AuthContext)
     const {getTeam} = useContext(TeamContext);
 
       const onLoad= async (week_name)=>{
-        if(!TimeFor.Screenka(true)) navigate("/");
+        if(!TimeFor.Screenka(true)) {navigate("/");return;}
         
         let me = getMe();
         if(me===null) navigate("/login");
-        if(!me.teams?.includes(team_id)) navigate("/"); 
+        if(!me.teams?.includes(team_id))  {navigate("/");return;}
         
-        getTeam(team_id).then(team=>{
-          setHideIfAppsState(me,team);
-        });
+        getTeam(team_id).then(team=>{  setHideIfAppsState(me,team); });
 
         amIScreenkaView(team_id,week_name).then(ami=>{
-          if(ami) navigate("/");
+          if(ami) {navigate("/");return;}
         })
 
         return setTimeout(()=>{
@@ -39,6 +36,7 @@ const Screenka = () => {
       }
 
     switch (Number(team_id)){
+        case -1: return <ScreenkaTDEMO></ScreenkaTDEMO>
         case 0: return <ScreenkaT0 onLoad={onLoad}></ScreenkaT0>
         default: return <NothingToShow/>
     }
