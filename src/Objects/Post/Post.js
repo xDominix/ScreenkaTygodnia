@@ -1,94 +1,144 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import "./Post.css"
 import App from '../App/App';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { AppClass } from '../App/AppClass';
 import { PostContext } from '../../Contexts/PostContext';
-import { dateToWeekDay } from '../Day';
-import { dateToHourString } from '../../aFunctions';
+import { dateToWeekDay } from '../Day/Day';
+import { dateToHourString, delay } from '../../aFunctions';
 import Checkbox from '../../Components/Checkbox';
+import User from '../User/User';
+import { AuthContext } from '../../Contexts/AuthContext';
+import { UserContext } from '../../Contexts/UserContext';
+import InputField from '../../Components/InputField';
 
-const Post = ({id,user_fullname,nicknameVisible=true,hideIfApps=null,unhide=false}) => {
+const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,comment_user=null,onView}) => {
 
-    const {getUserPost,hideIfAppsState} = useContext(PostContext)
+    const {hideIfAppsState} = useContext(AuthContext);
 
-    const [post,setPost] = useState(null);
+    const {getUserPost,setUserPostComment} = useContext(PostContext)
+    const {getUser} = useContext(UserContext);
+
+    const [postState,setPostState] = useState(post);
+    const [user,setUser]= useState(null);
+    const [commentUser,setCommentUser] = useState(comment_user)
 
     const [isSuperHide,setIsSuperHide] = useState(false);
-    const [isHide,setIsHide] = useState(!unhide);
+    const [isHide,setIsHide] = useState(true);
 
     useEffect(()=>{
-        const start =  async () =>{
-            let post = await getUserPost(user_fullname,id);
-            if(post==null) return null;
-            setPost(post);
-            return post;
+        const getPost =  async () =>{
+            if(post!=null) return post;
+
+            let post2 = await getUserPost(user_fullname,id);
+            if(post2==null) return null;
+            return post2;
         }
-      
-        start().then(post=>{
+
+        getPost().then(post=>{
             if(post==null) return;
+
+            setPostState(post);
+
+            if(comment_user) setUserPostComment(user_fullname,id,comment_user.fullname).then(res=>{onView(res);});
 
             const timeout = setTimeout(()=>{
                 if( hideIfApps?.includes(post.app)) setIsSuperHide(true);
             },500)
             return ()=>clearTimeout(timeout)
         });
-        
+
+        getUser(user_fullname).then((user)=>{ if(user != null) setUser(user)});
+
     },[])
 
     useEffect(()=>{
-        if(post==null) return;
+        if(postState==null) return;
 
         const timeout = setTimeout(()=>{
-            if(hideIfApps==null && hideIfAppsState?.includes(post.app)) setIsSuperHide(true);
+            if(hideIfApps==null && hideIfAppsState?.includes(postState.app)) setIsSuperHide(true);
         },500)
         return ()=> clearTimeout(timeout)
-    },[hideIfAppsState,post])
+    },[hideIfAppsState,postState])
 
+    useEffect(()=>{
+        if(postState?.comment_user_fullname !=null) 
+        {
+            getUser(postState.comment_user_fullname).then(user=>{
+                setCommentUser(user)
+                commentRef.current.value = postState.comment?postState.comment:"";
+            })
+        }
+    },[postState])
+
+    useEffect(()=>{
+        if(commentUser!=null)
+        {
+            const timeout = setTimeout(()=>{
+                setIsHidden(false);
+            },3500)
+            return ()=>clearTimeout(timeout)
+        }
+    },[commentUser])
+    
     const getNotificationText = ()=>{
-        if(post?.top_number) return "#"+post.top_number
-        if(post?.is_highlighted) return "*"
+        if(postState?.top_number) return "#"+postState.top_number
+        if(postState?.is_highlighted) return "*"
         return null
     }
 
     const getDate = ()=>{
-        if(!post) return "------- --:--";
-        let date = post.upload_date;
+        if(!postState) return "------- --:--";
+        let date = postState.upload_date;
         return `${dateToWeekDay(date).toUpperCase()} ${dateToHourString(date)}`
     }
     
+    //comment
+    const commentRef = useRef();
+    const [isRed,setIsRed] = useState(false);
+    const [isLoading,setIsLoading] = useState(false);
+    const [isHidden,setIsHidden] = useState(true);
+    const handleOnComment = ()=>{
+        setIsLoading(true);
+        Promise.all([setUserPostComment(user_fullname,id,comment_user.fullname,commentRef.current.value),delay(1000)])
+        .then(([res,_])=>{
+            if(res) setIsHidden(true);
+            setIsRed(!res);
+            setIsLoading(false);
+        })
+    }
+
     return ( 
-    <div className='pre-post'>
-        {nicknameVisible &&<div className='nickname'>
-            <div className='bcolor-gray circle'></div>
-            <h4 className='color-gray'>xDominix</h4>
+    <div className='pre-pre-post'>
+        {!hideNickname &&<div className="nickname">
+            <User user={user}/>
+            <h4 className='color-gray'>{user?user.username:"______"}</h4>
         </div>}
-        <div className='bcolor-gray post'>
-            <h3 className='date'>{getDate()}</h3>
-            <div className='head'>
-                <App application={AppClass.get(post?.app)} notificationText={getNotificationText()}/>
-                {isSuperHide && <a onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>show</a>}
+    <div className='pre-post bcolor-gray'>
+
+            <div className='bcolor-dark-gray post'>
+                <h3 className='date'>{getDate()}</h3>
+                <div className='head'>
+                    <App application={AppClass.get(postState?.app)} notificationText={getNotificationText()}/>
+                    {isSuperHide && <a onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>show</a>}
+                </div>
+                <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
+                <div className='body' style={isHide?{opacity:"0"}:{}}>
+                    <h3 className='content'>CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT </h3>
+                    <div className='context'>{postState?.context}</div>
+                </div>
+                    {isHide && <a className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>show</a>}
+                </div>
+                
             </div>
-            <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
-            <div className='body' style={isHide?{opacity:"0"}:{}}>
-                <h3 className='content'>CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT </h3>
-                <div className='context'>{post?.context}</div>
-                {post?.comment && <div className='comment'>
-                    <div className='bcolor-gray circle'></div>
-                    <h4>{post.comment_user_id}</h4>
-                    <div>{post.comment}</div>
-                </div>}
-                {post?.co_comment && <div className='co-comment'>
-                    <div className='bcolor-gray circle'></div>
-                    <h4>{post.co_comment_user_id}</h4>
-                    <div>{post.co_comment}</div>
-                </div>}
-            </div>
-                {isHide && <a className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>show</a>}
-            </div>
-            
-        </div>
+
+        {commentUser && <div className="nickname2"  style={isHidden?{height:"0px",padding:"0",opacity:0}:((commentUser.fullname === postState?.comment_user_fullname)?{opacity:"0.7"}:{})}>
+            <User height={20} user={commentUser}/>
+            <h5 className='color-gray'>{commentUser.username}</h5>
+            <InputField h5 readOnly={commentUser.fullname === postState?.comment_user_fullname}  reff={commentRef} value={commentRef.current?.value} placeholder="comment..." onEnter={handleOnComment} isRed={isRed} isLoading={isLoading}/>
+        </div>}
+    </div>
     </div> );
 }
  

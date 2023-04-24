@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ButtonPaste } from './Buttons';
 import "./InputField.css"
 
 const InputField = (
-    {autofocus,reff,placeholder,
-    onEnter,onKeyDown,
+    {autofocus,reff,placeholder, h5,readOnly,
+    onEnter,
     isRed,isLoading,
     longer,file,paste}) => {
 
+    const [typed,setTyped] = useState(false);
+
     const handleKeyDown = (event)=>{
-        if(typeof onKeyDown ===  'function')onKeyDown();
-        if (event.key === 'Enter') onEnter()
+        if(!typed) setTyped(true);
+        
+        if (event.key === 'Enter') {
+            reff.current.blur();
+            setTyped(false)
+            onEnter();
+        }
     }
 
     const onPasteClick=()=>{
@@ -20,7 +27,7 @@ const InputField = (
     if(paste && navigator.clipboard)
     return ( 
         <div className='input-paste' >
-            <InputField autofocus={autofocus} reff={reff} onEnter={onEnter} onKeyDown={onKeyDown} isRed={isRed} isLoading={isLoading} placeholder={placeholder} longer={longer}/>
+            <InputField autofocus={autofocus} reff={reff} readOnly={readOnly} onEnter={onEnter} isRed={isRed} isLoading={isLoading} placeholder={placeholder} longer={longer}/>
             <ButtonPaste onClick={onPasteClick}/>
         </div>
     );
@@ -36,10 +43,10 @@ const InputField = (
     </textarea>)
 
     return ( 
-        <input className={(isRed?"bcolor-red":"")+(longer?" longer":"")} 
+        <input className={((isRed && !typed && !isLoading)?"bcolor-red":"")+(longer?" longer":"")} 
         placeholder={placeholder}
-        readOnly={isLoading} 
-        style={isLoading?{opacity:"0.5"}:{}} 
+        readOnly={isLoading || readOnly} 
+        style={{...(h5?{fontSize:"17px"}:{}) , ...(isLoading?{opacity:"0.5"}:{})}} 
         autoFocus={autofocus} ref={reff} 
         onKeyDown={handleKeyDown}
         />

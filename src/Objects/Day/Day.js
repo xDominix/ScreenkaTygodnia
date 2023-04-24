@@ -1,4 +1,4 @@
-import { isTime } from "../aFunctions";
+import { isTime } from "../../aFunctions";
 
 export const WeekDay = {"Monday":0, "Tuesday":1, "Wednesday":2, "Thursday":3, "Friday":4, "Saturday":5, "Sunday":6}
 
@@ -34,7 +34,7 @@ export class Day {
     " - oczyść swoj umysl. Wejdź w nowy tydzień z najnowszym wydaniem Screenki Tygodnia i zacznij dzień z pozytywnym nastrojem.",false,8,24)
 
     static OhPreview = new Day("Oh-Preview",WeekDay.Wednesday,"SR 20 - 22",
-    "- to możliwość podglądu losowego tygodnia jednego z uczestników.",false,20,22)
+    "- to podgląd losowego tygodnia jednego z uczestników.",false,20,22)
 
     static ThrowBack = new Day("Throw-Back",WeekDay.Friday,"PT 8 - 19",
     " - to czas wspomnień jednego z twoich minionych tygodni.",false,8,19)
@@ -43,21 +43,10 @@ export class Day {
     " - zamykamy możliwość uploadowania. To czas dla jurorów, czas oczekiwania na Screenkę Tygodnia! W tym czasie możesz przeglądać swój tydzień.",false,20,24)
 
     static OneShot = new Day("One-Shot",null, "* 19 - 20",
-    " - to możliwość obejrzenia jednego z dzisiejszych postów uczestników... skomentuj swoje pierwsze wrażenie.",false,19,20,"* - codziennie");
+    " - to podgląd jednego z dzisiejszych postów uczestników... skomentuj swoje pierwsze wrażenie.",false,19,20,"* - codziennie");
 
     isTime = ()=>isTime(this.weekDay,this.fromHour,this.toHour)
 
-}
+    toString=()=> this.name.replace("-","").toLowerCase()
 
-//is time for...
-export class TimeFor {
-  //home
-  static Upload = (week) => week!=null && !Day.DeadLine.isTime();
-  
-  //screenka
-  static Screenka = (week) => week!=null && Day.ClearMind.isTime()
-
-  //pages
-  static WeekUploads = () => Day.DeadLine.isTime()
-  static DayUploads = () => true
 }

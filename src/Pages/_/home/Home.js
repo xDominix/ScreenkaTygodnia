@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import App from '../../../Objects/App/App';
 import './Home.css';
 import { AuthContext } from '../../../Contexts/AuthContext';
 import { PostContext } from '../../../Contexts/PostContext';
 import { UserContext } from '../../../Contexts/UserContext';
 import { BottomTabContext } from '../../../Contexts/BottomTabContext';
-import { TimeFor } from '../../../Objects/Day';
+import { TimeFor } from '../../../Objects/TimeFor';
 import { useNavigate } from 'react-router-dom';
-import { MAX_TICKETS, datesWeekDelta, delay } from '../../../aFunctions';
-import { ButtonScreenka,ButtonPlus,ButtonWeekUploads } from './components/Buttons';
+import { HIDE_APP_UPLOADER, MAX_TICKETS, datesWeekDelta, delay } from '../../../aFunctions';
+import { ButtonScreenka,ButtonPlus,ButtonWeekUploads, ButtonText } from './components/Buttons';
 import { AppClass } from '../../../Objects/App/AppClass';
 import User from '../../../Objects/User/User';
+import { Day } from '../../../Objects/Day/Day';
 
 const height = 80;
 const userHeight=32;
@@ -20,7 +21,7 @@ const buttonStyle = {height:height+"px",borderRadius:borderRadius+"px"}
 const HOME_APPS_SIZE = 6;
 
 const Home = ({onAboutWeekClick,weekNumber,week}) => {
-    const {getMyTeam,getMeAndMyTeam,amIScreenkaViewLocal,getMyDayUploads, /*getMyWeek -> week*/} = useContext(AuthContext)
+    const {getMeAndMyTeam,amIScreenkaViewLocal,getMyDayUploads,amIViewLocal,/*getMyWeek -> week*/} = useContext(AuthContext)
     const {setBottomTab,isBottomTab,equalObject,getObject,isObjectApp} = useContext(BottomTabContext);
     const {getUserWeekPosts} = useContext(PostContext);
     const {getUser} = useContext(UserContext);
@@ -35,10 +36,8 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
 
     const [isUploadMode,setIsUploadMode] = useState(false);
 
-    const [isScreenkaTime,setIsScreenkaTime] = useState(false);
-
     const [tickets,setTickets]=useState(0);
-   
+
     useEffect(()=>{
         const loadApps=async (me,team)=>{
             var apps = [...team.popular_apps,...me.personalized_apps];
@@ -52,7 +51,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
             return apps;
         }
 
-        const loadAppsMap= async (team)=>{
+        const loadAppsMap= async (me,team)=>{
             var apps_count={};
             var active_members = [];
             return Promise.all( team.members.map(async (member) => { 
@@ -60,7 +59,17 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
                         if(posts==null || posts.length===0) return;
 
                         let new_apps_count = {};
+
+                        //active members
                         active_members.push(member);
+
+                        //rnshot
+                        if(member.fullname!==me.fullname && isRnShotData===null)
+                        {
+                            posts?.forEach(post=> {if(TimeFor.RnShot(post) && post.comment_user_fullname===null) setIsRnShotData({user_fullname:member.fullname,post_id:post.id})})
+                        }
+
+                        //all
                         posts?.forEach(post=>{ new_apps_count[post.app] = (new_apps_count[post.app] || 0) + 1; });
                         for (let [key, value] of Object.entries(new_apps_count)) {
                             if (apps_count[key]) {apps_count[key].count += value; apps_count[key].fullnames.push(member.fullname)}
@@ -95,8 +104,8 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
         const loadScreenka = async()=>{
             if(TimeFor.Screenka(week))
             {
-                if(isButtonScreenkaDisabled()) setIsScreenkaTime(true)
-                else delay(2000).then(()=>setIsScreenkaTime(true))
+                if(isButtonScreenkaDisabled()) setIsScreenka(true)
+                else delay(2000).then(()=>setIsScreenka(true))
             }
         }
         const sortHomeApps = (apps,appsMap)=>{
@@ -134,7 +143,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
         loadApps(me,team).then((apps)=>{
             loadScreenka();
             loadTickets();
-            loadAppsMap(team).then(([appsMap,active_members])=>{
+            loadAppsMap(me,team).then(([appsMap,active_members])=>{
                 sortHomeApps(apps,appsMap);
                 loadParticipantsMap(team,active_members)})});
 
@@ -170,26 +179,35 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
         return res;
     }
     const userClassName=(user)=>{
-        let res =  "home-blur-dark-pre ";
-        if(isBottomTab())
-        {
-            if(! (isObjectApp() &&  appsMap.get(getObject().name)?.fullnames.includes(user.fullname))) res+= "home-blur-dark"
-        } 
-        return res;  }
+    let res =  "home-blur-dark-pre ";
+    if(isBottomTab())
+    {
+        if(! (isObjectApp() &&  appsMap.get(getObject().name)?.fullnames.includes(user.fullname)) ||  HIDE_APP_UPLOADER) res+= "home-blur-dark"
+    } 
+    return res;  }
 
+
+    /* BUTTONS START */
+    const isDay = [Day.OneShot,Day.OhPreview,Day.ThrowBack].find(day=>TimeFor.Day(day,week) && !amIViewLocal(day.toString()))
+    const [isRnShotData,setIsRnShotData] = useState(amIViewLocal("rnshot")?false:null); 
+    const [isScreenka,setIsScreenka] = useState(false);
+
+    const onDayClick = (day)=> {navigate(`day/${day.name}`)}
+
+    const onRnShotClick=()=>{   navigate(`post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/rnshot`);  }
+    
     const isButtonScreenkaDisabled = ()=>{
-        let team = getMyTeam();
+        let team = getMeAndMyTeam()[1];
         if(team===null) return true;
         let res = amIScreenkaViewLocal(team.id);
-        return res;
-    }
-
+        return res;  }
     const onButtonScreenkaClick = ()=>{
-        let team = getMyTeam()
+        let team = getMeAndMyTeam()[1];
         if(team==null) return;
         let agree = window.confirm("This content could be viewed once. Continue?")
-        if(agree) navigate("/screenka/"+team.id);
-    }
+        if(agree) navigate("/screenka/"+team.id);  }
+
+  /* BUTTONS END */
 
     return (
     <div className={"home "+( isBottomTab()?'noclick':"")}>
@@ -204,12 +222,22 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
             </h1>
         </div>
 
+        {isDay &&
+        <div className={defaultClassName()+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
+            <ButtonText onClick={()=>onDayClick(isDay)} day={isDay} style={buttonStyle} text={isDay.name.toUpperCase()}/>
+        </div>}
+
+        {isRnShotData &&
+        <div className={defaultClassName()+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
+            <ButtonText onClick={onRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
+        </div>}
+
         {TimeFor.WeekUploads() &&
         <div className={defaultClassName()+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
             <ButtonWeekUploads onClick={()=>{navigate("/uploads/week")}} style={buttonStyle}/>
         </div>}
     
-        {isScreenkaTime &&
+        {isScreenka &&
         <div className={defaultClassName()+" home-button-effect"} style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}} >
             { <ButtonScreenka disabled={isButtonScreenkaDisabled()} onClick={onButtonScreenkaClick} style={buttonStyle}/>}
         </div>}
@@ -218,7 +246,6 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
             <ButtonPlus tickets={tickets} disabled={!TimeFor.Upload(week)} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
         </div>
        
-    
         <div className='home-app-conteiner'  style={{"gridTemplateColumns":"repeat(auto-fill, "+height+"px)"}}>
             {getApps().map(app => 
             <div key={app.name} className={appClassName(app)} >

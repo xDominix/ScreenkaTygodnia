@@ -5,12 +5,11 @@ import { BottomTabProvider } from '../../Contexts/BottomTabContext';
 import Home from './home/Home';
 import "./Start.css"
 import AboutWeek from './about-week/AboutWeek';
-import { datesWeekDelta, NOW } from '../../aFunctions';
 
 const Start = () => {
     const navigate = useNavigate();
 
-    const {getMeAndMyTeamAndMyWeek} = useContext(AuthContext)
+    const {getMeAndMyTeamAndMyWeek,getMyTeamWeekNumber} = useContext(AuthContext)
 
     const [aboutToggled,setAboutToggled] = useState(false);
     const [weekNumber,setWeekNumber] = useState(null);
@@ -18,13 +17,11 @@ const Start = () => {
     
     useEffect(()=>{
 
-      let [me,team,week] = getMeAndMyTeamAndMyWeek()
+      let [me,,week] = getMeAndMyTeamAndMyWeek()
 
         if(me===null) navigate("/login");
         else{
-          
-          setWeekNumber(datesWeekDelta(team.start_date,NOW));
-
+          setWeekNumber(getMyTeamWeekNumber());
           if(week!==null) setWeek(week);
         }
     },[])

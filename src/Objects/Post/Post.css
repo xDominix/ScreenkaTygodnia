@@ -1,15 +1,25 @@
-.pre-post .nickname
+.pre-pre-post {   margin-bottom: 5px;}
+.pre-pre-post .nickname , .pre-pre-post .nickname2
 {
-    display: flex;
-    align-items: center;
+    display: flex; align-items: center;
 }
 
-.pre-post .circle
+.pre-pre-post .nickname>* , .pre-pre-post .nickname2>*
 {
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
     margin: 5px;
+}
+
+.pre-post{
+    border-radius: 20px;/*takie jakie nickname src*/
+}
+.pre-post .nickname2
+{
+    padding:10px;
+    height: 30px;/*20 + 10*/
+    opacity: 1;
+    overflow: hidden;
+    transition: height 0.5s ease-in-out,opacity 0.3s ease-in-out;
+   
 }
 
 .post{
@@ -93,3 +103,22 @@
     align-items: center;
     height: 100%;
 }
+
+/*posts*/
+.posts{
+    display: flex;
+    flex-direction: column;
+}
+
+.posts h1,.posts h2,.posts h3{
+    margin-left: 15px;
+}
+
+.posts-list
+{
+    display:flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.posts-list>*{margin-bottom: 10px;}

@@ -4,9 +4,9 @@ export const LABEL_STEP = 10
 
 export class AppClass {
     constructor(name,miniDescription,description,format,label) { 
-      this.name = name;
+      /***/ this.name = name; //to nie bedzie zmieniane, nie ma sensu ALE co z Spotify co bedziemy chcieli zastapi Apple Music????
       this.miniDescription = miniDescription;
-      this.description = description;
+      this.description = description;// przykladowe elementy w formacie
       this.format=  format;
       this.label=label;
     }
