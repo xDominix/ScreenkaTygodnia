@@ -14,60 +14,39 @@ const AuthProvider = ({children}) => {
     const teamRef = useRef(null);
     const weekRef = useRef(null);
 
-    /*
-    const routingPermission = useRef(false);
-    const tryUseRoutingPermission = ()=> {if(ADMIN) return true; if(routingPermission.current !=true) return false; routingPermission.current=false; return true;}
-    const setRoutingPermission = ()=> {routingPermission.current=true;}
-    
-     //START AUTH  in component after setRoutingPermission
-     const navigate = useNavigate();
-     const {tryUseRoutingPermission} = useContext(AuthContext);
-     const [auth,setAuth] = useState(false);
-     useEffect(()=>{
-         if(!auth) if(tryUseRoutingPermission() || ADMIN) setAuth(true);
- 
-         if(auth) getUserTeamWeekPosts(user_fullname,team_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
- 
-         const requestTimeout = setTimeout(()=>{
-             if(!auth) navigate("/");
-         },3000)
-         return ()=>clearTimeout(requestTimeout);        
-     },[auth]);
-     // END AUTH 
-     */
-
     const [authLoaded,setAuthLoaded] = useState(false);
 
+    const loadUser= async ()=>{
+        let fullname = localStorage.getItem("fullname");
+        if(fullname === null) return null;
+        let user = await getUser(fullname)
+        if(user==null) return null;//new Error('Fullname in localStorage is invalid. Cannot find fullname in database.');
+        userRef.current = user;
+        return userRef.current;
+    }
+
+    const loadTeam = async(me)=>{
+        if(me ===null || me.teams==null || me.teams.length===0) return null
+        let defaultTeam = await getTeam(me.teams[0]  )
+        if(defaultTeam==null) throw new Error('User default team is invalid. Cannot find team in database.');
+        teamRef.current = defaultTeam;
+        return teamRef.current;
+    }
+
+    const loadWeek = async(team)=>{
+        if(team==null) return null;
+        let week = await getTeamWeek(team.id);
+        weekRef.current = week;
+        return weekRef.current;
+    }
+
     useEffect(()=>{
-
-        const loadUser= async ()=>{
-            let fullname = localStorage.getItem("fullname");
-            if(fullname === null) return null;
-            let user = await getUser(fullname)
-            if(user==null) return null;//new Error('Fullname in localStorage is invalid. Cannot find fullname in database.');
-            userRef.current = user;
-            return userRef.current;
-        }
-
-        const loadTeam = async(me)=>{
-            if(me ===null || me.teams==null || me.teams.length===0) return null
-            let defaultTeam = await getTeam(me.teams[0]  )
-            if(defaultTeam==null) throw new Error('User default team is invalid. Cannot find team in database.');
-            teamRef.current = defaultTeam;
-            return teamRef.current;
-        }
-
-        const loadWeek = async(team)=>{
-            if(team==null) return null;
-            let week = await getTeamWeek(team.id);
-            weekRef.current = week;
-            return weekRef.current;
-        }
-      
         loadUser().then((me)=>{
             loadTeam(me).then((team)=>{
                 loadWeek(team).then(()=> 
-                    setAuthLoaded(true));
+                    {
+                        setAuthLoaded(true);
+                    })
             })
         })
 
@@ -84,6 +63,7 @@ const AuthProvider = ({children}) => {
         if(user===undefined) return false;
 
         userRef.current = user;
+        loadTeam(user).then(loadWeek)
         return true;
     }
 
@@ -201,7 +181,6 @@ const AuthProvider = ({children}) => {
         localStorage.setItem(`${name}_view_${team_id}`,NOW);
     }
     
-    
     const value = {  tryLogMeInTemporarly,saveMe,getMe,//me
                                 getMyTeamWeekNumber,//team
                                 getMyTeamWeekNames,//week
@@ -220,3 +199,25 @@ const AuthProvider = ({children}) => {
 }
 
 export default AuthProvider;
+
+/*
+    const routingPermission = useRef(false);
+    const tryUseRoutingPermission = ()=> {if(ADMIN) return true; if(routingPermission.current !=true) return false; routingPermission.current=false; return true;}
+    const setRoutingPermission = ()=> {routingPermission.current=true;}
+    
+     //START AUTH  in component after setRoutingPermission
+     const navigate = useNavigate();
+     const {tryUseRoutingPermission} = useContext(AuthContext);
+     const [auth,setAuth] = useState(false);
+     useEffect(()=>{
+         if(!auth) if(tryUseRoutingPermission() || ADMIN) setAuth(true);
+ 
+         if(auth) getUserTeamWeekPosts(user_fullname,team_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
+ 
+         const requestTimeout = setTimeout(()=>{
+             if(!auth) navigate("/");
+         },3000)
+         return ()=>clearTimeout(requestTimeout);        
+     },[auth]);
+     // END AUTH 
+     */

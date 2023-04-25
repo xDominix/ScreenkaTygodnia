@@ -18,7 +18,7 @@ const Start = () => {
     useEffect(()=>{
 
       let [me,,week] = getMeAndMyTeamAndMyWeek()
-
+      
         if(me===null) navigate("/login");
         else{
           setWeekNumber(getMyTeamWeekNumber());

@@ -8,7 +8,7 @@ export class TimeFor {
     static Upload = (week) => !Day.DeadLine.isTime() && ( (week!=null && TimeFor.Screenka(week)) || !isDayToday(WeekDay.Monday) )
     
     //screenka
-    static Screenka = (week) => week!=null && (Day.ClearMind.isTime || week.force_screenka_show)
+    static Screenka = (week) => week!=null && (Day.ClearMind.isTime() || week.force_screenka_show)
   
     //rnshot
     static RnShot = (post) => post!=null && isLessThenMinutes(post.upload_date,15);

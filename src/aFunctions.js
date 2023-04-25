@@ -1,5 +1,5 @@
 //CONSTS
-export const MAX_TICKETS = 3;
+export const MAX_TICKETS = 2;
 export const ADMIN = false;
 export const NOW = new Date();
 
@@ -87,13 +87,6 @@ export const isLessThenMinutes = (date,minutes)=>{
     if(diff<0) return false;
     var diffMinutes = Math.floor((diff/1000)/60);
     return minutes >= diffMinutes;
-}
-
-//STRING
-export const shortFullname= (fullname)=>{
-    let splits = fullname.split(" ");
-    splits = splits.map((split,i)=>{return i===0?split:(split.charAt(0)+".")})
-    return splits.join(" ");
 }
 
 //RANDOM

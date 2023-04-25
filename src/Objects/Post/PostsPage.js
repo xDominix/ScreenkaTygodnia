@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Post from './Post';
-import { shortFullname } from '../../aFunctions';
 import { PostContext } from '../../Contexts/PostContext';
 import NothingToShow from '../../Pages/NothingToShow';
 import Loading from '../../Pages/Loading';

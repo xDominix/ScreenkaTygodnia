@@ -35,11 +35,12 @@ const Screenka = () => {
         },10000);
       }
 
-    switch (Number(team_id)){
-        case -1: return <ScreenkaTDEMO></ScreenkaTDEMO>
-        case 0: return <ScreenkaT0 onLoad={onLoad}></ScreenkaT0>
+  switch (Number(team_id)){
+        case -1: return <div><ScreenkaTDEMO/></div>
+        case 0: return <div><ScreenkaT0 onLoad={onLoad}/></div>
         default: return <NothingToShow/>
     }
+  
 }
  
 export default Screenka;

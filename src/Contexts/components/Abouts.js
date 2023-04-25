@@ -3,7 +3,6 @@ import { Format } from '../../Objects/App/AppClass';
 import BottomTab from './BottomTab';
 import { ButtonUpload } from '../../Components/Buttons';
 import InputField from '../../Components/InputField';
-import { shortFullname } from '../../aFunctions';
 import useUnload from '../../Components/useUnload';
 
 export const AboutAppMini = ({app,onClose,totalUploads}) => {
@@ -64,7 +63,7 @@ export const AboutUserMini = ({user,sinceWeek,onClose}) => {
 
     return (  
         <BottomTab 
-            title={shortFullname(user.fullname)} 
+            title={user.getFullnameShort()} 
             subtitle={`Also known as ${user.username}`}
             footer={`Since: #${sinceWeek} week`}
             image={user.src} 

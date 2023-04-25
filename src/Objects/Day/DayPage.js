@@ -20,7 +20,7 @@ const DayPage = () => {
         default: return Day.Default
     }}
 
-    const {amIViewLocal,getMeAndMyTeam,getMyTeamWeekNames,getMeAndMyTeamAndMyWeek} = useContext(AuthContext);
+    const {getMe,amIViewLocal,getMeAndMyTeam,getMyTeamWeekNames,getMeAndMyTeamAndMyWeek} = useContext(AuthContext);
     const {getUserDayPosts,getUserWeekPosts} = useContext(PostContext);
     const {getTeamWeekNames} = useContext(WeekContext);
 
@@ -44,16 +44,18 @@ const DayPage = () => {
     
         if(day===Day.OneShot)
         {
-            let [_,team] = getMeAndMyTeam();
+            let [me,team] = getMeAndMyTeam();
             let members = team.members//.filter(member=>member.fullname!==me.fullname)
             if(members?.length===0) return null;
             let randomMember = randomElement(members);
             let memberPosts = await getUserDayPosts(randomMember.fullname);
             memberPosts?.filter(post=>post.comment_user_fullname == null);
+            memberPosts?.filter(post=>me.personalized_apps?.includes(post.app) || team.popular_apps.includes(post.app))
             if(memberPosts.length===0)
             {
                 memberPosts = await getUserWeekPosts(randomMember.fullname);
                 memberPosts?.filter(post=>post.comment_user_fullname == null);
+                memberPosts?.filter(post=>me.personalized_apps?.includes(post.app) || team.popular_apps.includes(post.app))
             } 
             if(memberPosts?.length===0) return null;
             let randomPost = randomElement(memberPosts);

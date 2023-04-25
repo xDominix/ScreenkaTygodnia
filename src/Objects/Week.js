@@ -19,9 +19,8 @@ export class Week{
 
         /*4DEMO*/ this.force_screenka_show = force_screenka_show;
 
-        
+        /*SOON*/ //max_tickets - np. 1 (one-ticket-week), 5 (dla wiekszych kontenciarzy)
         /*NO*/ //participants: user - nie, zakladamy ze kazdy postuje kazdego tygodnia
-
     }
 
     isDayOff = (day) =>{
