@@ -84,9 +84,6 @@ input:focus, textarea:focus, .focus{
 
 .box-shadow .shadow {box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.466);}
 
-a{ cursor: pointer; color:rgba(40, 255, 215, 0.7); font-weight:bold;font-size: inherit; }
-a.underline {text-decoration: underline; color: inherit;font-weight: normal;}
-
 .opacity {opacity: 0.4;}
 
 /*h_*/

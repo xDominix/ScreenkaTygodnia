@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Post from './Post';
-import { shortFullname } from '../../aFunctions';
 import { PostContext } from '../../Contexts/PostContext';
 import NothingToShow from '../../Pages/NothingToShow';
 import Loading from '../../Pages/Loading';
@@ -43,9 +42,11 @@ const PostsPage = ({ohpreview,throwback}) => {
     {posts === null && <Loading/>}
     {posts?.length===0 &&<NothingToShow/>}
     
+    <div style={{overflow:"auto"}} className='noscroll'>
     {posts?.length !==0 && <div className='posts-list'>
             {posts?.map((post,i) =>(  <Post key={i} post={post} hideNickname={i!==0} /> ))} 
         </div>}
+    </div>
 
     </div> )
 }

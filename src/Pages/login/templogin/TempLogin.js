@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
 import { AuthContext } from '../../../Contexts/AuthContext';
-import { delay } from '../../../aFunctions';
 import "./TempLogin.css"
 import { UserClass } from '../../../Objects/User/UserClass';
 
@@ -12,7 +11,7 @@ const TempLogin = ({onTempLogin}) => {
     const {getMe,tryLogMeInTemporarly} = useContext(AuthContext)
 
     const [meSrc,setMeSrc] = useState(UserClass.getDefaultSrc())
-    const inputRef = useRef("");
+    const inputRef = useRef();
 
     const [isInputFieldRed,setIsInputFieldRed] = useState(false);
     const [isInputFieldLoading,setIsInputFieldLoading] = useState(false);
@@ -20,11 +19,12 @@ const TempLogin = ({onTempLogin}) => {
     useEffect(()=>{
         const timeout = setTimeout(()=>{
             let me =getMe();
+            if(me== null) return;
             inputRef.current.value=me.username; 
             setMeSrc(me.src)},500);
     
         return ()=> clearTimeout(timeout);
-
+           
     },[])
 
     const handleOnEnter = async () => {
@@ -32,13 +32,7 @@ const TempLogin = ({onTempLogin}) => {
         
         let res = await tryLogMeInTemporarly(inputRef.current.value);
         setIsInputFieldRed(!res);
-        if(res) onTempLogin()
-        else{
-            setTimeout(()=>{
-            let me =getMe();
-            inputRef.current.value=me.username;
-        },500);
-        }
+        if(res) onTempLogin();
         
         setIsInputFieldLoading(false);
       };

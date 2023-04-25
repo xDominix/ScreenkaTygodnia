@@ -48,7 +48,7 @@
     justify-content: center;
 }
 
-.app-max-mobile>*{
+.app-max-mobile>div{
     width: 100%;
     height: 100%;
     position: relative;

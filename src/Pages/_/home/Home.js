@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import App from '../../../Objects/App/App';
 import './Home.css';
 import { AuthContext } from '../../../Contexts/AuthContext';
@@ -12,6 +12,7 @@ import { ButtonScreenka,ButtonPlus,ButtonWeekUploads, ButtonText } from './compo
 import { AppClass } from '../../../Objects/App/AppClass';
 import User from '../../../Objects/User/User';
 import { Day } from '../../../Objects/Day/Day';
+import A from '../../../Components/A';
 
 const height = 80;
 const userHeight=32;
@@ -38,7 +39,13 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
 
     const [tickets,setTickets]=useState(0);
 
-    useEffect(()=>{
+    //buttons    
+    const isDay = [Day.OneShot,Day.OhPreview,Day.ThrowBack].find(day=>TimeFor.Day(day,week) && !amIViewLocal(day.toString()))
+    const [isRnShotData,setIsRnShotData] = useState(amIViewLocal("rnshot")?false:null); 
+    const [isScreenka,setIsScreenka] = useState(false);
+    //end buttons
+
+    const loadAll = useCallback(()=>{
         const loadApps=async (me,team)=>{
             var apps = [...team.popular_apps,...me.personalized_apps];
             
@@ -101,11 +108,20 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
             .then(ticketsLeft=> setTickets(ticketsLeft));
         }
 
-        const loadScreenka = async()=>{
+        const loadScreenka = async ()=>
+        {
             if(TimeFor.Screenka(week))
             {
-                if(isButtonScreenkaDisabled()) setIsScreenka(true)
-                else delay(2000).then(()=>setIsScreenka(true))
+                //isButtonScreenkaDisabled
+                let team = getMeAndMyTeam()[1];
+                if(team===null) return true;
+                let res = amIScreenkaViewLocal(team.id);
+
+                if(res) setIsScreenka(true)
+                else{
+                    await delay(2000);
+                    setIsScreenka(true);
+                }
             }
         }
         const sortHomeApps = (apps,appsMap)=>{
@@ -147,7 +163,11 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
                 sortHomeApps(apps,appsMap);
                 loadParticipantsMap(team,active_members)})});
 
-    },[]);
+    },[getMeAndMyTeam,getMyDayUploads,getUser,getUserWeekPosts,isRnShotData,amIScreenkaViewLocal,week])
+    
+    useEffect(()=>{
+        loadAll();
+    },[loadAll]);
 
     const getApps = ()=>{
         return isUploadMode? uploadApps : homeApps.slice(0,HOME_APPS_SIZE);
@@ -188,9 +208,6 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
 
 
     /* BUTTONS START */
-    const isDay = [Day.OneShot,Day.OhPreview,Day.ThrowBack].find(day=>TimeFor.Day(day,week) && !amIViewLocal(day.toString()))
-    const [isRnShotData,setIsRnShotData] = useState(amIViewLocal("rnshot")?false:null); 
-    const [isScreenka,setIsScreenka] = useState(false);
 
     const onDayClick = (day)=> {navigate(`day/${day.name}`)}
 
@@ -239,7 +256,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
     
         {isScreenka &&
         <div className={defaultClassName()+" home-button-effect"} style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}} >
-            { <ButtonScreenka disabled={isButtonScreenkaDisabled()} onClick={onButtonScreenkaClick} style={buttonStyle}/>}
+            <ButtonScreenka disabled={isButtonScreenkaDisabled()} onClick={onButtonScreenkaClick} style={buttonStyle}/>
         </div>}
             
         <div className={defaultClassName()} >
@@ -268,7 +285,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
        
         {!isUploadMode &&<div className='home-info-filler'></div>}     
 
-        {isUploadMode && <footer className='center'><a className='underline' onClick={()=>navigate("/uploads/day")}>manage uploads</a></footer>}
+        {isUploadMode && <footer className='center'><A underline href="/uploads/day">manage uploads</A></footer>}
 
         
     </div>

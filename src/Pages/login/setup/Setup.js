@@ -8,14 +8,13 @@ import {TeamContext} from "../../../Contexts/TeamContext"
 import { ButtonNext } from '../../../Components/Buttons';
 import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
-import { UserClass } from '../../../Objects/User/UserClass';
 
 const Setup = ({onSetup}) => {
 
     const {getMe,saveMe,trySetMyUsername,setMyPersonalizedApps} = useContext(AuthContext)
     const {getTeam} = useContext(TeamContext)
 
-    const [mySrc,setMySrc]=useState(UserClass.getDefaultSrc());
+    const meRef = useRef(getMe());
     const [personalizedApps,setPersonalizedApps] = useState(null);
     const [checkboxes, setCheckboxes] = useState(null);
     
@@ -24,7 +23,6 @@ const Setup = ({onSetup}) => {
         if(me === null) throw new Error("getMe() error")
 
         inputRef.current.value= me.username;
-        setMySrc(me.src)
 
         getPersonalizedApps(me).then(apps=>{
             setPersonalizedApps(apps)
@@ -65,7 +63,7 @@ const Setup = ({onSetup}) => {
 
     //username
 
-    const inputRef = useRef("");
+    const inputRef = useRef();
     const [isInputFieldRed,setIsInputFieldRed] = useState(false);
     const [isInputFieldLoading,setIsInputFieldLoading] = useState(false);
     const handleOnEnter = ()=>{
@@ -93,10 +91,10 @@ const Setup = ({onSetup}) => {
 
     return ( 
         <div className='setup'>
-            <h2 className='color-gray-solid'>Welcome, Dominik!<span role="img" aria-label="emoji"> ✋🏼</span></h2>
+            <h2 className='color-gray-solid'>Welcome, {meRef.current.getName()}!<span role="img" aria-label="emoji"> ✋🏼</span></h2>
        
             <div className='setup-user'>
-                <img src={mySrc} alt="profile"/>
+                <img src={meRef.current.src} alt="profile"/>
                 <div>
                     <h4>Username:</h4>
                     <InputField reff={inputRef} onEnter={handleOnEnter} onKeyDown={()=>{if(isInputFieldRed) setIsInputFieldRed(false)}}  isRed={isInputFieldRed} isLoading={isInputFieldLoading} />

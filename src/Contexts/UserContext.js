@@ -1,6 +1,6 @@
 import React from "react";
 import { delay } from "../aFunctions";
-import { UserRepository } from "./Repository";
+import { DEMOUSERNAME, UserRepository } from "./Repository";
 
 export const UserContext = React.createContext();
 
@@ -68,7 +68,7 @@ export const UserDemoProvider = ({children}) => {
     const getUserByUsername = async (username)=>{ //returns undefined or null or user
         await delay(1000); 
         if(username===undefined) return undefined
-        return UserRepository.find(user=>user.username.toLowerCase()===username.toLowerCase())
+        return UserRepository.find(user=>user.username.toLowerCase()===DEMOUSERNAME.toLowerCase())
     }
 
     const trySetUsername = async (fullname,username,team_members=[])=>{

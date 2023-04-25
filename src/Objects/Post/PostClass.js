@@ -3,7 +3,7 @@ export class PostClass {
     ) {
       /***/ this.id = id; //data przekonwertowana na string np. 2023_0322_1301
       this.team_id = team_id;// if team==null then post uniwersalny
-      this.week = week_name; //mozna pofiltrowac, mozna info odrazu poznac (bo jest to pewnego rodzaju context - a na tym nam zalezy zby week_name mialo znaczenie i bylo czesto oznaczane), jesli null to uniwersalny - wiadomo
+      this.week_name = week_name; //mozna pofiltrowac, mozna info odrazu poznac (bo jest to pewnego rodzaju context - a na tym nam zalezy zby week_name mialo znaczenie i bylo czesto oznaczane), jesli null to uniwersalny - wiadomo
       this.upload_date = upload_date;
       this.app = app;
       this.content = content; 

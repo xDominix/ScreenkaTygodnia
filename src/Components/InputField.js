@@ -3,7 +3,7 @@ import { ButtonPaste } from './Buttons';
 import "./InputField.css"
 
 const InputField = (
-    {autofocus,reff,placeholder, h5,readOnly,
+    {autofocus,reff,placeholder, h5,readOnly=false,
     onEnter,
     isRed,isLoading,
     longer,file,paste}) => {

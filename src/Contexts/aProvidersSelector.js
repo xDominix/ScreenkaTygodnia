@@ -5,13 +5,14 @@ import { PostDemoProvider, PostProvider } from "./PostContext";
 import { TeamProvider, TeamDemoProvider } from "./TeamContext";
 import { UserDemoProvider, UserProvider } from "./UserContext";
 import { WeekDemoProvider, WeekProvider } from "./WeekContext";
+import { DEMONAME } from './Repository';
 
 export const ProvidersSelector = ({ children }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const isDemo = useRef(location.pathname.startsWith("/demo"));
 
-    useEffect(()=>{ if(isDemo.current) localStorage.setItem("fullname","Giorgio Armani1") },[isDemo])
+    useEffect(()=>{ if(isDemo.current) {localStorage.setItem("fullname",DEMONAME)} },[isDemo])
   
     useEffect(() => {
         if (isDemo.current && !location.pathname.startsWith("/demo"))

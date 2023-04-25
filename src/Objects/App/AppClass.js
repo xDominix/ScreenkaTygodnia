@@ -30,7 +30,7 @@ export class AppClass {
     static Default = new AppClass("Default","","",Format.None,100)
     //Abstract
     static Word = new AppClass("Word","","write down a word, phrase or an emoji that describes your day!",Format.String,0)
-    static Sentence = new AppClass("Sentence", "","write a sentence, short story, poetical quote, funny joke...",Format.LongString,1)//about what you've heard, what you've learned, what you've done.
+    static Sentence = new AppClass("Sentence", "","write a sentence about what you've heard, what you've learned, what you've done...",Format.LongString,1)
     //Apple App
     static Safari = new AppClass("Safari","page","read some interesting content? saw some pretty layout? Share a website!",Format.Url,10)
     static Photos = new AppClass("Photos","photo, video","upload saved photo, saved video, screenshot, screen recording.",Format.Path,11)

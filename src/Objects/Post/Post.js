@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useCallback, useContext, useRef } from 'react';
 import "./Post.css"
 import App from '../App/App';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ import User from '../User/User';
 import { AuthContext } from '../../Contexts/AuthContext';
 import { UserContext } from '../../Contexts/UserContext';
 import InputField from '../../Components/InputField';
+import A from '../../Components/A';
 
 const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,comment_user=null,onView}) => {
 
@@ -27,7 +28,7 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
     const [isSuperHide,setIsSuperHide] = useState(false);
     const [isHide,setIsHide] = useState(true);
 
-    useEffect(()=>{
+    const loadAll = useCallback(()=>{
         const getPost =  async () =>{
             if(post!=null) return post;
 
@@ -51,7 +52,12 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
 
         getUser(user_fullname).then((user)=>{ if(user != null) setUser(user)});
 
-    },[])
+    },[comment_user,getUser,getUserPost,hideIfApps,id,onView,post,setUserPostComment,user_fullname])
+
+
+    useEffect(()=>{
+        loadAll()  
+    },[loadAll])
 
     useEffect(()=>{
         if(postState==null) return;
@@ -121,14 +127,14 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
                 <h3 className='date'>{getDate()}</h3>
                 <div className='head'>
                     <App application={AppClass.get(postState?.app)} notificationText={getNotificationText()}/>
-                    {isSuperHide && <a onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>show</a>}
+                    {isSuperHide && <A onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>show</A>}
                 </div>
                 <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
                 <div className='body' style={isHide?{opacity:"0"}:{}}>
                     <h3 className='content'>CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT </h3>
                     <div className='context'>{postState?.context}</div>
                 </div>
-                    {isHide && <a className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>show</a>}
+                    {isHide && <A className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>show</A>}
                 </div>
                 
             </div>

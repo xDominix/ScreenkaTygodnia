@@ -1,8 +1,9 @@
 import "./AboutWeek.css"
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Day, WeekDay } from "../../../Objects/Day/Day";
 import { getMonday , isDayToday, MonthNames} from "../../../aFunctions";
 import { BottomTabContext } from "../../../Contexts/BottomTabContext";
+import A from "../../../Components/A";
 
 const AboutWeek = ({onClose,weekNumber,week}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
@@ -10,7 +11,7 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
     const [days,setDays] = useState([]);
     const [isDayLetter,setIsDayLetter] = useState(true)
 
-    useEffect(()=>{
+    const loadAll = useCallback(()=>{
         let res =  [ Day.ClearMind,Day.DeadLine ]
         
         const days = [Day.OhPreview, Day.ThrowBack, Day.OneShot].filter((day) => !week.isDayOff(day));
@@ -20,8 +21,11 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
             res.push(special_day.toDay())
          });
         setDays(res);
+    },[week])
 
-    },[])
+    useEffect(()=>{
+        loadAll()
+    },[loadAll])
 
     const getEveryDayDays= ()=>{return days.filter(day=>day.weekDay===null)}
     const getDefaultDayByWeekDay=(weekDay)=>{return days.filter(day=>day.weekDay===weekDay).at(0)}
@@ -67,9 +71,9 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
                 <div style={{display:"flex"}} > 
                     {days.filter(day=>day.weekDay===WeekDay[weekDayName]).map((day,key2)=>{
                         if(isDayToday(weekDayIndex))  return(
-                            <a key={key2} onClick={()=>handleDayNameClick(weekDayIndex,day)}>
+                            <A key={key2} onClick={()=>handleDayNameClick(weekDayIndex,day)}>
                                     {key2!==0?", ":""}{day.name.toUpperCase()}
-                            </a>)
+                            </A>)
                         else return (
                             <div key={key2} onClick={()=>handleDayNameClick(weekDayIndex,day)}>
                                     {key2!==0?", ":""}{day.name.toUpperCase()}
@@ -90,7 +94,7 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
 
         {getEveryDayDays().map((day,key) => { return (   
                     <div key={key}>
-                        <a onClick={()=>setBottomTab({id:3,object:day})}>{day.name.toUpperCase()}</a>
+                        <A onClick={()=>setBottomTab({id:3,object:day})}>{day.name.toUpperCase()}</A>
                         <span className="bcolor-green-solid color-black"></span>
                     </div>
             )})}
