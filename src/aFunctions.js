@@ -1,6 +1,6 @@
 //CONSTS
 export const MAX_TICKETS = 2;
-export const ADMIN = false;
+export const ADMIN = true;
 export const NOW = new Date();
 
 //MINI CONSTS

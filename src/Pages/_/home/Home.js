@@ -120,7 +120,6 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
                 if(res) setIsScreenka(true)
                 else{
                     await delay(2000);
-                    console.log("2")
                     setIsScreenka(true);
                 }
             }
@@ -169,10 +168,6 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
     useEffect(()=>{
         loadAll();
     },[loadAll]);
-
-    useEffect(()=>{
-        console.log(isScreenka);
-    },[isScreenka])
 
     const getApps = ()=>{
         return isUploadMode? uploadApps : homeApps.slice(0,HOME_APPS_SIZE);

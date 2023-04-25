@@ -35,7 +35,7 @@ export const PostProvider = ({children}) => {
         if(user_fullname==null || team_id==null || week_name==null ) return undefined
         let user= UserRepository.find(user=>user.fullname.toLowerCase()===user_fullname.toLowerCase())
         if(user===undefined) return undefined;
-        return user.posts?.filter(post=> post.team_id===team_id && post.week_name===week_name);
+        return user.posts?.filter(post=>post.team_id===team_id && post.week_name===week_name)
     }
 
     // const getTeamWeekPosts ()=>{} // TO MUCH FOR DB

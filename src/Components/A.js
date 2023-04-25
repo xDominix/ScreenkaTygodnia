@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import "./A.css"
 
 const A = ({className,underline,href,onClick,children}) => {
     const navigate = useNavigate();
