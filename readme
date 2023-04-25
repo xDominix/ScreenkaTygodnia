@@ -1,0 +1,72 @@
+TODO
+
+- todo na icloud soon
+- todo vTODOv
+- then todo na pulpicie
+- then firebase
+- then figma
+- then icloud
+- then forms
+
+IF FIREBASE
+- manage tickets in uploads/day. errorless checkboxes to use ticket or not. uploads.js  (on click - disable all checkboxes)
+
+====================================
+WARSTYWY
+
+UserContext,TeamContext,WeekContext, PostContext
+AuthContext
+*.js
+
+====================================
+
+App models: (wszystkie modele maja nazwy zmiennych jak leci)
+1. team
+1. team/member
+2. team/week
+2. team/week/special_day
+2. team/week/screenka_view
+3. user
+4. user/post
+5. app
+
+! liczba mnoga np weeks zwiera id weekow (nie trzeba weeks_ids)
+! liczba pojedyncza to juz np user_id 
+========================================
+- funckcje tryCosttam returnuja true lub false
+========================================
+
+SOON
+- wyswitlanie team na poscie... jakos wewnatrz by sie przydalo zeby dotyczylo to contextu
+- background SCREENKA jako potega podswiadomosci, albo inne tajemnicze ukryte rzeczy 
+- team menagement - narazie w authContext jest getMyDefaultTeam - pozniej trzeba to usunac 
+- umiescic gdzies miesiac na AboutWeek.js -> cos w stylu: EDYCJA KWIECIEN czy cos w tym stylu (a moze to zbedne?)
+- paginacja uzytkowinkow w Home.js
+- FAVICONS as safari page addon: https://www.google.com/s2/favicons?domain=spotify.com&sz=128
+-slide left screenka, jak na mobile to zeby byl scrollable vertiacal (niczym na ig)
+-floating labels: w zaleznosci ile kto czego postuje ustawiamy labele w zakresie grupy (pozycjonujemy) np. Spotify < YouTube < Twitch 
+- nielocalne zapisywanie viewsow (ohpreview, itp.)
+- comentarze do postow/ weekow (przede wszystkim do oneshota)
+- screenka max 3 razy moze byc widziana - i beda takie oczka przy buttonie, i wtedy alert boxa mozna sie pozbyc (bo 3 proby to spoko)
+
+SOON (LESS IMPORTANT)
+-jak zmienisz localstorage fullname na niewlasciwy bedziesz miec przekierowanie na login (USE CASE)
+- sharowanie postow (public url bez routingPermission)
+- smooth /posts slide-page - blurowanie na ktory nie patrzysz i bardziej sie lepi tego co ogladasz...
+
+SOON (APIs)
+
+- CONTENT IMAGES:
+	jak w remindersach
+	LOGIN: https://www.opengraph.io/
+	THEN TEST: curl https://opengraph.io/api/1.1/site/{URl}?app_id=${KEY}
+	ON URL: https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO
+	100 requestow / month
+	
+- SPOTIFY CUSTOM CONTENT READER:
+	https://developer.spotify.com/documentation/web-api/
+	i stad mozemy pozyskac genre, titlte, artist, itp.
+	500 requestow / month
+
+LICENCJA
+- uwaga na zdjea aplikacji! - przemyslec zeby pozniej nie bylo przypau
