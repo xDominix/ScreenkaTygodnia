@@ -92,7 +92,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
             var participantsMap = new Map();
             Promise.all(active_members.map(async (member) => { 
                 return getUser(member.fullname).then((user)=>{
-                    let since_week = datesWeekDelta(team.start_date,member.join_date);
+                    let since_week = datesWeekDelta(team.start_date,member.joined_date);
                     participantsMap.set(user,since_week);
                 })
             })).then(()=>{
@@ -202,7 +202,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
     let res =  "home-blur-dark-pre ";
     if(isBottomTab())
     {
-        if(! (isObjectApp() &&  appsMap.get(getObject().name)?.fullnames.includes(user.fullname)) ||  HIDE_APP_UPLOADER) res+= "home-blur-dark"
+        if (!equalObject(user) && (! (isObjectApp() &&  appsMap.get(getObject().name)?.fullnames.includes(user.fullname)) ||  HIDE_APP_UPLOADER)) res+= "home-blur-dark"
     } 
     return res;  }
 

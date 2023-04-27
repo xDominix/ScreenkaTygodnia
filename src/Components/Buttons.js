@@ -17,9 +17,9 @@ export const ButtonNext = ({onClick}) =>{
     </button>)
 }
 
-export const ButtonUpload = ({onClick,children}) =>{
+export const ButtonUpload = ({onClick,children,disabled}) =>{
     return (
-    <button className="button-upload focus" onClick={onClick}>
+    <button disabled={disabled} className="button-upload focus" onClick={onClick}>
         {children ? children : "UPLOAD"}
     </button>)
 }

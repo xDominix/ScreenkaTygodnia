@@ -5,7 +5,7 @@ import { PostDemoProvider, PostProvider } from "./PostContext";
 import { TeamProvider, TeamDemoProvider } from "./TeamContext";
 import { UserDemoProvider, UserProvider } from "./UserContext";
 import { WeekDemoProvider, WeekProvider } from "./WeekContext";
-import { DEMONAME } from './Repository';
+import { DEMONAME } from './aLocalbase';
 
 export const ProvidersSelector = ({ children }) => {
     const location = useLocation();

@@ -1,7 +1,7 @@
 import { Day, toWeekDay } from "./Day/Day";
 
 export class Week{
-    constructor(   name,start_date,  description,emoji,  special_days,  oh_preview_off , throw_back_off,  one_shot_off, blocked_apps,    extra_apps, screenka_views, force_screenka_show) {
+    constructor(   name,start_date,  description,emoji,  oh_preview_off , throw_back_off,  one_shot_off, blocked_apps, extra_apps, force_screenka_show,  special_days=null, screenka_views=null) {
         /***/ this.name = name; //gdy bedziemy chcieli sobie wziac po week_namie z posta,
         this.start_date = start_date; // filtrujemy czy currweekdate===newdate, filtrujemy po datach ktore so przed teraz, a pozniej sortujemy po najwyzszej i nia bierzemy - tym samym nowy week odbedzie wtedy kiedy start_date - wraz ze screenka!
         this.description = description; // opis tygodnia, zawierac moze uwagi tygodnia np. spersonalizuj by dodac settingsy! (wejdz na /login)
@@ -31,6 +31,10 @@ export class Week{
             default: return true;
         }
     }
+
+    static fromDoc=(doc,special_days=null,screenka_views=null)=>{
+        return doc?new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.oh_preview_off,doc.throw_back_off,doc.one_shot_off,doc.blocked_apps,doc.extra_apps,doc.force_screenka_show,special_days,screenka_views):null;
+    }
 }
 
 export class ScreenkaView{
@@ -41,6 +45,10 @@ export class ScreenkaView{
         
         /*MAYBE*/ //comment?? - nieee... to ma byc fresh and clean, a z drugiej strony cos w stylu - opisz emocje?
         /*MAYBE*/ //rate?? - daj gwiazdki???
+    }
+
+    static fromDoc=(doc)=>{
+        return doc?new ScreenkaView(doc.id,doc.view_date.toDate()):null
     }
 }
 
@@ -55,5 +63,9 @@ export class SpecialDay{
     toDay()
     {
         return new Day(this.name,toWeekDay(this.week_day),"",this.description)
+    }
+
+    static fromDoc=(doc)=>{
+        return doc?new SpecialDay(doc.id,doc.name,doc.description):null
     }
 }

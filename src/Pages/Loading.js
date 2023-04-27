@@ -1,11 +1,12 @@
 import React from 'react';
+import { getPath } from '../aFunctions';
 
 const Loading = ({logo=false}) => {
 
     if(logo)
         return (<div>
-            {/*<img className='centered default-animation' alt="mini logo" src={getPath("screenka_logo.png")} style={{width:"200px",filter:"brightness(150%)"}}></img>*/}
-            <div className='centered'>SCREENKA <br/> TYGODNIA</div>
+            {<div className='centered'> <img className='fromdown' alt="logo" src={getPath("logo.png")} style={{width:"200px"}}/></div>}
+            {/*<div className='centered'>SCREENKA <br/> TYGODNIA</div>*/}
         </div>)
 
 

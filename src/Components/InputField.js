@@ -34,7 +34,7 @@ const InputField = (
 
     if(file)
     {
-        return (<input type="file" accept="image/*,video/*"  tilte="file..."/>)
+        return (<input type="file" accept="image/*"  tilte="file..."/>)
     }
 
     if(longer)

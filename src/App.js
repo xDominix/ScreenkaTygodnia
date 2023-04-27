@@ -20,7 +20,7 @@ const App = () => {
     return (
             <div className='app-flex-center-v'>
                 <div className='app-max-mobile'>
-                    <BrowserRouter>
+                    <BrowserRouter basename='/ScreenkaTygodnia'>
                         <ProvidersSelector>
                             <Routes>
                                 <Route exact path={getPath("/")} element={<Start />}/>
@@ -36,6 +36,7 @@ const App = () => {
                                 <Route path={getPath("/post/:user_fullname/:id/oneshot")} element={<PostPage oneshot />}/>
                                 <Route path={getPath("/post/:user_fullname/:id/rnshot")} element={<PostPage rnshot />}/> 
 
+                                {ADMIN && <Route path={getPath("/posts/:user_fullname/:team_id")} element={<PostsPage/>}/>}
                                 {ADMIN && <Route path={getPath("/posts/:user_fullname/:team_id/:week_name")} element={<PostsPage/>}/>}
                                 <Route path={getPath("/posts/:user_fullname/:team_id/:week_name/throwback")} element={<PostPage throwback />}/> 
                                 <Route path={getPath("/posts/:user_fullname/:team_id/:week_name/ohpreview")} element={<PostPage ohpreview />}/> 
@@ -52,6 +53,7 @@ const App = () => {
 {ADMIN && <Route path={getPathDemo("/post/:user_fullname/:id")} element={<PostPage />}/>}
 <Route path={getPathDemo("/post/:user_fullname/:id/oneshot")} element={<PostPage oneshot />}/>
 <Route path={getPathDemo("/post/:user_fullname/:id/rnshot")} element={<PostPage rnshot />}/> 
+{ADMIN && <Route path={getPathDemo("/posts/:user_fullname/:team_id")} element={<PostsPage/>}/>}
 {ADMIN && <Route path={getPathDemo("/posts/:user_fullname/:team_id/:week_name")} element={<PostsPage/>}/>}
 <Route path={getPathDemo("/posts/:user_fullname/:team_id/:week_name/throwback")} element={<PostPage throwback />}/> 
 <Route path={getPathDemo("/posts/:user_fullname/:team_id/:week_name/ohpreview")} element={<PostPage ohpreview />}/>

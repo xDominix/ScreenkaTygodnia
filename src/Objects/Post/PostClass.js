@@ -1,5 +1,5 @@
 export class PostClass {
-    constructor(      id,      team_id,      week_name,      upload_date,      app,      content,      context,      screenkaOn,      comment,      comment_user_fullname,   top_number,     is_highlighted
+    constructor(      id,      team_id,      week_name,      upload_date,      app,      content,      context,      screenkaOn,      comment=null,      comment_user_fullname=null,   top_number=null,     is_highlighted=null
     ) {
       /***/ this.id = id; //data przekonwertowana na string np. 2023_0322_1301
       this.team_id = team_id;// if team==null then post uniwersalny
@@ -19,5 +19,34 @@ export class PostClass {
       /*NO*/ //this.co_comment = co_comment; // komentarz jurora, jednego jurora , potrzebne do jugding-time // jeden komentarz period
       /*MAYBE */ //?tag - ???? np tapeta itp. a pozniej sortowanko
     }
+    static fromDoc=(doc)=>{
+      return doc?new PostClass(doc.id,doc.team_id,doc.week_name,doc.upload_date.toDate(),doc.app,doc.content,doc.context,doc.screenkaOn,doc.comment,doc.comment_user_fullname,doc.top_number,doc.is_highlighted):null;
   }
+
+    toDoc = ()=>{
+      if(this.screenkaOn!==true)
+      return {
+        team_id:this.team_id,
+        week_name:this.week_name,
+        upload_date:this.upload_date,
+        app:this.app,
+        content:this.content,
+        context:this.context,
+        }
+        else
+        return {
+          team_id:this.team_id,
+          week_name:this.week_name,
+          upload_date:this.upload_date,
+          app:this.app,
+          content:this.content,
+          context:this.context,
+          screenkaOn:this.screenkaOn,
+          }
+      
+    }
+
+  }
+
+  
   

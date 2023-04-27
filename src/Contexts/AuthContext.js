@@ -1,4 +1,4 @@
-import React, {  useContext, useEffect, useRef, useState } from "react";
+import React, {  useCallback, useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "./UserContext";
 import { TeamContext } from "./TeamContext";
 import { WeekContext } from "./WeekContext";
@@ -15,6 +15,15 @@ const AuthProvider = ({children}) => {
     const weekRef = useRef(null);
 
     const [authLoaded,setAuthLoaded] = useState(false);
+
+    const {getUser,getUserByUsername,
+        trySetUsername,setPersonalizedApps} = useContext(UserContext)
+
+    const {getTeam,getTeamWeekNumber} = useContext(TeamContext)
+
+    const {getTeamWeek,getTeamWeekNames,setTeamWeekScreenkaView,getTeamWeekScreenkaViews} = useContext(WeekContext)
+
+    const {getUserDayPosts,getUserWeekPosts,setUserPostComment}=useContext(PostContext);
 
     const loadUser= async ()=>{
         let fullname = localStorage.getItem("fullname");
@@ -40,7 +49,8 @@ const AuthProvider = ({children}) => {
         return weekRef.current;
     }
 
-    useEffect(()=>{
+    const loadAll = useCallback(()=>{
+        
         loadUser().then((me)=>{
             loadTeam(me).then((team)=>{
                 loadWeek(team).then(()=> 
@@ -49,18 +59,18 @@ const AuthProvider = ({children}) => {
                     })
             })
         })
+    },[setAuthLoaded,userRef,teamRef,weekRef,getUser,getTeam,getTeamWeek])
+    
 
-    },[])
+    useEffect(()=>{
+        loadAll()
+    },[loadAll])
 
     //USER CONTEXT
-
-    const {getUser,getUserByUsername,
-        trySetUsername,setPersonalizedApps} = useContext(UserContext)
-
     const tryLogMeInTemporarly = async (username)=>{
         let user = await getUserByUsername(username)
 
-        if(user===undefined) return false;
+        if(user==null) return false;
 
         userRef.current = user;
         loadTeam(user).then(loadWeek)
@@ -76,7 +86,7 @@ const AuthProvider = ({children}) => {
 
     const trySetMyUsername= async (username)=>{
         let [me,team]=getMeAndMyTeam();
-        let res =  await trySetUsername(me.fullname,username,team.members.map(member=>member.user_fullname))
+        let res =  await trySetUsername(me.fullname,username,team.members.map(member=>member.user_fullname));
         return res;
     }
 
@@ -87,20 +97,14 @@ const AuthProvider = ({children}) => {
 
 
     //TEAM CONTEXT
-
-    const {getTeam,getTeamWeekNumber} = useContext(TeamContext)
-
     const getMyTeamWeekNumber =  ()=>{
-        let [_,team] = getMeAndMyTeam()
+        let [,team] = getMeAndMyTeam()
         return getTeamWeekNumber(team);
     }
     
     //WEEK CONTEXT
-
-    const {getTeamWeek,getTeamWeekNames,setTeamWeekScreenkaView,getTeamWeekScreenkaViews} = useContext(WeekContext)
-
-    const getMyTeamWeekNames = (from_date)=>{
-        let [_,team] = getMeAndMyTeam()
+    const getMyTeamWeekNames = async (from_date)=>{
+        let [,team] = getMeAndMyTeam()
         return getTeamWeekNames(team.id,from_date);
     }
 
@@ -109,7 +113,7 @@ const AuthProvider = ({children}) => {
         if(me==null) return false;
         let screenkaViews = await getTeamWeekScreenkaViews(team_id,week_name);
         if(screenkaViews==null) return false;
-        return screenkaViews.some(view=>view.user_fullname==me.fullname);
+        return screenkaViews.some(view=>view.user_fullname===me.fullname);
     }
 
     const setMyScreenkaView = async(team_id,week_name)=>{//team_id, week_name - ala klucze do wysetowania
@@ -123,8 +127,6 @@ const AuthProvider = ({children}) => {
     }
 
     //POST CONTEXT
-    const {getUserDayPosts,getUserWeekPosts,setUserPostComment}=useContext(PostContext);
-
     const getMyDayUploads = async ()=>{
         let me = getMe();
         if(me==null) return null;
@@ -162,7 +164,7 @@ const AuthProvider = ({children}) => {
 
     const getMeAndMyTeamAndMyWeek=()=>{
         let me = userRef.current;
-        let team = userRef.current;
+        let team = teamRef.current;
         let week = weekRef.current;
         return [me,team,week];
     }

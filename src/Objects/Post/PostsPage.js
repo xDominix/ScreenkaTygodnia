@@ -22,7 +22,7 @@ const PostsPage = ({ohpreview,throwback}) => {
 
     useEffect(()=>{
         let [,,week] = getMeAndMyTeamAndMyWeek();
-        if( user_fullname==null || team_id==null || week_name==null)  navigate("/")
+        if( user_fullname==null || team_id==null )  navigate("/")
         if(day && (!TimeFor.Day(day,week) || amIViewLocal(day.toString()))) navigate("/");
         getUserTeamWeekPosts(user_fullname,team_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
     },[])

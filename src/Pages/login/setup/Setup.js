@@ -8,6 +8,7 @@ import {TeamContext} from "../../../Contexts/TeamContext"
 import { ButtonNext } from '../../../Components/Buttons';
 import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
+import { getPath } from '../../../aFunctions';
 
 const Setup = ({onSetup}) => {
 
@@ -15,6 +16,7 @@ const Setup = ({onSetup}) => {
     const {getTeam} = useContext(TeamContext)
 
     const meRef = useRef(getMe());
+    const meSrcUrl = useRef() 
     const [personalizedApps,setPersonalizedApps] = useState(null);
     const [checkboxes, setCheckboxes] = useState(null);
     
@@ -24,11 +26,15 @@ const Setup = ({onSetup}) => {
 
         inputRef.current.value= me.username;
 
+        let sess = sessionStorage.getItem(meRef.current.src);
+        meSrcUrl.current = sess?sess:getPath('default_profile_picture.png');
+
         getPersonalizedApps(me).then(apps=>{
             setPersonalizedApps(apps)
             let checkboxes = getCheckboxes(me,apps)
             setCheckboxes(checkboxes)
         });
+
     },[])
 
     //apps
@@ -37,14 +43,14 @@ const Setup = ({onSetup}) => {
         const personalized_apps_set = new Set();
 
         if(me.teams == null) throw new Error("me.teams error")
-        await me.teams.forEach(async team_id => {
-            let team = await getTeam(team_id)
+        for(let i =0;i<me.teams.length;i++)
+        {
+            let team = await getTeam(me.teams[i])
             if(team==null || team.personalized_apps==null) throw new Error("team error")
             team.personalized_apps.forEach(app => {
                 personalized_apps_set.add(app)
             });
-        });
-
+        }
         return Array.from(personalized_apps_set);
     }
     const getCheckboxes=(me,all_personalized_apps)=>{
@@ -94,14 +100,14 @@ const Setup = ({onSetup}) => {
             <h2 className='color-gray-solid'>Welcome, {meRef.current.getName()}!<span role="img" aria-label="emoji"> ✋🏼</span></h2>
        
             <div className='setup-user'>
-                <img src={meRef.current.src} alt="profile"/>
+                <img src={meSrcUrl.current} alt="profile"/>
                 <div>
                     <h4>Username:</h4>
                     <InputField reff={inputRef} onEnter={handleOnEnter} onKeyDown={()=>{if(isInputFieldRed) setIsInputFieldRed(false)}}  isRed={isInputFieldRed} isLoading={isInputFieldLoading} />
                     </div>
                
             </div>
-            {personalizedApps && <div className='setup-apps'>
+            {personalizedApps?.length>0 && <div className='setup-apps'>
                 <h4>Choose apps you interested in:</h4>
                 <div className='setup-apps-list'>
                     {personalizedApps.map((appname,index)=>{

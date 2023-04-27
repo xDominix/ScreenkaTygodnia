@@ -1,5 +1,5 @@
 //CONSTS
-export const MAX_TICKETS = 2;
+export const MAX_TICKETS = 10;
 export const ADMIN = true;
 export const NOW = new Date();
 
@@ -14,12 +14,6 @@ export const getPath=(file)=>{
 export const getAppFullSrc=(app_name,size=64)=>{
     if(size<=64) return getPath("app-logos-64/"+app_name.toLowerCase()+".png")
     return getPath("app-logos-128/"+app_name.toLowerCase()+".png")
-}
-
-
-export const getUserFullSrc=(src)=>{
-    if(src==null) return getPath('default_profile_picture.png')
-    return getPath('default_profile_picture.png') //TODO
 }
 
 //ASYNC
@@ -47,7 +41,7 @@ export function getMonday(d) {
     return new Date(d.setDate(diff));
 }
 
-export function dateEqual(instancedate1, instancedate2) {
+export function dayEqual(instancedate1, instancedate2) {
     return instancedate1.getFullYear() === instancedate2.getFullYear() &&
     instancedate1.getMonth() === instancedate2.getMonth() &&
     instancedate1.getDate() === instancedate2.getDate()

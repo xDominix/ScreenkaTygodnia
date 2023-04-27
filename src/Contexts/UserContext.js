@@ -1,21 +1,22 @@
 import React from "react";
-import { delay } from "../aFunctions";
-import { DEMOUSERNAME, UserRepository } from "./Repository";
+import { delay, getPath, } from "../aFunctions";
+import { DEMOUSERNAME, UserRepository } from "./aLocalbase";
+import { UserClass as User, UserClass} from "../Objects/User/UserClass";
+import { doc, updateDoc } from "firebase/firestore";
+import { db, getDoc, getDocWhere, getUserSrcFromStorage } from "./aFirebase";
 
 export const UserContext = React.createContext();
 
 export const UserProvider = ({children}) => {
 
     const getUser = async (fullname)=>{
-        await delay(1000); 
-        if(fullname===undefined) return undefined
-        return UserRepository.find(user=>user.fullname.toLowerCase()===fullname.toLowerCase())
+        let doc = await getDoc("users",fullname);
+        return User.fromDoc(doc);
     }
 
     const getUserByUsername = async (username)=>{ //returns undefined or null or user
-        await delay(1000); 
-        if(username===undefined) return undefined
-        return UserRepository.find(user=>user.username.toLowerCase()===username.toLowerCase())
+        let doc = await getDocWhere("users","username",username);
+        return UserClass.fromDoc(doc);
     }
 
     const trySetUsername = async (fullname,username,team_members=[])=>{
@@ -32,22 +33,34 @@ export const UserProvider = ({children}) => {
             if(user.username === username) return false;
         });
 
-        //set
-        
-        delay(1000)
+        await updateDoc(doc(db, "users",fullname),{username:username});
+
         return true;
     }
 
 
     const setPersonalizedApps = async (fullname,apps)=>{
-        //set
-        
-        delay(1000)
+        if(fullname ==null || apps==null) return false;
+        await updateDoc(doc(db, "users",fullname),{personalized_apps:apps});
+        return true;
+    }
+
+    const getUserSrcUrl = async (user)=>{
+        if(user==null || user.src?.length<4) return null;
+
+        let sessionUrl =sessionStorage.getItem(user.url);
+        if(sessionUrl) return new Promise((resolve, ) => { resolve(sessionUrl); });
+
+        return getUserSrcFromStorage(user.src).then(url=>{
+            sessionStorage.setItem(user.src,url);
+            return url;
+        })
     }
 
     const value = {
         getUser, getUserByUsername,
-        trySetUsername,setPersonalizedApps
+        trySetUsername,setPersonalizedApps,
+        getUserSrcUrl
     }
 
     return ( 
@@ -98,9 +111,13 @@ export const UserDemoProvider = ({children}) => {
         delay(1000)
     }
 
+    const getUserSrcUrl = async ()=>{
+        return getPath('default_profile_picture.png');
+    }
+
     const value = {
         getUser, getUserByUsername,
-        trySetUsername,setPersonalizedApps
+        trySetUsername,setPersonalizedApps,getUserSrcUrl
     }
 
     return ( 

@@ -13,12 +13,14 @@ import { AuthContext } from '../../Contexts/AuthContext';
 import { UserContext } from '../../Contexts/UserContext';
 import InputField from '../../Components/InputField';
 import A from '../../Components/A';
+import NothingToShow from '../../Pages/NothingToShow';
+import { Format } from '../App/AppClass';
 
 const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,comment_user=null,onView}) => {
 
     const {hideIfAppsState} = useContext(AuthContext);
 
-    const {getUserPost,setUserPostComment} = useContext(PostContext)
+    const {getUserPost,setUserPostComment,getPathPostUrl} = useContext(PostContext)
     const {getUser} = useContext(UserContext);
 
     const [postState,setPostState] = useState(post);
@@ -27,6 +29,8 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
 
     const [isSuperHide,setIsSuperHide] = useState(false);
     const [isHide,setIsHide] = useState(true);
+
+    const [content,setContent] = useState(null);
 
     const loadAll = useCallback(()=>{
         const getPost =  async () =>{
@@ -47,12 +51,15 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
             const timeout = setTimeout(()=>{
                 if( hideIfApps?.includes(post.app)) setIsSuperHide(true);
             },500)
+
+            getContent(post).then(setContent);
+
             return ()=>clearTimeout(timeout)
         });
 
         getUser(user_fullname).then((user)=>{ if(user != null) setUser(user)});
 
-    },[comment_user,getUser,getUserPost,hideIfApps,id,onView,post,setUserPostComment,user_fullname])
+    },[comment_user,getUser,getUserPost,hideIfApps,id,onView,post,setUserPostComment,user_fullname,content])
 
 
     useEffect(()=>{
@@ -115,6 +122,23 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
         })
     }
 
+    //content
+    const getContent = async (post)=>{
+        if(!post) return null;
+    
+        let app = AppClass.get(post.app), content = post.content;
+        switch(app?.format){
+            case Format.LongString: <h4>{content}</h4>
+            case Format.String: return <h3>{content}</h3>
+            case Format.Url: return <a className='centered'  href={content} target="_blank">OPEN LINK</a>
+            case Format.Path: 
+                let src = await getPathPostUrl(content);
+                return <img className='centered' src={src}></img>;
+            default: return content;
+        }
+    }
+    
+
     return ( 
     <div className='pre-pre-post'>
         {!hideNickname &&<div className="nickname">
@@ -131,8 +155,8 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
                 </div>
                 <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
                 <div className='body' style={isHide?{opacity:"0"}:{}}>
-                    <h3 className='content'>CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT CONTENT </h3>
-                    <div className='context'>{postState?.context}</div>
+                    <div className='content'>{content?content:<NothingToShow/>}</div>
+                    <h4 className='context'>{postState?.context}</h4>
                 </div>
                     {isHide && <A className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>show</A>}
                 </div>
