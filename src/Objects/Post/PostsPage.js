@@ -10,26 +10,26 @@ import { AuthContext } from '../../Contexts/AuthContext';
 
 const PostsPage = ({ohpreview,throwback}) => {
 
-    const {user_fullname,team_id,week_name} = useParams();
+    const {user_fullname,host_id,week_name} = useParams();
     const navigate = useNavigate();
 
-    const {getUserTeamWeekPosts}=useContext(PostContext);
-    const {amIViewLocal,setMyViewLocal,getMeAndMyTeamAndMyWeek} = useContext(AuthContext)
+    const {getUserHostWeekPosts}=useContext(PostContext);
+    const {amIViewLocal,setMyViewLocal,getMyHostWeekNumber} = useContext(AuthContext)
 
     const [posts,setPosts] = useState(null);
 
     const day = ohpreview?Day.OhPreview : (throwback?Day.ThrowBack:null);
 
     useEffect(()=>{
-        let [,,week] = getMeAndMyTeamAndMyWeek();
-        if( user_fullname==null || team_id==null )  navigate("/")
-        if(day && (!TimeFor.Day(day,week) || amIViewLocal(day.toString()))) navigate("/");
-        getUserTeamWeekPosts(user_fullname,team_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
-    },[])
+        let weekNumber = getMyHostWeekNumber();
+        if( user_fullname==null || host_id==null )  navigate("/")
+        if(day && (!TimeFor.Day(day,weekNumber) || amIViewLocal(day.toString()))) navigate("/");
+        getUserHostWeekPosts(user_fullname,host_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
+    },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
         if(day && posts.length>0) setMyViewLocal(day.toString());
-    },[posts])
+    },[posts]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const getTitle = ()=>day==null?"Week Posts":day.name.toUpperCase()
     const getDescription =()=>day==null?null:day.description

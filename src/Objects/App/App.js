@@ -1,5 +1,5 @@
 import NotificationDot from "./components/NotificationDot";
-import React, { useEffect } from 'react';
+import React from 'react';
 import { getAppFullSrc } from "../../aFunctions";
 import { AppClass } from "./AppClass";
 

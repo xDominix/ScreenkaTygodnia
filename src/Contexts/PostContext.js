@@ -1,8 +1,8 @@
 import React from "react";
-import { NOW, dayEqual, delay, getPath, weekEqual } from "../aFunctions";
+import { NOW, YYYYMMDDHHMM, dayEqual, delay, getPath, weekEqual } from "../aFunctions";
 import { DEMONOW, UserRepository } from "./aLocalbase";
 import { PostClass } from "../Objects/Post/PostClass";
-import { addDoc, doc, updateDoc ,collection} from "firebase/firestore";
+import { addDoc, doc, updateDoc ,collection, arrayUnion, increment} from "firebase/firestore";
 import { db, getDoc, getDocs ,getDocsWhere, getPostFromStorage, storage} from "./aFirebase";
 import { ref, uploadBytes } from "firebase/storage";
 
@@ -19,38 +19,38 @@ export const PostProvider = ({children}) => {
     const getUserDayPosts = async (user_fullname)=>{
         let docs = await getDocs(`users/${user_fullname}/posts`);
         let posts = docs.map(doc=>PostClass.fromDoc(doc));
-        return posts?.filter(post=> dayEqual(post.upload_date,NOW));
+        return posts?.filter(post=> dayEqual(post.upload_date,NOW()));
     }
 
-    const getUserWeekPosts = async (user_fullname,team_id=null,week_name=null)=>{
-        if(week_name==null || team_id==null)
+    const getUserWeekPosts = async (user_fullname,host_id=null,week_name=null)=>{
+        if(week_name==null || host_id==null)
         {
             let docs = await getDocs(`users/${user_fullname}/posts`);
             let posts = docs.map(doc=>PostClass.fromDoc(doc));
-            return posts?.filter(post=> weekEqual(post.upload_date,NOW));
+            return posts?.filter(post=> weekEqual(post.upload_date,NOW()));
         }
 
         let docs = await getDocsWhere(`users/${user_fullname}/posts`,"week_name",week_name);
         let posts = docs.map(doc=>PostClass.fromDoc(doc));
-        posts = docs?.filter(post=> post.team_id === team_id);
-        return posts?.filter(post=> weekEqual(post.upload_date,NOW));
+        posts = docs?.filter(post=> post.host_id === host_id);
+        return posts?.filter(post=> weekEqual(post.upload_date,NOW()));
     }
 
-    const getUserTeamWeekPosts = async (user_fullname,team_id,week_name=null)=>{
-        if(user_fullname==null || team_id==null) return null
-        return await getUserWeekPosts(user_fullname,team_id,week_name);
+    const getUserHostWeekPosts = async (user_fullname,host_id,week_name=null)=>{
+        if(user_fullname==null || host_id==null) return null
+        return await getUserWeekPosts(user_fullname,host_id,week_name);
      }
 
-    // const getTeamWeekPosts ()=>{} // TO MUCH FOR DB
+    // const getHostWeekPosts ()=>{} // TO MUCH FOR DB
 
-    const getPathPostUrl = async (post)=>{
-        if(post==null || post.content==null) return null;
+    const getPathPostContentUrl = async (user_fullname,content)=>{
+        if(content==null) return null;
 
-        let sessionUrl =sessionStorage.getItem(post.content);
+        let sessionUrl =sessionStorage.getItem(content);
         if(sessionUrl) return new Promise((resolve, ) => { resolve(sessionUrl); });
 
-        return getPostFromStorage(post.content).then(url=>{
-            sessionStorage.setItem(post.content,url);
+        return getPostFromStorage(user_fullname,content).then(url=>{
+            sessionStorage.setItem(content,url);
             return url;
         })
     }
@@ -58,6 +58,7 @@ export const PostProvider = ({children}) => {
     //SETTERS
 
     const setUserPostComment = async (user_fullname,id, comment_user_fullname,comment=null)=>{
+        if(user_fullname === comment_user_fullname) return false;
 
         let post = await getUserPost(user_fullname,id);
         if(post==null || post.comment_user_fullname) return false;
@@ -68,28 +69,33 @@ export const PostProvider = ({children}) => {
         return true;
     }
 
-    const postPost = async (user_fullname,post)=>{
+    const postPost = async (user_fullname,host_id,week_name,post,file=null)=>{
+
+        if(file!=null)
+        {
+            let secure_filename = YYYYMMDDHHMM(post.upload_date)+"_"+file.name;
+            post.content = secure_filename;
+
+            let fileRef = ref(storage,user_fullname+'/'+secure_filename);
+            await uploadBytes(fileRef,file);
+            console.log('Uploaded file to '+user_fullname+'/'+secure_filename);
+        }
 
         const docRef = await addDoc(collection(db, `users/${user_fullname}/posts`), post.toDoc());
+
+        let data = {
+            latest_uploader:user_fullname,
+            participants:arrayUnion(user_fullname) }
+        data[`apps_counts_map.${post.app}`] =  increment(1);
+        updateDoc(doc(db,"hosts",host_id,"weeks",week_name),data)
 
         console.log("Document written with ID: ", docRef.id);
     }
 
-    const postFile = async (filename)=>{
-        if(!filename) return;
-
-        let ref = ref(storage,'posts/'+filename);
-
-        await uploadBytes(ref,filename)
-
-        console.log('Uploaded file to posts/'+filename);
-    }
-    
-
     const value = {
         getUserPost,
-        getUserDayPosts,getUserWeekPosts,getUserTeamWeekPosts,
-        setUserPostComment,getPathPostUrl,postPost,postFile
+        getUserDayPosts,getUserWeekPosts,getUserHostWeekPosts,
+        setUserPostComment,getPathPostContentUrl,postPost
     }
 
     return ( 
@@ -117,26 +123,26 @@ export const PostDemoProvider = ({children}) => {
         return user.posts.filter(post=> dayEqual(post.upload_date,DEMONOW));
     }
 
-    const getUserWeekPosts = async (user_fullname,team_id=null,week_name=null)=>{
+    const getUserWeekPosts = async (user_fullname,host_id=null,week_name=null)=>{
         await delay(1000); 
-        if(user_fullname!=null && team_id!=null && week_name!=null) return await getUserTeamWeekPosts(user_fullname,team_id,week_name)
+        if(user_fullname!=null && host_id!=null && week_name!=null) return await getUserHostWeekPosts(user_fullname,host_id,week_name)
         if(user_fullname==null ) return null
         let user= UserRepository.find(user=>user.fullname.toLowerCase()===user_fullname.toLowerCase())
         if(user==null) return null;
         return user.posts?.filter(post=> weekEqual(post.upload_date,DEMONOW));
     }
 
-    const getUserTeamWeekPosts = async (user_fullname,team_id,week_name=null)=>{
+    const getUserHostWeekPosts = async (user_fullname,host_id,week_name=null)=>{
         await delay(1000); 
-        if(user_fullname==null || team_id==null ) return undefined
+        if(user_fullname==null || host_id==null ) return undefined
         let user= UserRepository.find(user=>user.fullname.toLowerCase()===user_fullname.toLowerCase())
         if(user===undefined) return undefined;
-        return user.posts?.filter(post=> post.team_id===team_id && post.week_name===week_name);
+        return user.posts?.filter(post=> post.host_id===host_id && post.week_name===week_name);
     }
 
-    // const getTeamWeekPosts ()=>{} // TO MUCH FOR DB
+    // const getHostWeekPosts ()=>{} // TO MUCH FOR DB
 
-    const getPathPostUrl = async ()=>{
+    const getPathPostContentUrl = async ()=>{
         return getPath('no_picture.png');
     }
 
@@ -148,24 +154,19 @@ export const PostDemoProvider = ({children}) => {
         return true;
     }
 
-    const postPost = async (user_fullname,post)=>{
+    const postPost = async (user_fullname,host,week,post,file=null)=>{
         await delay(2000);
+        if(file){
+            await delay(1000);
+            console.log('Uploaded file to '+user_fullname+'/'+file.name);
+        } 
         return true;
     }
-
-    const postFile = async (filename)=>{
-        if(!filename) return;
-        await delay(2000)
-
-        console.log('Uploaded file to posts/'+filename);
-    }
     
-    
-
     const value = {
         getUserPost,
-        getUserDayPosts,getUserWeekPosts,getUserTeamWeekPosts,
-        setUserPostComment,getPathPostUrl,postPost,postFile
+        getUserDayPosts,getUserWeekPosts,getUserHostWeekPosts,
+        setUserPostComment,getPathPostContentUrl,postPost
     }
 
     return ( 

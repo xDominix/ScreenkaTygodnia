@@ -42,8 +42,8 @@
 .home-app-conteiner{
     display: grid;
     justify-content: center;
-    gap: 30px 40px;
-    margin-top: 10px;
+    gap: 35px;
+    margin-top: 20px;
 }
 .home-user-conteiner{
     display: flex;
@@ -82,7 +82,7 @@
 
 /**/
 
-.home-user-conteiner img{
+.home-user-conteiner img, .home-user-conteiner span{
     width: 40px;
     height: 40px;
     margin: 5px;

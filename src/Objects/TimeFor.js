@@ -14,7 +14,7 @@ export class TimeFor {
     static RnShot = (post) => post!=null && isLessThenMinutes(post.upload_date,15);
 
     //days
-    static Day = (day, week) => day.isTime() && week!=null &&!week.isDayOff(day);
+    static Day = (day, weekNumber) => day.isTime() && weekNumber!=null &&  weekNumber>day.weekOffset;
     
     //pages
     static WeekUploads = () => Day.DeadLine.isTime()

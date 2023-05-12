@@ -16,16 +16,16 @@ const PostPage = ({oneshot,rnshot}) => {
     const day = oneshot?Day.OneShot:null;
 
     useEffect(()=>{
-        let [,,week] = getMeAndMyTeamAndMyWeek()
-        if(day && (!TimeFor.Day(day,week) || amIViewLocal(day.toString()))) navigate("/");
+        let weekNumber = getMyHostWeekNumber()
+        if(day && (!TimeFor.Day(day,weekNumber) || amIViewLocal(day.toString()))) navigate("/");
         if(rnshot && amIViewLocal("rnshot")) navigate("/")
-    },[])
+    },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const getTitle = ()=> day?day.name.toUpperCase():(rnshot?"RN-SHOT":"Post")
     const getDescription =()=>day?day.description:(rnshot?"- z ostatniej chwili!":null)
 
     const [alreadyViewed,setAlreadyViewed] = useState(false);
-    const {getMe,setMyViewLocal,amIViewLocal,getMeAndMyTeamAndMyWeek} = useContext(AuthContext);
+    const {setMyViewLocal,amIViewLocal,getMyHostWeekNumber} = useContext(AuthContext);
     const handleOnView = (success)=>{
         if(day || rnshot)
         {
@@ -39,7 +39,7 @@ const PostPage = ({oneshot,rnshot}) => {
         <h1 style={{marginLeft: "15px",marginTop:"25px"}}>{getTitle()}</h1>
         {getDescription() &&<h4 style={{textAlign:"right",marginRight:"15px",marginBottom:"20px"}}>{getDescription()}</h4>}
 
-        {!alreadyViewed && <Post id={id} user_fullname={user_fullname} comment_user={getMe()} onView={handleOnView}/>}
+        {!alreadyViewed && <Post id={id} user_fullname={user_fullname} commentOn={day || rnshot} onView={handleOnView}/>/*comment_user with condition inside */}
         {alreadyViewed && <NothingToShow/>}
     </div> );
 }

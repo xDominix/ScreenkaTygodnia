@@ -9,7 +9,7 @@ const ScreenkaT0 = ({onLoad}) => {
     useEffect(()=>{
         const timeout = setTimeout(()=> onLoad(WEEK_NAME),1000);
         return ()=>clearTimeout(timeout);
-    },[onLoad])
+    },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     return ( 
         <div className='Screenka noscroll'>

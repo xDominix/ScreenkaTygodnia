@@ -8,6 +8,7 @@ import Loading from '../../Pages/Loading';
 import { PostContext } from '../../Contexts/PostContext';
 import { randomElement } from '../../aFunctions';
 import { WeekContext } from '../../Contexts/WeekContext';
+import { HostContext } from '../../Contexts/HostContext';
 
 const DayPage = () => {
 
@@ -20,15 +21,16 @@ const DayPage = () => {
         default: return Day.Default
     }}
 
-    const {getMe,amIViewLocal,getMeAndMyTeam,getMyTeamWeekNames,getMeAndMyTeamAndMyWeek} = useContext(AuthContext);
+    const {amIViewLocal,getMeAndMyHost,getMyHostWeekNames,getMyHostWeekNumber} = useContext(AuthContext);
     const {getUserDayPosts,getUserWeekPosts} = useContext(PostContext);
-    const {getTeamWeekNames} = useContext(WeekContext);
+    const {getHostMembers} = useContext(HostContext)
+    const {getHostWeekNames} = useContext(WeekContext);
 
     const [isNothingToShow,setIsNothingToShow]=useState(false);
 
     useEffect(()=>{
-        const [,,week] = getMeAndMyTeamAndMyWeek();
-        if(TimeFor.Day(getDay(),week) && !amIViewLocal(getDay().toString())) navigate("/");
+        const weekNumber = getMyHostWeekNumber();
+        if(TimeFor.Day(getDay(),weekNumber) && !amIViewLocal(getDay().toString())) navigate("/");
 
         const timeout = setTimeout(()=>{
             let nav = getNavigator(getDay());
@@ -37,25 +39,25 @@ const DayPage = () => {
         },1000)
 
         return ()=>clearTimeout(timeout)
-    },[])
+    },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
     //navigate
     const getNavigator=async (day)=>{
     
         if(day===Day.OneShot)
         {
-            let [me,team] = getMeAndMyTeam();
-            let members = team.members//.filter(member=>member.fullname!==me.fullname)
-            if(members?.length===0) return null;
-            let randomMember = randomElement(members);
-            let memberPosts = await getUserDayPosts(randomMember.fullname);
+            let [me,host] = getMeAndMyHost();
+            let members_fullnames = host.members_fullnames//.filter(fullname=>fullname!==me.fullname)
+            if(members_fullnames?.length===0) return null;
+            let randomFullname = randomElement(members_fullnames);
+            let memberPosts = await getUserDayPosts(randomFullname);
             memberPosts?.filter(post=>post.comment_user_fullname == null);
-            memberPosts?.filter(post=>me.personalized_apps?.includes(post.app) || team.popular_apps.includes(post.app))
+            memberPosts?.filter(post=>me.personalized_apps?.includes(post.app) || host.popular_apps.includes(post.app))
             if(memberPosts.length===0)
             {
-                memberPosts = await getUserWeekPosts(randomMember.fullname);
+                memberPosts = await getUserWeekPosts(randomFullname);
                 memberPosts?.filter(post=>post.comment_user_fullname == null);
-                memberPosts?.filter(post=>me.personalized_apps?.includes(post.app) || team.popular_apps.includes(post.app))
+                memberPosts?.filter(post=>me.personalized_apps?.includes(post.app) || host.popular_apps.includes(post.app))
             } 
             if(memberPosts?.length===0) return null;
             let randomPost = randomElement(memberPosts);
@@ -64,23 +66,23 @@ const DayPage = () => {
         }
         else if (day===Day.ThrowBack)
         {
-            let [me,team] = getMeAndMyTeam();
-            let my_start_date = team.members?.find(member=>member.fullname===me.fullname)?.start_date;
-            let week_names = await getMyTeamWeekNames(my_start_date);
+            let [me,host] = getMeAndMyHost();
+            let my_start_date = getHostMembers(host.id)?.find(member=>member.fullname===me.fullname)?.start_date;
+            let week_names = await getMyHostWeekNames(my_start_date);
             if(week_names?.length===0) return null;
             let randomWeekName = randomElement(week_names);
-            return  `/posts/${me.fullname}/${team.id}/${randomWeekName}/throwback`
+            return  `/posts/${me.fullname}/${host.id}/${randomWeekName}/throwback`
         }
         else if (day===Day.OhPreview)
         {
-            let [me,team] = getMeAndMyTeam();
-            let members = team.members.filter(member=>member.fullname!==me.fullname)
+            let [me,host] = getMeAndMyHost();
+            let members = getHostMembers(host.id).filter(member=>member.fullname!==me.fullname)
             if(members?.length===0) return null;
             let randomMember = randomElement(members);
-            let week_names = await getTeamWeekNames(team.id,randomMember.start_date);
+            let week_names = await getHostWeekNames(host.id,randomMember.start_date);
             if(week_names?.length===0) return null;
             let randomWeekName = randomElement(week_names);
-            return  `/posts/${randomMember.fullname}/${team.id}/${randomWeekName}/ohpreview`
+            return  `/posts/${randomMember.fullname}/${host.id}/${randomWeekName}/ohpreview`
         }
         else return null
     

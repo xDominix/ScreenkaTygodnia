@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, {  useContext, useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
@@ -25,12 +25,12 @@ const TempLogin = ({onTempLogin}) => {
             if(me== null) return;
             inputRef.current.value=me.username; 
 
-            getUserSrcUrl(me).then(setMeSrc);
+            getUserSrcUrl(me.fullname).then(setMeSrc);
         },500);
     
         return ()=> clearTimeout(timeout);
            
-    },[])
+    },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnEnter = async () => {
         setIsInputFieldLoading(true)

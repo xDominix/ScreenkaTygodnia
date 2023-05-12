@@ -1,31 +1,24 @@
 import "./AboutWeek.css"
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Day, WeekDay } from "../../../Objects/Day/Day";
 import { getMonday , isDayToday, MonthNames} from "../../../aFunctions";
 import { BottomTabContext } from "../../../Contexts/BottomTabContext";
 import A from "../../../Components/A";
 
-const AboutWeek = ({onClose,weekNumber,week}) => {
+const AboutWeek = ({onClose,weekNumber,week,special_days}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
 
     const [days,setDays] = useState([]);
     const [isDayLetter,setIsDayLetter] = useState(true)
 
-    const loadAll = useCallback(()=>{
-        let res =  [ Day.ClearMind,Day.DeadLine ]
-        
-        const days = [Day.OhPreview, Day.ThrowBack, Day.OneShot].filter((day) => !week.isDayOff(day));
-        days.forEach(day => { res.push(day) });
-
-        week.special_days.forEach(special_day => {
-            res.push(special_day.toDay())
-         });
-        setDays(res);
-    },[week])
-
     useEffect(()=>{
-        loadAll()
-    },[loadAll])
+        let days = [Day.ClearMind,Day.DeadLine,Day.OhPreview, Day.ThrowBack, Day.OneShot].filter((day) =>  weekNumber>day.weekOffset);
+
+        if(special_days) special_days.forEach(special_day => {
+            days.push(special_day.toDay())
+         });
+        setDays(days);
+    },[special_days]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const getEveryDayDays= ()=>{return days.filter(day=>day.weekDay===null)}
     const getDefaultDayByWeekDay=(weekDay)=>{return days.filter(day=>day.weekDay===weekDay).at(0)}
@@ -48,8 +41,12 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
     }
 
     const getFooter = ()=>{
+        let total_uploads = Array.from(week.apps_counts_map.values()).reduce((acc, value) => acc + value, 0);
+        let total_uploads_string = "TOTAL UPLOADS: "+total_uploads;
+
         let date = getMonday(week.start_date);
-        return MonthNames[date.getMonth()].toUpperCase()+" "+date.getFullYear();
+        let full_date_string =(MonthNames[date.getMonth()].toUpperCase()+" "+date.getFullYear());
+        return (<footer>{full_date_string}<br/>{total_uploads_string}</footer>)
     }
 
     return (
@@ -75,7 +72,7 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
                                     {key2!==0?", ":""}{day.name.toUpperCase()}
                             </A>)
                         else return (
-                            <div key={key2} onClick={()=>handleDayNameClick(weekDayIndex,day)}>
+                            <div key={key2}>
                                     {key2!==0?", ":""}{day.name.toUpperCase()}
                             </div>)}
                         )    
@@ -103,7 +100,7 @@ const AboutWeek = ({onClose,weekNumber,week}) => {
             </div>
             <div className="bcolor-dark-gray-solid"></div>
         </div>
-        <footer>{getFooter()}</footer>
+        {getFooter()}
         </div> 
     );
 }

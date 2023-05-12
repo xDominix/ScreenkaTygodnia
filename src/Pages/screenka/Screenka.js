@@ -3,39 +3,37 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom/dist';
 import ScreenkaT0 from '../../aScreenkas/ScreenkaT0';
 import { AuthContext } from '../../Contexts/AuthContext';
-import { TeamContext } from '../../Contexts/TeamContext';
+import { HostContext } from '../../Contexts/HostContext';
 import { TimeFor } from '../../Objects/TimeFor';
 import NothingToShow from '../NothingToShow';
 import ScreenkaTDEMO from '../../aScreenkas/ScreenkaTDEMO';
 
 const Screenka = () => {
-    const {team_id} = useParams();
+    const {host_id} = useParams();
    
     const navigate = useNavigate();
 
-    const {getMe,setMyScreenkaView,amIScreenkaView,setHideIfAppsState} = useContext(AuthContext)
-    const {getTeam} = useContext(TeamContext);
+    const {getMe,setMyScreenkaView,amIScreenkaViewLocal,setHideIfAppsState} = useContext(AuthContext)
+    const {getHost} = useContext(HostContext);
 
       const onLoad= async (week_name)=>{
         if(!TimeFor.Screenka(true)) {navigate("/");return;}
         
         let me = getMe();
         if(me===null) navigate("/login");
-        if(!me.teams?.includes(team_id))  {navigate("/");return;}
+        if(!me.hosts?.includes(host_id))  {navigate("/");return;}
         
-        getTeam(team_id).then(team=>{  setHideIfAppsState(me,team); });
+        getHost(host_id).then(host=>{  setHideIfAppsState(me,host); });
 
-        amIScreenkaView(team_id,week_name).then(ami=>{
-          if(ami) {navigate("/");return;}
-        })
+        if(amIScreenkaViewLocal(host_id)) {navigate("/");return;}
 
         return setTimeout(()=>{
-        setMyScreenkaView(team_id,week_name);
+        setMyScreenkaView(host_id,week_name);
         console.log("Screenka View has been set")
         },10000);
       }
 
-  switch (Number(team_id)){
+  switch (Number(host_id)){
         case -1: return <div><ScreenkaTDEMO/></div>
         case 0: return <div><ScreenkaT0 onLoad={onLoad}/></div>
         default: return <NothingToShow/>

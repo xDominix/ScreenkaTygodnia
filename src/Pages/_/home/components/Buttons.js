@@ -28,12 +28,11 @@ export const ButtonScreenka = ({style,onClick,disabled}) => {
         </button>
 );}
 
-export const ButtonPlus = ({style, onClick,isRotate=false,disabled,tickets}) => {
+export const ButtonPlus = ({style, onClick,isRotate=false,disabled}) => {
     return (  <button disabled={disabled}
      className={"bcolor-dark-gray-solid "+((isRotate?"button-plus-red ":"")+'button-plus shadow ')}
       style={style} onClick={onClick}>
         <div className={isRotate?"rotate":""}>+</div>
-        {!disabled && !isRotate && <h5 className={"ticket"}><span role="img" aria-label="ticket_emoji">🎫</span>x{tickets}</h5>}
     </button> );
 }
 

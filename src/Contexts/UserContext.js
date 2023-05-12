@@ -10,7 +10,14 @@ export const UserContext = React.createContext();
 export const UserProvider = ({children}) => {
 
     const getUser = async (fullname)=>{
+        if(fullname==null) return null;
+        if(sessionStorage.getItem("users/"+fullname)) 
+        {
+            let obj = JSON.parse(sessionStorage.getItem("users/"+fullname));
+            return User.fromDoc(obj);
+        }
         let doc = await getDoc("users",fullname);
+        sessionStorage.setItem("users/"+fullname,JSON.stringify(doc));
         return User.fromDoc(doc);
     }
 
@@ -19,16 +26,16 @@ export const UserProvider = ({children}) => {
         return UserClass.fromDoc(doc);
     }
 
-    const trySetUsername = async (fullname,username,team_members=[])=>{
+    const trySetUsername = async (fullname,username,host_members=[])=>{
         if(username==null || username.length<=0 || username.length>20 )
            return false;
 
         let user = await getUser(fullname)
         if(user==null) throw new Error("Wrong your fullname")
 
-        team_members.forEach(async(fullname) => {
+        host_members.forEach(async(fullname) => {
             user = await getUser(fullname);
-            if(user!=null) throw new Error("Wrong team_member fullname")
+            if(user!=null) throw new Error("Wrong host_member fullname")
 
             if(user.username === username) return false;
         });
@@ -45,14 +52,14 @@ export const UserProvider = ({children}) => {
         return true;
     }
 
-    const getUserSrcUrl = async (user)=>{
-        if(user==null || user.src?.length<4) return null;
+    const getUserSrcUrl = async (user_fullname)=>{
+        if(user_fullname==null) return null;
 
-        let sessionUrl =sessionStorage.getItem(user.url);
+        let sessionUrl =sessionStorage.getItem(user_fullname+"_src");
         if(sessionUrl) return new Promise((resolve, ) => { resolve(sessionUrl); });
 
-        return getUserSrcFromStorage(user.src).then(url=>{
-            sessionStorage.setItem(user.src,url);
+        return getUserSrcFromStorage(user_fullname).then(url=>{
+            sessionStorage.setItem(user_fullname+"_src",url);
             return url;
         })
     }
@@ -84,16 +91,16 @@ export const UserDemoProvider = ({children}) => {
         return UserRepository.find(user=>user.username.toLowerCase()===DEMOUSERNAME.toLowerCase())
     }
 
-    const trySetUsername = async (fullname,username,team_members=[])=>{
+    const trySetUsername = async (fullname,username,host_members=[])=>{
         if(username==null || username.length<=0 || username.length>20 )
            return false;
 
         let user = await getUser(fullname)
         if(user==null) throw new Error("Wrong your fullname")
 
-        team_members.forEach(async(fullname) => {
+        host_members.forEach(async(fullname) => {
             user = await getUser(fullname);
-            if(user!=null) throw new Error("Wrong team_member fullname")
+            if(user!=null) throw new Error("Wrong host_member fullname")
 
             if(user.username === username) return false;
         });
@@ -111,7 +118,7 @@ export const UserDemoProvider = ({children}) => {
         delay(1000)
     }
 
-    const getUserSrcUrl = async ()=>{
+    const getUserSrcUrl = async (user_fullname)=>{
         return getPath('default_profile_picture.png');
     }
 

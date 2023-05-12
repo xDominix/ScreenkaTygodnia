@@ -103,12 +103,12 @@ export async function getDocs(collection){
 }
 
 //storage
-export const getUserSrcFromStorage= (src)=> {
-  console.log("usersSrc/"+src+" from Storage")
-  return getDownloadURL(ref(storage, "usersSrc/"+src));
+export const getUserSrcFromStorage= (fullname)=> {
+  console.log(fullname+"/src.jpg");
+  return getDownloadURL(ref(storage, fullname+"/src.jpg"));
 }
 
-export const getPostFromStorage=(content)=>{ //jak narazie zakladamy ze to zdjecia
-  console.log("posts/"+content+" from Storage")
-  return getDownloadURL(ref(storage, "posts/"+content));
+export const getPostFromStorage=(fullname,content)=>{ //jak narazie zakladamy ze to zdjecia
+  console.log(fullname+"/"+content+" from Storage")
+  return getDownloadURL(ref(storage, fullname+"/"+content));
 }

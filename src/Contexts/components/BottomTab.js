@@ -7,10 +7,10 @@ const BottomTab = ({title,subtitle,image,children,footer,style,onClose,footerCen
     return ( 
     <div className="bottom-tab bcolor-dark-gray-solid" style={style}>
         <div className='head'>
-            {image &&  <img src={image} alt="image"/>}
+            {image &&  <img src={image} alt=""/>}
             <div style={image?{flexDirection:"column"}:{}}>
                 <h3 style={image?{marginBottom:"5px"}:{}} className="color-white">{title}</h3>
-                <h4 style={image?{marginTop:"0"}:{}} className='subtitle opacity' >{subtitle}</h4>
+                <h4 style={image?{marginTop:"0"}:{}} className={image?"subtitle":'subtitle opacity'} >{subtitle}</h4>
             </div>
         </div>
 

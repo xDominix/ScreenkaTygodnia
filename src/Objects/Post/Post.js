@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import "./Post.css"
 import App from '../App/App';
 import { useState } from 'react';
@@ -16,23 +16,39 @@ import A from '../../Components/A';
 import NothingToShow from '../../Pages/NothingToShow';
 import { Format } from '../App/AppClass';
 
-const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,comment_user=null,onView}) => {
+const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,commentOn=false,onView}) => {
 
-    const {hideIfAppsState} = useContext(AuthContext);
+    const {getMe,hideIfAppsState} = useContext(AuthContext);
 
-    const {getUserPost,setUserPostComment,getPathPostUrl} = useContext(PostContext)
+    const {getUserPost,setUserPostComment,getPathPostContentUrl} = useContext(PostContext)
     const {getUser} = useContext(UserContext);
 
     const [postState,setPostState] = useState(post);
     const [user,setUser]= useState(null);
-    const [commentUser,setCommentUser] = useState(comment_user)
+    const [commentUser,setCommentUser] = useState(commentOn?getMe():null)
 
     const [isSuperHide,setIsSuperHide] = useState(false);
     const [isHide,setIsHide] = useState(true);
 
     const [content,setContent] = useState(null);
 
-    const loadAll = useCallback(()=>{
+    useEffect(()=>{
+        //content
+        const getContent = async (post)=>{
+            if(!post) return null;
+
+            let app = AppClass.get(post.app), content = post.content;
+            switch(app?.format){
+                case Format.LongString: return <h4>{content}</h4>
+                case Format.String: return <h3 className='centered' >{content}</h3>
+                case Format.Url: return <a className='centered'  href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
+                case Format.Path: 
+                    let src = await getPathPostContentUrl(user_fullname,content);
+                    return <img alt="post content" className='centered' src={src}></img>;
+                default: return content;
+            }
+        }
+
         const getPost =  async () =>{
             if(post!=null) return post;
 
@@ -46,7 +62,7 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
 
             setPostState(post);
 
-            if(comment_user) setUserPostComment(user_fullname,id,comment_user.fullname).then(res=>{onView(res);});
+            if(commentOn) setUserPostComment(user_fullname,id,getMe().fullname).then(res=>{onView(res);});
 
             const timeout = setTimeout(()=>{
                 if( hideIfApps?.includes(post.app)) setIsSuperHide(true);
@@ -58,13 +74,7 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
         });
 
         getUser(user_fullname).then((user)=>{ if(user != null) setUser(user)});
-
-    },[comment_user,getUser,getUserPost,hideIfApps,id,onView,post,setUserPostComment,user_fullname,content])
-
-
-    useEffect(()=>{
-        loadAll()  
-    },[loadAll])
+    },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
         if(postState==null) return;
@@ -73,25 +83,21 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
             if(hideIfApps==null && hideIfAppsState?.includes(postState.app)) setIsSuperHide(true);
         },500)
         return ()=> clearTimeout(timeout)
-    },[hideIfAppsState,postState])
+    },[postState]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
-        if(postState?.comment_user_fullname !=null) 
+        if( postState && postState.comment_user_fullname !=null) 
         {
             getUser(postState.comment_user_fullname).then(user=>{
-                setCommentUser(user)
-                commentRef.current.value = postState.comment?postState.comment:"";
+                setCommentUser(user);
             })
         }
-    },[postState])
+    },[postState]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
         if(commentUser!=null)
         {
-            const timeout = setTimeout(()=>{
-                setIsHidden(false);
-            },3500)
-            return ()=>clearTimeout(timeout)
+            setIsCommentShown(false);
         }
     },[commentUser])
     
@@ -111,41 +117,24 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
     const commentRef = useRef();
     const [isRed,setIsRed] = useState(false);
     const [isLoading,setIsLoading] = useState(false);
-    const [isHidden,setIsHidden] = useState(true);
+    const [isCommentShown,setIsCommentShown] = useState(true);
     const handleOnComment = ()=>{
         setIsLoading(true);
-        Promise.all([setUserPostComment(user_fullname,id,comment_user.fullname,commentRef.current.value),delay(1000)])
+        Promise.all([setUserPostComment(user_fullname,id,getMe().fullname,commentRef.current.value),delay(1000)])
         .then(([res,_])=>{
-            if(res) setIsHidden(true);
+            if(res) setIsCommentShown(true);
             setIsRed(!res);
             setIsLoading(false);
         })
     }
 
-    //content
-    const getContent = async (post)=>{
-        if(!post) return null;
-    
-        let app = AppClass.get(post.app), content = post.content;
-        switch(app?.format){
-            case Format.LongString: <h4>{content}</h4>
-            case Format.String: return <h3>{content}</h3>
-            case Format.Url: return <a className='centered'  href={content} target="_blank">OPEN LINK</a>
-            case Format.Path: 
-                let src = await getPathPostUrl(content);
-                return <img className='centered' src={src}></img>;
-            default: return content;
-        }
-    }
-    
-
     return ( 
     <div className='pre-pre-post'>
         {!hideNickname &&<div className="nickname">
-            <User user={user}/>
+            <User user_fullname={user_fullname}/>
             <h4 className='color-gray'>{user?user.username:"______"}</h4>
         </div>}
-    <div className='pre-post bcolor-gray'>
+    <div className='pre-post'>
 
             <div className='bcolor-dark-gray post'>
                 <h3 className='date'>{getDate()}</h3>
@@ -163,10 +152,10 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
                 
             </div>
 
-        {commentUser && <div className="nickname2"  style={isHidden?{height:"0px",padding:"0",opacity:0}:((commentUser.fullname === postState?.comment_user_fullname)?{opacity:"0.7"}:{})}>
+        {commentUser && <div className="nickname2"  style={isCommentShown?{height:"0px",padding:"0",opacity:0}:((commentUser.fullname === postState?.comment_user_fullname)?{opacity:"0.7"}:{})}>
             <User height={20} user={commentUser}/>
             <h5 className='color-gray'>{commentUser.username}</h5>
-            <InputField h5 readOnly={commentUser.fullname === postState?.comment_user_fullname}  reff={commentRef} value={commentRef.current?.value} placeholder="comment..." onEnter={handleOnComment} isRed={isRed} isLoading={isLoading}/>
+            <InputField h5 readOnly={commentUser.fullname === postState?.comment_user_fullname}  reff={commentRef} value={postState.comment_user_fullname? (postState.comment?postState.comment:"no comment"):null} placeholder="comment..." onEnter={handleOnComment} isRed={isRed} isLoading={isLoading}/>
         </div>}
     </div>
     </div> );
@@ -174,7 +163,7 @@ const Post = ({post=null,id,user_fullname,hideNickname=false,hideIfApps=null,com
  
 export default Post;
 
-export const MiniPost = ({post,hourDate})=>{
+export const MiniPost = ({post,hourDate=false})=>{
     return <div className="mini-post-pre">
         <Checkbox checked={post.screenkaOn}/>
         <div className='mini-post'>
@@ -183,7 +172,7 @@ export const MiniPost = ({post,hourDate})=>{
                 <div><b>{post.app}</b></div>
                 <div className='noscroll'>{post.context}</div>
             </div>
-            <div>{hourDate==null? dateToHourString(post.upload_date): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}</div>
+            <div>{hourDate===true? dateToHourString(post.upload_date): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}</div>
         </div>
     </div>
 }

@@ -20,14 +20,26 @@ const Uploads = () => {
     useEffect(()=>{
         if(type==="day") {
             if(!TimeFor.DayUploads()) navigate("/")
-            getMyDayUploads().then(posts=>posts==null?navigate("/"):setPosts(posts))
+            getMyDayUploads().then(posts=>{
+                if(posts==null){navigate("/"); return null;}
+                
+                posts.sort((a, b) => a.upload_date - b.upload_date); 
+                return posts;
+            
+            }).then(setPosts)
         } 
         else if(type==="week") {
             if(!TimeFor.WeekUploads()) navigate("/")
-            getMyWeekUploads().then(posts=>posts==null?navigate("/"):setPosts(posts));
+            getMyWeekUploads().then(posts=>{
+                if(posts==null){navigate("/"); return null;}
+                
+                posts.sort((a, b) => a.upload_date - b.upload_date); 
+                return posts;
+            
+            }).then(setPosts)
         }
         else navigate("/")
-    },[])
+    },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     const getTicketsUsed=()=>{
         return posts? posts.filter(post=>post.screenkaOn).length : "";

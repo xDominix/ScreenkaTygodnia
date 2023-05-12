@@ -39,8 +39,9 @@ border-radius: 15px;
 .container:hover input ~ .checkmark {
   background-color: rgb(255, 255, 255,0.4);
 }
-.container input[disabled] ~.checkmark{
-  background-color: rgb(255, 255, 255,0.6);
+.container input[disabled] ~.checkmark, .container input[disabled]:checked ~ .checkmark {
+  /*background-color: rgb(255, 255, 255,0.6);*/
+  opacity: 0.5;
   cursor:not-allowed;
 }
 

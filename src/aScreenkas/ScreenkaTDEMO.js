@@ -3,10 +3,8 @@ import Post from '../Objects/Post/Post';
 import "./Screenka.css"
 import { DEMONAME } from '../Contexts/aLocalbase';
 
-const WEEK_NAME = "First Week";
-
-const ScreenkaTDEMO = ({}) => {
-
+const ScreenkaTDEMO = () => {
+    
     return ( 
     <div className='Screenka noscroll'>
         <h1>Witamy bardzo serdeczenie na Screence Tygodnia!</h1>

@@ -4,7 +4,7 @@ import Checkbox from '../../../Components/Checkbox';
 import { AppClass } from '../../../Objects/App/AppClass';
 import "./Setup.css"
 import {AuthContext} from "../../../Contexts/AuthContext"
-import {TeamContext} from "../../../Contexts/TeamContext"
+import {HostContext} from "../../../Contexts/HostContext"
 import { ButtonNext } from '../../../Components/Buttons';
 import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
@@ -13,7 +13,7 @@ import { getPath } from '../../../aFunctions';
 const Setup = ({onSetup}) => {
 
     const {getMe,saveMe,trySetMyUsername,setMyPersonalizedApps} = useContext(AuthContext)
-    const {getTeam} = useContext(TeamContext)
+    const {getHost} = useContext(HostContext)
 
     const meRef = useRef(getMe());
     const meSrcUrl = useRef() 
@@ -26,7 +26,7 @@ const Setup = ({onSetup}) => {
 
         inputRef.current.value= me.username;
 
-        let sess = sessionStorage.getItem(meRef.current.src);
+        let sess = sessionStorage.getItem(meRef.current.fullname+"_src");
         meSrcUrl.current = sess?sess:getPath('default_profile_picture.png');
 
         getPersonalizedApps(me).then(apps=>{
@@ -35,19 +35,19 @@ const Setup = ({onSetup}) => {
             setCheckboxes(checkboxes)
         });
 
-    },[])
+    },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     //apps
 
     const getPersonalizedApps =async (me)=>{
         const personalized_apps_set = new Set();
 
-        if(me.teams == null) throw new Error("me.teams error")
-        for(let i =0;i<me.teams.length;i++)
+        if(me.hosts == null) throw new Error("me.hosts error")
+        for(let i =0;i<me.hosts.length;i++)
         {
-            let team = await getTeam(me.teams[i])
-            if(team==null || team.personalized_apps==null) throw new Error("team error")
-            team.personalized_apps.forEach(app => {
+            let host = await getHost(me.hosts[i])
+            if(host==null || host.personalized_apps==null) throw new Error("host error")
+            host.personalized_apps.forEach(app => {
                 personalized_apps_set.add(app)
             });
         }
