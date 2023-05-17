@@ -1,20 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Post from './Post';
-import { PostContext } from '../../Contexts/PostContext';
+import { MiniPost } from './Post';
 import NothingToShow from '../../Pages/NothingToShow';
 import Loading from '../../Pages/Loading';
 import TimeFor from '../TimeFor';
 import { Day } from '../Day/Day';
 import { AuthContext } from '../../Contexts/AuthContext';
 
-const PostsPage = ({ohpreview,throwback}) => {
+const MiniPostsPage = ({ohpreview,throwback}) => {
 
     const {user_fullname,host_id,week_name} = useParams();
     const navigate = useNavigate();
 
-    const {getUserHostWeekPosts}=useContext(PostContext);
-    const {amIViewLocal,setMyViewLocal,getMyHostWeekNumber} = useContext(AuthContext)
+    const {amIViewLocal,setMyViewLocal,getMyHostWeekNumber,PostService} = useContext(AuthContext)
 
     const [posts,setPosts] = useState(null);
 
@@ -24,7 +22,7 @@ const PostsPage = ({ohpreview,throwback}) => {
         let weekNumber = getMyHostWeekNumber();
         if( user_fullname==null || host_id==null )  navigate("/")
         if(day && (!TimeFor.Day(day,weekNumber) || amIViewLocal(day.toString()))) navigate("/");
-        getUserHostWeekPosts(user_fullname,host_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
+        PostService.getUserHostWeekPosts(user_fullname,host_id,week_name,day!=null).then(posts=>posts==null?navigate("/"):setPosts(posts));
     },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
@@ -44,11 +42,11 @@ const PostsPage = ({ohpreview,throwback}) => {
     
     <div style={{overflow:"auto"}} className='noscroll'>
     {posts?.length !==0 && <div className='posts-list'>
-            {posts?.map((post,i) =>(  <Post key={i} post={post} hideNickname={i!==0} /> ))} 
+            {posts?.map((post) =>(  <MiniPost post={post} hourDate={false}/> ))} 
         </div>}
     </div>
 
     </div> )
 }
  
-export default PostsPage;
+export default MiniPostsPage;

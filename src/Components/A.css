@@ -1,2 +1,3 @@
-.A{ cursor: pointer; color:rgba(40, 255, 215, 0.7); font-weight:bold;font-size: inherit; }
+.A{ cursor: pointer; font-size: inherit; }
+.A.color {color:rgba(40, 255, 215, 0.7); }
 .A.underline {text-decoration: underline; color: inherit;font-weight: normal;}

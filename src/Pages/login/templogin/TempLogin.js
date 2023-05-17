@@ -4,13 +4,12 @@ import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
 import { AuthContext } from '../../../Contexts/AuthContext';
 import "./TempLogin.css"
-import { UserContext } from '../../../Contexts/UserContext';
 import { getPath } from '../../../aFunctions';
+import { MultipleError } from '../../../Services/aFirebase';
 
 const TempLogin = ({onTempLogin}) => {
 
-    const {getMe,tryLogMeInTemporarly} = useContext(AuthContext)
-    const {getUserSrcUrl} = useContext(UserContext)
+    const {getMe,tryLogMeInTemporarly,UserService} = useContext(AuthContext);
 
     const [meSrc,setMeSrc] = useState(getPath("default_profile_picture.png"))
     const inputRef = useRef();
@@ -25,7 +24,7 @@ const TempLogin = ({onTempLogin}) => {
             if(me== null) return;
             inputRef.current.value=me.username; 
 
-            getUserSrcUrl(me.fullname).then(setMeSrc);
+            UserService.getUserSrcUrl(me.fullname).then(setMeSrc);
         },500);
     
         return ()=> clearTimeout(timeout);
@@ -35,13 +34,16 @@ const TempLogin = ({onTempLogin}) => {
     const handleOnEnter = async () => {
         setIsInputFieldLoading(true)
         
-        let res = await tryLogMeInTemporarly(inputRef.current.value);
+        tryLogMeInTemporarly(inputRef.current.value).then(res=>{
+            setIsInputFieldRed(!res);
+            if(res) onTempLogin();
+        }).catch(err=>{
+            if(err instanceof MultipleError) window.alert("Multiple users with same username. Contact the host.");
+            else window.alert(err.message);
+        });
 
-        setIsInputFieldRed(!res);
-        if(res) onTempLogin();
-        
         setIsInputFieldLoading(false);
-      };
+       };
 
     return ( 
     <div className='login flex-center'>

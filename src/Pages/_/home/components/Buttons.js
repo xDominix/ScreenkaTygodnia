@@ -9,6 +9,13 @@ export const ButtonText = ({style, onClick,text}) => {
         <h2  style={{margin:"5px",fontSize:"30px",lineHeight:"28px",color:"white"}}>{text.toUpperCase()}</h2>
     </button> );
 }
+export const ButtonRn = ({style, onClick,text}) => {
+    return (  <button
+     className={"bcolor-rn button-week-uploads shadow"}
+      style={style} onClick={onClick}>
+        <h2  style={{margin:"5px",fontSize:"30px",lineHeight:"28px",color:"white"}}>{text.toUpperCase()}</h2>
+    </button> );
+}
 
 export const ButtonWeekUploads = ({style, onClick}) => {
     return (  <button

@@ -6,50 +6,35 @@ import "./Uploads.css"
 import { TimeFor } from '../../Objects/TimeFor';
 import Loading from '../Loading';
 import NothingToShow from '../NothingToShow';
-import { MAX_TICKETS } from '../../aFunctions';
+import { ButtonPageBack } from '../../Components/Buttons';
 
 const Uploads = () => {
 
     const navigate = useNavigate();
 
-    const {getMyDayUploads,getMyWeekUploads} = useContext(AuthContext)
+    const {getMyDayUploads,getTickets,getMaxTickets,getMyWeekUploads} = useContext(AuthContext)
     const {type} = useParams();
 
     const [posts,setPosts]=useState(null);
 
     useEffect(()=>{
         if(type==="day") {
-            if(!TimeFor.DayUploads()) navigate("/")
-            getMyDayUploads().then(posts=>{
-                if(posts==null){navigate("/"); return null;}
-                
-                posts.sort((a, b) => a.upload_date - b.upload_date); 
-                return posts;
-            
-            }).then(setPosts)
+            if(!TimeFor.DayUploads()) navigate("/");
+            getMyDayUploads().then(setPosts).catch(()=>navigate("/"))
         } 
         else if(type==="week") {
             if(!TimeFor.WeekUploads()) navigate("/")
-            getMyWeekUploads().then(posts=>{
-                if(posts==null){navigate("/"); return null;}
-                
-                posts.sort((a, b) => a.upload_date - b.upload_date); 
-                return posts;
-            
-            }).then(setPosts)
+            getMyWeekUploads().then(setPosts).catch(()=>navigate("/"))
         }
         else navigate("/")
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 
-    const getTicketsUsed=()=>{
-        return posts? posts.filter(post=>post.screenkaOn).length : "";
-    }
-
     return (
-    <div className='uploads'>
+        <div>
+        <div className='uploads noscroll'>
         
-        {type==="day" && <h2>Your Day Uploads:</h2>}
-        {type==="week" && <h2>Your Week Uploads:</h2>}
+        {type==="day" && <h2> <ButtonPageBack/>Your Day Uploads:</h2>}
+        {type==="week" && <h2> <ButtonPageBack/> Your Week Uploads:</h2>}
         
         {posts === null && <Loading/>}
         {posts?.length===0 &&<NothingToShow/>}
@@ -57,8 +42,8 @@ const Uploads = () => {
         {posts?.length !==0 && <div className='content'>
             
             <div className='uploads-legend'>
-                <span style={{fontSize:"30px"}} role="img" aria-label="ticket_emoji">🎫</span>
-                {type==="day" && <h5>{`${getTicketsUsed()}/${MAX_TICKETS}`}<span role="img" aria-label="ticket_emoji"> 🎫</span></h5>}
+                <span style={{fontSize:"30px"}} role="img" aria-label="ticket_emoji">🎟️</span>
+                {type==="day" && <h5>{`${getMaxTickets()-getTickets()}/${getMaxTickets()}`} used</h5>}
             </div>
         
             <div className='uploads-list'>
@@ -69,7 +54,8 @@ const Uploads = () => {
 
         </div>}
 
-    </div> );
+    </div> 
+    </div>);
 }
  
 export default Uploads;

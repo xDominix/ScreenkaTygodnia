@@ -4,7 +4,6 @@ import Checkbox from '../../../Components/Checkbox';
 import { AppClass } from '../../../Objects/App/AppClass';
 import "./Setup.css"
 import {AuthContext} from "../../../Contexts/AuthContext"
-import {HostContext} from "../../../Contexts/HostContext"
 import { ButtonNext } from '../../../Components/Buttons';
 import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
@@ -12,13 +11,13 @@ import { getPath } from '../../../aFunctions';
 
 const Setup = ({onSetup}) => {
 
-    const {getMe,saveMe,trySetMyUsername,setMyPersonalizedApps} = useContext(AuthContext)
-    const {getHost} = useContext(HostContext)
+    const {getMe,saveMe,trySetMyUsername,trySetMyPersonalizedApps,HostService} = useContext(AuthContext);
 
     const meRef = useRef(getMe());
     const meSrcUrl = useRef() 
     const [personalizedApps,setPersonalizedApps] = useState(null);
     const [checkboxes, setCheckboxes] = useState(null);
+    const [isLoading,setIsLoading] = useState(true);
     
     useEffect(()=>{
         let me = getMe();
@@ -33,6 +32,7 @@ const Setup = ({onSetup}) => {
             setPersonalizedApps(apps)
             let checkboxes = getCheckboxes(me,apps)
             setCheckboxes(checkboxes)
+            setIsLoading(false);
         });
 
     },[])// eslint-disable-line react-hooks/exhaustive-deps
@@ -45,7 +45,7 @@ const Setup = ({onSetup}) => {
         if(me.hosts == null) throw new Error("me.hosts error")
         for(let i =0;i<me.hosts.length;i++)
         {
-            let host = await getHost(me.hosts[i])
+            let host = await HostService.getHost(me.hosts[i])
             if(host==null || host.personalized_apps==null) throw new Error("host error")
             host.personalized_apps.forEach(app => {
                 personalized_apps_set.add(app)
@@ -71,27 +71,27 @@ const Setup = ({onSetup}) => {
 
     const inputRef = useRef();
     const [isInputFieldRed,setIsInputFieldRed] = useState(false);
-    const [isInputFieldLoading,setIsInputFieldLoading] = useState(false);
     const handleOnEnter = ()=>{
-        setIsInputFieldLoading(true);
+        setIsLoading(true);
         inputRef.current.blur();
         trySetMyUsername(inputRef.current.value).then(bool=>{
             if(!bool)
                 setIsInputFieldRed(true)
-            setIsInputFieldLoading(false);
+            setIsLoading(false);
         })
     }
 
     //next
 
     const onNextClick=()=>{
+        setIsLoading(true);
         let my_personalized_apps = [];
         personalizedApps.forEach((app,index) => {
             if(checkboxes[index]) my_personalized_apps.push(app);
         });
-        setMyPersonalizedApps(my_personalized_apps).then(()=>{
-            saveMe(); 
-            onSetup();
+        trySetMyPersonalizedApps(my_personalized_apps).then(res=>{
+            if(res) {saveMe();onSetup();}
+            setIsLoading(false);
         })
     }
 
@@ -103,7 +103,7 @@ const Setup = ({onSetup}) => {
                 <img src={meSrcUrl.current} alt="profile"/>
                 <div>
                     <h4>Username:</h4>
-                    <InputField reff={inputRef} onEnter={handleOnEnter} onKeyDown={()=>{if(isInputFieldRed) setIsInputFieldRed(false)}}  isRed={isInputFieldRed} isLoading={isInputFieldLoading} />
+                    <InputField reff={inputRef} onEnter={handleOnEnter} onKeyDown={()=>{if(isInputFieldRed) setIsInputFieldRed(false)}}  isRed={isInputFieldRed} isLoading={isLoading} />
                     </div>
                
             </div>
@@ -114,6 +114,7 @@ const Setup = ({onSetup}) => {
                         let app = AppClass.get(appname);
                         return <div key={index}>
                            <Checkbox 
+                             disabled={isLoading}
                              checked={checkboxes!==null? checkboxes[index]:false}
                              onChange={() => handleOnChange(index)}
                            />
@@ -127,7 +128,7 @@ const Setup = ({onSetup}) => {
                 </div>
             </div>}
             <div className='flex-center-v'>
-                <ButtonNext onClick={onNextClick}></ButtonNext>
+                <ButtonNext disabled={isLoading} onClick={onNextClick}></ButtonNext>
             </div>
         </div>
  );

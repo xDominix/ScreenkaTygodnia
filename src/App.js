@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import PageNotFound from './Pages/PageNotFound';
 import Prestart from './Pages/login/Prestart';
@@ -7,62 +7,48 @@ import "./App.css"
 import Screenka from './Pages/screenka/Screenka';
 import PostPage from './Objects/Post/PostPage';
 import Uploads from './Pages/uploads/Uploads';
-import PostsPage from './Objects/Post/PostsPage';
 import DayPage from './Objects/Day/DayPage';
 import { ADMIN } from './aFunctions';
-import { ProvidersSelector } from './Contexts/aProvidersSelector';
+import { AuthContextWithDemo } from './Contexts/AuthContextWithDemo';
+import MiniPostsPage from './Objects/Post/MiniPostsPage';
 
 const App = () => {
 
-    const getPath = (string)=>string
-    const getPathDemo = (string)=>`/demo${string}`
+    const [isDemo,setIsDemo] = useState(false);
+    const getPath = (string)=>!isDemo?string:`/demo${string}`;
 
     return (
             <div className='app-flex-center-v'>
                 <div className='app-max-mobile'>
                     <HashRouter basename='/'>
-                        <ProvidersSelector>
+                        <AuthContextWithDemo onDemo={()=>setIsDemo(true)}>
                             <Routes>
                                 <Route exact path={getPath("/")} element={<Start />}/>
 
                                 <Route path={getPath("/login")} element={<Prestart />} />
                                 
                                 <Route path={getPath("/day/:name")} element={<DayPage/>}/>
-                                <Route path={getPath("/uploads/:type")} element={< Uploads/>}/>
+                                <Route path={getPath("/uploads/:type")} element={< Uploads/>}/> {/*MyPosts = Uploads */}
                                 <Route path={getPath("/screenka/:host_id")} element={<Screenka />} /> {/*tylko gdy nalezysz do hostu, jest poniedzialek po 8, istnieje plik*/}
                                 
 
-                                {ADMIN && <Route path={getPath("/post/:user_fullname/:id")} element={<PostPage />}/>}
+                                {ADMIN && <Route path={getPath("/post/:user_fullname/:id")} element={<PostPage />}/>} {/*demo - /post/Tola Bajka/123123 */} 
+                                <Route path={getPath("/post/:user_fullname/:id/preview")} element={<PostPage preview />}/> {/* podglad posta (bez komentrza) tylko dla ciebie */}
                                 <Route path={getPath("/post/:user_fullname/:id/oneshot")} element={<PostPage oneshot />}/>
                                 <Route path={getPath("/post/:user_fullname/:id/rnshot")} element={<PostPage rnshot />}/> 
 
-                                {ADMIN && <Route path={getPath("/posts/:user_fullname/:host_id")} element={<PostsPage/>}/>}
-                                {ADMIN && <Route path={getPath("/posts/:user_fullname/:host_id/:week_name")} element={<PostsPage/>}/>}
-                                <Route path={getPath("/posts/:user_fullname/:host_id/:week_name/throwback")} element={<PostPage throwback />}/> 
-                                <Route path={getPath("/posts/:user_fullname/:host_id/:week_name/ohpreview")} element={<PostPage ohpreview />}/> 
+                                {ADMIN && <Route path={getPath("/posts/:user_fullname/:host_id")} element={<MiniPostsPage/>}/>}
+                                {ADMIN && <Route path={getPath("/posts/:user_fullname/:host_id/:week_name")} element={<MiniPostsPage/>}/>}
+                                <Route path={getPath("/posts/:user_fullname/:host_id/:week_name/throwback")} element={<MiniPostsPage throwback />}/> 
+                                <Route path={getPath("/posts/:user_fullname/:host_id/:week_name/ohpreview")} element={<MiniPostsPage ohpreview />}/> 
 
                                 
                                 {/*SOON*/}{/*ADMIN && <Route path={getPath("/uploads/:type/:user_fullname")} element={< Uploads/>}/>*/} 
                                 {/*NO*/}{/*ADMIN && <Route path={getPath("/posts/:host_id/:week_name")} element={<PostsPage/>}/> //za duzo do liczenia*/}
-                                
-<Route exact path={getPathDemo("/")} element={<Start />}/>
-<Route path={getPathDemo("/login")} element={<Prestart />} />
-<Route path={getPathDemo("/day/:name")} element={<DayPage/>}/>
-<Route path={getPathDemo("/uploads/:type")} element={< Uploads/>}/>
-<Route path={getPathDemo("/screenka/:host_id")} element={<Screenka />} />
-{ADMIN && <Route path={getPathDemo("/post/:user_fullname/:id")} element={<PostPage />}/>}{/*/post/Tola Bajka/123123 */} 
-<Route path={getPathDemo("/post/:user_fullname/:id/oneshot")} element={<PostPage oneshot />}/>
-<Route path={getPathDemo("/post/:user_fullname/:id/rnshot")} element={<PostPage rnshot />}/> 
-{ADMIN && <Route path={getPathDemo("/posts/:user_fullname/:host_id")} element={<PostsPage/>}/>}
-{ADMIN && <Route path={getPathDemo("/posts/:user_fullname/:host_id/:week_name")} element={<PostsPage/>}/>}
-<Route path={getPathDemo("/posts/:user_fullname/:host_id/:week_name/throwback")} element={<PostPage throwback />}/> 
-<Route path={getPathDemo("/posts/:user_fullname/:host_id/:week_name/ohpreview")} element={<PostPage ohpreview />}/>
-
 
                                 <Route path="*" element={<PageNotFound />} />
-
                             </Routes>
-                        </ProvidersSelector>
+                        </AuthContextWithDemo>
                     </HashRouter>
                 </div>
             </div>

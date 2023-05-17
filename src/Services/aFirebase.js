@@ -40,66 +40,47 @@ export async function getDoc(collection,document) {
   }
 }
 
-
-export async function getDocWhere(collection,what,equal){
-  console.log("getDocWhere from "+collection+" => "+equal);
+export class MultipleError extends Error {}
+export async function getDocWhere(collection,what,equal){ //if find >1 results then returns null
+    console.log("getDocWhere from "+collection+" => "+equal);
 
     if(collection==null || what==null) return null;
     try {
     const q = query(dbCollection(db, collection), where(what, "==", equal));
 
     const querySnapshot = await dbGetDocs(q);
-    let res = null;
+    let ress = [];
     querySnapshot.forEach((doc) => {
         const data = doc.data();
-        res = {id:doc.id,...data}
+        ress.push({id:doc.id,...data})
         });
-    return res;
+    if(ress.length>2) new MultipleError()
+    if(ress.length===0) return null;
+    return ress[0];
     } catch (error) {
         console.error('Error getting document:', error);
         return null;
     }
 }
 
-export async function getDocsWhere(collection,what,equal){
-    console.log("getDocsWhere from "+collection+" => "+equal);
-    
-    if(collection==null || what==null) return null;
-    try {
-    const q = query(dbCollection(db, collection), where(what, "==", equal));
+export async function getDocs(collection,...queryConstraints){
+ 
+  if(collection==null) return null;
+  try {
+  const q = query(dbCollection(db, collection), ...queryConstraints);
 
-    const querySnapshot = await dbGetDocs(q);
-    const datas = [];
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        datas.push({id:doc.id,...data});
-        });
-    return datas;
-    } catch (error) {
-        console.error('Error getting document:', error);
-        return null;
-    }
-}
-
-export async function getDocs(collection){
-  console.log("getDocs from "+collection);
-    if(collection==null) return null;
-    try {
-        const snapshot = await dbGetDocs(dbCollection(db,collection))
-    
-        const datas = [];
-        snapshot.forEach((docSnapshot) => {
-        if (docSnapshot.exists()) {
-            const data = docSnapshot.data();
-            datas.push({id:docSnapshot.id,...data});
-        }
-        });
-    
-        return datas;
-    } catch (error) {
-        console.error('Error getting documents:', error);
-        return null;
-    }
+  const querySnapshot = await dbGetDocs(q);
+  const datas = [];
+  querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      datas.push({id:doc.id,...data});
+      });
+  console.log("getDocs from "+collection+". Count: "+datas.length);
+  return datas;
+  } catch (error) {
+      console.error('Error getting document:', error);
+      return null;
+  }
 }
 
 //storage
@@ -108,7 +89,7 @@ export const getUserSrcFromStorage= (fullname)=> {
   return getDownloadURL(ref(storage, fullname+"/src.jpg"));
 }
 
-export const getPostFromStorage=(fullname,content)=>{ //jak narazie zakladamy ze to zdjecia
+export const getPostContentSrcFromStorage=(fullname,content)=>{ //jak narazie zakladamy ze to zdjecia
   console.log(fullname+"/"+content+" from Storage")
   return getDownloadURL(ref(storage, fullname+"/"+content));
 }

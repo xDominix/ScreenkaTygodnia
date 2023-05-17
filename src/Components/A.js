@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./A.css"
 
-const A = ({className,underline,href,onClick,children,disable}) => {
+const A = ({className,underline,color=true,href,onClick,children,disable}) => {
     const navigate = useNavigate();
 
     const handleOnClick = ()=>{
@@ -11,7 +11,7 @@ const A = ({className,underline,href,onClick,children,disable}) => {
         else if(onClick) onClick();
     }
     
-    return ( <div className={"A "+className+(underline?' underline':" ")+(disable?" opacity":"")} onClick={handleOnClick}>{children}</div> );
+    return ( <div className={"A "+className+(color?" color ":"")+(underline?' underline':" ")+(disable?" opacity":"")} onClick={handleOnClick}>{children}</div> );
 }
  
 export default A;

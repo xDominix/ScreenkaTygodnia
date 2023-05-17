@@ -5,7 +5,7 @@ import "./BottomTab.css"
 const BottomTab = ({title,subtitle,image,children,footer,style,onClose,footerCenter,}) => {
 
     return ( 
-    <div className="bottom-tab bcolor-dark-gray-solid" style={style}>
+    <div className="bottom-tab bcolor-dark-gray-solid" style={{minHeight:"250px",...style}}>
         <div className='head'>
             {image &&  <img src={image} alt=""/>}
             <div style={image?{flexDirection:"column"}:{}}>
@@ -19,11 +19,11 @@ const BottomTab = ({title,subtitle,image,children,footer,style,onClose,footerCen
             {children}
         </div>}
 
-        {footer && <footer>
+        {footer && <footer className='light'>
             {footer}
         </footer>}
 
-        {footerCenter && <footer className='center'>
+        {footerCenter && <footer className='light center'>
             {footerCenter}
         </footer>}
         

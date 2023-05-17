@@ -4,21 +4,22 @@ import { Day, WeekDay } from "../../../Objects/Day/Day";
 import { getMonday , isDayToday, MonthNames} from "../../../aFunctions";
 import { BottomTabContext } from "../../../Contexts/BottomTabContext";
 import A from "../../../Components/A";
+import { ButtonPageBack } from "../../../Components/Buttons";
 
-const AboutWeek = ({onClose,weekNumber,week,special_days}) => {
+const AboutWeek = ({onClose,weekNumber,week}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
 
     const [days,setDays] = useState([]);
     const [isDayLetter,setIsDayLetter] = useState(true)
 
     useEffect(()=>{
-        let days = [Day.ClearMind,Day.DeadLine,Day.OhPreview, Day.ThrowBack, Day.OneShot].filter((day) =>  weekNumber>day.weekOffset);
-
-        if(special_days) special_days.forEach(special_day => {
-            days.push(special_day.toDay())
+        let days = [Day.ClearMind,Day.DeadLine,Day.OhPreview, Day.ThrowBack, Day.OneShot].filter((day) =>  weekNumber>=day.fromWeek);
+ 
+        week.getSpecialDays().forEach(special_day => {
+            days.push(special_day)
          });
         setDays(days);
-    },[special_days]) // eslint-disable-line react-hooks/exhaustive-deps
+    },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const getEveryDayDays= ()=>{return days.filter(day=>day.weekDay===null)}
     const getDefaultDayByWeekDay=(weekDay)=>{return days.filter(day=>day.weekDay===weekDay).at(0)}
@@ -52,7 +53,7 @@ const AboutWeek = ({onClose,weekNumber,week,special_days}) => {
     return (
         <div className={"aweek "+( isBottomTab()?'noclick aweek-blur-dark':"")}>
         <h1>
-            <span className='week-span' onClick={onClose}>{"<"}</span>
+            <ButtonPageBack onClick={onClose}/>
              {"#"+(weekNumber?weekNumber:0)} 
              <span className="color-green-highlight">{week.name.toUpperCase()}</span>
              <span role="img" aria-label="emoji">{week.emoji}</span>
@@ -82,8 +83,11 @@ const AboutWeek = ({onClose,weekNumber,week,special_days}) => {
                 <span 
                     className={"noselect "+(isDayToday(weekDayIndex)?"bcolor-green-solid color-black clickable":"bcolor-dark-gray-solid")} 
                     onMouseDown={()=>handleDayLetterClick(weekDayIndex,true)} 
+                    onPointerDown={()=>handleDayLetterClick(weekDayIndex,true)} 
                     onMouseUp={()=>handleDayLetterClick(weekDayIndex,false)}
-                    onMouseLeave={()=>handleDayLetterClick(weekDayIndex,false)}>
+                    onPointerUp={()=>handleDayLetterClick(weekDayIndex,false)}
+                    /*onMouseLeave={()=>handleDayLetterClick(weekDayIndex,false)}
+                    onPointerLeave={()=>handleDayLetterClick(weekDayIndex,false)}*/>
                         {getSpanDate(weekDayName,weekDayIndex)}
                     </span>
             </div>

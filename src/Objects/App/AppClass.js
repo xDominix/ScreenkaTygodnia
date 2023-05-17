@@ -45,7 +45,7 @@ export class AppClass {
     static Netflix = new AppClass("Netflix","movie, tv series","share the title of movie or tv series you watched recently.",Format.Url,33)
     static Instagram = new AppClass("Instagram","post, account","paste the url of your favourite account or post on Instagram.",Format.Url,34)
     //Settings
-    static Settings = new AppClass("Settings","idea","set up your week; suggest a motive of the week, app name, special event, additional feature.",Format.String,35)
+    static Settings = new AppClass("Settings","idea","set up week by your own! Suggest a motive of the week, app name, special event, additional feature.",Format.String,35)
 
     getGroup = ()=>{
       return (this.label/LABEL_STEP) | 0

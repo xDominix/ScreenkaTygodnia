@@ -1,13 +1,13 @@
 import React, {  useContext, useEffect, useState } from 'react';
 import { getPath } from '../../aFunctions';
-import { UserContext } from '../../Contexts/UserContext';
+import { AuthContext } from '../../Contexts/AuthContext';
 
 const User = ({user_fullname,count=null,onClick, height=32}) => {
-    const {getUserSrcUrl} = useContext(UserContext)
+    const {UserService} = useContext(AuthContext)
     const [srcUrl,setSrcUrl] = useState(getPath('default_profile_picture.png'));
 
     useEffect(()=>{
-        if(count==null) getUserSrcUrl(user_fullname).then(setSrcUrl);
+        if(count==null) UserService.getUserSrcUrl(user_fullname).then(setSrcUrl);
     },[user_fullname])// eslint-disable-line react-hooks/exhaustive-deps
 
     if(count!=null)

@@ -19,7 +19,7 @@
     opacity: 1;
     overflow: hidden;
     transition: height 0.5s ease-in-out,opacity 0.3s ease-in-out;
-   
+    will-change: height, opacity;
 }
 
 .post{
@@ -61,6 +61,7 @@
     overflow: hidden;
     height: 200px;
     transition: height ease-in-out 1s;
+    will-change: height;
 }
 
 /*MINI POST*/
@@ -74,6 +75,7 @@
 .mini-post-pre>:first-child{margin: 0px 10px;}
 
 .mini-post{
+    position: relative;
     height: 100%;
     overflow: hidden;
     padding:10px 0px;
@@ -82,10 +84,6 @@
 }
 
 .mini-post>*{margin-right: 10px;}
-
-.mini-post>:last-child{
-    margin-left: auto;
-}
 
 .mini-post .text
 {
@@ -103,6 +101,17 @@
     align-items: center;
     height: 100%;
 }
+
+.mini-post .infos{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 5px;
+    right:7px;
+    margin:0;
+    opacity: 0.5;
+}
+.mini-post .infos>div{ font-size: 20px;margin-left: 5px;}
 
 /*posts*/
 .posts{

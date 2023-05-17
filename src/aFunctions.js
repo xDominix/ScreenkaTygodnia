@@ -1,9 +1,7 @@
 //CONSTS
-export const MAX_TICKETS = 3;
 export const MAX_SCREENKA = 3;
-export const ADMIN = true;
-export const CUSTOM_DATE = new Date(2021,3,3,10,10);
-export const NOW = ()=> new Date(); //CUSTOM DATE
+export const ADMIN = false;
+export const NOW = ()=> new Date(); //new Date(2021,3,3,10,10)
 
 //PATH
 export const getPath=(file)=>{
@@ -32,8 +30,8 @@ export const isDayToday=(dayIndex)=>{ return (NOW().getDay()+6)%7 === dayIndex;}
 
 export const dayIndexToday=()=>{ return (NOW().getDay()+6)%7 }
 
-export function getMonday(d) {
-    d = new Date(d);
+export function getMonday(d=null) {
+    d =d? new Date(d): NOW();
     d.setHours(0,0,0,0);
     var day = d.getDay(),
         diff = d.getDate() - day + (day === 0 ? -6:1); // adjust when day is sunday
@@ -61,7 +59,10 @@ export const isTime=(weekIndex,fromHour,toHour) =>{
     return true;
 }
     
-export const dateToHourString = (date)=>{
+export const dateToHourStringPretty = (date)=>{ //prettier version of date
+    if(isLessThenMinutes(date,15)) return "NOW";
+    if(isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN AGO`;
+    if(isLessThenMinutes(date,60+59)) return "1H AGO";
     return (
         date.getHours().toLocaleString('en-US', { minimumIntegerDigits: 1, useGrouping: false })+ ":"+ 
         date.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }))
@@ -76,17 +77,22 @@ export const datesWeekDelta = (date1,date2)=>{
 }
 
 export const isLessThenMinutes = (date,minutes)=>{
-    var diff = NOW() - date;
+    var diff = datesMinuteDifference(date)
     if(diff<0) return false;
-    var diffMinutes = Math.floor((diff/1000)/60);
-    return minutes >= diffMinutes;
+    return minutes >= diff;
 }
 
-export const YYYYMMDDHHMM=(date)=>{
+export const datesMinuteDifference=(date_past,date=NOW())=>{
+    var diff = date - date_past;
+    return Math.floor((diff/1000)/60);
+}
+
+export const YY_MMDD_HHMM=(date)=>{
     function pad2(n) {  return (n < 10 ? '0' : '') + n; }
-    return date.getFullYear() +
+    if(!date) date=NOW();
+    return (date.getFullYear()%100) +"_"+
         pad2(date.getMonth() + 1) + 
-        pad2(date.getDate()) +
+        pad2(date.getDate()) +"_"+
         pad2(date.getHours()) +
         pad2(date.getMinutes())
 }
@@ -97,7 +103,7 @@ export const randomElement = (array)=>{
 }
 
 //MAP
-export const toMap=(doc)=>{
+export const toMap=(doc={})=>{
     const map = new Map();
     Object.entries(doc).forEach(([key, value]) => { map.set(key, value) });
     return map;

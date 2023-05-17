@@ -12,7 +12,8 @@
     height: 100%;
 
     box-sizing: border-box;
-    transition: all 0.7s ease;
+    transition: transform 0.5s ease;
+    will-change: transform;
 }
 
 .start-pages>*{
@@ -21,8 +22,6 @@
     overflow: auto;
     -ms-overflow-style: none; 
     scrollbar-width: none; 
-
-    
 }
 
 .start-pages>*::-webkit-scrollbar {

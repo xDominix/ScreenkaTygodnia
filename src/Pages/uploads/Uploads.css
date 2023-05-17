@@ -1,4 +1,6 @@
 .uploads{
+    height: 100%;
+    overflow: scroll;
     display: flex;
     flex-direction: column;
 }

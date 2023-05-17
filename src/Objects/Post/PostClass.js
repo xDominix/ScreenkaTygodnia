@@ -24,16 +24,6 @@ export class PostClass {
   }
 
     toDoc = ()=>{
-      if(this.screenkaOn!==true)
-      return {
-        host_id:this.host_id,
-        week_name:this.week_name,
-        upload_date:this.upload_date,
-        app:this.app,
-        content:this.content,
-        context:this.context,
-        }
-        else
         return {
           host_id:this.host_id,
           week_name:this.week_name,
@@ -41,9 +31,9 @@ export class PostClass {
           app:this.app,
           content:this.content,
           context:this.context,
-          screenkaOn:this.screenkaOn,
+          screenkaOn:this.screenkaOn===true,
+          comment_user_fullname:null,
           }
-      
     }
 
   }

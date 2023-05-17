@@ -32,7 +32,7 @@ div#root{overflow: auto;}
 
 /*.color-red {color:rgba(255, 49, 49, 0.842)}*/
 
-.color-gray-solid, input, textarea, input[type=file],input[type=file]::file-selector-button{
+.color-gray-solid, input, textarea, input[type=file],input[type=file]::file-selector-button, button.paste{
   color: rgb(172,172,172);
 }
 
@@ -66,12 +66,14 @@ div#root{overflow: auto;}
 {
   background-color: #474747;
 }
-.bcolor-blue
+.bcolor-blue /*rn-shot*/
 {
-  background-color: rgba(99, 153, 253, 0.6);
+  background-color: rgb(59,92,152);
 }
+.bcolor-rn{background-color: rgb(255, 119, 56);}
+.bcolor-red{background-color: rgb(255, 56, 56);}
 
-input, textarea{
+input, textarea, button.paste{
   background-color: rgba(0, 0, 0, 0.15);
 }
 
@@ -116,11 +118,18 @@ h5{
 }
 h5 span{font-size: 17px;}
 
+footer::before {
+  content: '';
+  height: 40px;
+  display: inline-block;
+}
+footer.light::before {content: "";height:0;display: block;}
 footer{
   opacity: 0.5;
   margin: 10px 0px;
   margin-top: 15px;
   margin-top: auto;
+  margin-bottom: 30px;
   text-align: end;
   font-size: 17px;
 }
@@ -141,6 +150,7 @@ button{
   border: none;
   cursor: pointer;
   transition: scale 0.2s linear;
+  will-change: scale;
 
   background: none;
 	color: inherit;
@@ -148,7 +158,7 @@ button{
 	outline: inherit;
 }
 button[disabled]{
-  opacity: 0.2;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 .centered{

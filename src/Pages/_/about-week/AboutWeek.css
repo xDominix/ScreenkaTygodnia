@@ -4,9 +4,10 @@
     
     padding: 15px;
     transition: filter 0.4s ease-in-out;
+    will-change:filter;
 
     position: relative;
-    height: 100%;
+    min-height: 100%;
     width: 100%;
     overflow: hidden;
     box-sizing: border-box;
@@ -24,13 +25,6 @@
 }
 
 .aweek h1>span{font-size: 30px;margin-left: 10px}
-
-.aweek .week-span{
-    cursor: pointer;
-    font-size: 40px;
-    margin-right: 10px;
-    font-family: 'Advent Pro';
-}
 
 /*calendar*/
 

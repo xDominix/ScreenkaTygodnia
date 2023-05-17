@@ -1,104 +1,99 @@
-import React, {  useContext, useEffect, useRef, useState } from "react";
-import { UserContext } from "./UserContext";
-import { HostContext } from "./HostContext";
-import { WeekContext } from "./WeekContext";
-import { PostContext } from "./PostContext";
+import React, {  useEffect, useRef, useState } from "react";
 import { MAX_SCREENKA, NOW, isLessThenMinutes, weekEqual } from "../aFunctions";
 import Loading from "../Pages/Loading";
+import { useHostService } from "../Services/HostService";
+import { useUserService } from "../Services/UserService";
+import { useWeekService } from "../Services/WeekService";
+import { usePostService } from "../Services/PostService";
 
 export const AuthContext = React.createContext();
 
-const AuthProvider = ({children}) => {
+const AuthProvider = ({children, demo}) => {
 
     const userRef = useRef(null);
     const hostRef = useRef(null);
-    const friendsFullnamesRef = useRef(null);
-    const weekRef = useRef(null);
-    const [weekSnapshot,setWeekSnapshot] = useState(null);
+    const friendsRef = useRef([]); //array
+    const [weekState,setWeekState] = useState(null);
 
+    const dayUploads = useRef(null);
+    const weekUploads=useRef(null);
+    const ticketsRef = useRef(0);
+    
     const [authLoaded,setAuthLoaded] = useState(false);
 
-    const {getUser,getUserByUsername,
-        trySetUsername,setPersonalizedApps} = useContext(UserContext)
+    const {getUser,getUserByUsername,trySetUsername,trySetPersonalizedApps} = useUserService(demo);
+    const {getHost,getHostWeekNumber} = useHostService(demo);
+    const {getHostWeek,getHostWeekNames,trySetHostWeekScreenkaView,onWeekSnapshot} = useWeekService(demo);
+    const {getUserDayPosts,getUserWeekPosts,getUserPostTicketsUsed,trySetUserPostComment,postPost}=usePostService(demo);
 
-    const {getHost,getHostWeekNumber} = useContext(HostContext)
+    const loadAll = async()=>{
+        const loadUser= async ()=>{
+            const loadTickets = async (me)=>{
+                if(!me)return;
+                let ticketsUsed = await getUserPostTicketsUsed(me.fullname);
+                ticketsRef.current = Math.max(getMaxTickets()-ticketsUsed,0);
+            }
 
-    const {getHostWeek,getHostWeekNames,setHostWeekScreenkaView,getHostWeekSpecialDays,onWeekSnapshot} = useContext(WeekContext)
+            let fullname = localStorage.getItem("fullname");
+            if(fullname === null) return null;
+            let user = await getUser(fullname)
+            if(user==null) return null;//new Error('Fullname in localStorage is invalid. Cannot find fullname in database.');
+            loadTickets(user);
+            userRef.current = user;
+            return userRef.current;
+        }
+    
+        const loadHost = async(me)=>{
+            if(me ===null || me.hosts==null || me.hosts.length===0) return null
+            let defaultHost = await getHost(me.hosts[0]  )
+            if(defaultHost==null) throw new Error('User default host is invalid. Cannot find host in database.');
+            if(defaultHost.members_map.has(me.fullname)) hostRef.current = defaultHost;
+            friendsRef.current = defaultHost.getFriendsFullnames(me.fullname);
+            return hostRef.current;
+        }
+    
+        const loadWeek = async(host)=>{
+            if(host==null) return null;
+            let week = await getHostWeek(host.id);
+            setWeekState(week);
+            return week;
+        }
 
-    const {getUserDayPosts,getUserWeekPosts,setUserPostComment}=useContext(PostContext);
-
-    const loadUser= async ()=>{
-        let fullname = localStorage.getItem("fullname");
-        if(fullname === null) return null;
-        let user = await getUser(fullname)
-        if(user==null) return null;//new Error('Fullname in localStorage is invalid. Cannot find fullname in database.');
-        userRef.current = user;
-        return userRef.current;
-    }
-
-    const loadHost = async(me)=>{
-        if(me ===null || me.hosts==null || me.hosts.length===0) return null
-        let defaultHost = await getHost(me.hosts[0]  )
-        if(defaultHost==null) throw new Error('User default host is invalid. Cannot find host in database.');
-        hostRef.current = defaultHost;
-        return hostRef.current;
-    }
-
-    const loadWeek = async(host)=>{
-        if(host==null) return null;
-        let week = await getHostWeek(host.id);
-        weekRef.current= week;
-        return weekRef.current;
+        const loadUserPromise = userRef.current !== null ? Promise.resolve(userRef.current) : loadUser();
+        return loadUserPromise.then(loadHost).then(loadWeek).then(()=> setAuthLoaded(true));
     }
 
     useEffect(()=>{
-        loadUser().then((me)=>{
-            loadHost(me).then((host)=>{
-                if(me && host) friendsFullnamesRef.current = host.getFriendsFullnames(me.fullname);
-
-                loadWeek(host).then((week)=> 
-                    {
-                        setAuthLoaded(true);
-
-                        if(!week) return;
-                        const unsubscribe = onWeekSnapshot(host.id,week.name,(doc) => { console.log("Week updated");setWeekSnapshot(doc) });
-                        return () => unsubscribe()
-                    })
-            }) 
-        })
+        loadAll();
     },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    const isWeekState = weekState!==null;
+    useEffect(()=>{
+        if(!isWeekState) return;
+        const unsubscribe = onWeekSnapshot(hostRef.current.id,weekState.name,(doc) => { console.log("Week updated");setWeekState(doc) });
+        return () => unsubscribe()
+    },[isWeekState]) // eslint-disable-line react-hooks/exhaustive-deps
+
     //USER CONTEXT
-    const tryLogMeInTemporarly = async (username)=>{
-        
-        let user = await getUserByUsername(username)
-
-        if(user==null) return false;
-
-        userRef.current = user;
-        loadHost(user).then((host)=>{
-            if(user && host) friendsFullnamesRef.current = host.getFriendsFullnames(user.fullname);
-            loadWeek(host)
-        })
-        return true;
+    const tryLogMeInTemporarly = async (username)=>{ //gdy ustawisz sobie username o takiej samej nazwie co inny uzytkownik to pisz do admina
+        return getUserByUsername(username)
+            .then(user=>{if(user==null) return false;
+            userRef.current = user;   loadAll(); return true; });
     }
-
     const saveMe =()=>{
         if(userRef.current===null) throw new Error('Cannot save. UserRef is null');
         localStorage.setItem("fullname",userRef.current.fullname);
     }
     
-   
-
     const trySetMyUsername= async (username)=>{
-        let [me,host]=getMeAndMyHost();
-        let res =  await trySetUsername(me.fullname,username,host.members_fullnames);
+        let me=getMe();
+        let res =  await trySetUsername(me.fullname,username);
         return res;
     }
 
-    const setMyPersonalizedApps = async (apps)=>{
+    const trySetMyPersonalizedApps = async (apps)=>{
         let me = getMe();
-        return setPersonalizedApps(me.fullname,apps)
+        return trySetPersonalizedApps(me.fullname,apps)
     }
 
 
@@ -114,28 +109,14 @@ const AuthProvider = ({children}) => {
         return getHostWeekNames(host.id,from_date);
     }
 
-    const getMyHostWeekSpecialDays=async()=>{
-        let [,host,week]=getMeAndMyHostAndMyWeek();
-        return getHostWeekSpecialDays(host.id,week.name);
-    }
-
-    /*
-    const amIScreenkaView = async (host_id,week_name)=>{
+    const trySetMyScreenkaView = async(host_id,week_name)=>{//host_id, week_name - ala klucze do wysetowania
         let me = getMe();
         if(me==null) return false;
-        let screenkaViews = await getHostWeekScreenkaViews(host_id,week_name);
-        if(screenkaViews==null) return false;
-        return screenkaViews.some(view=>view.user_fullname===me.fullname);
-    }
-    */
-
-    const setMyScreenkaView = async(host_id,week_name)=>{//host_id, week_name - ala klucze do wysetowania
-        let me = getMe();
-        if(me==null) return;
         let count_str = localStorage.getItem("screenka_count_"+host_id);
         localStorage.setItem("screenka_count_"+host_id,count_str?(Number(count_str)+1):1)
         setMyViewLocal("screenka",host_id);
-        if(!count_str) return setHostWeekScreenkaView(host_id,week_name, me.fullname)
+        if(!count_str) return trySetHostWeekScreenkaView(host_id,week_name, me.fullname);
+        return true;
     }
     const amIScreenkaViewLocal = (host_id)=>{
         let count_str = localStorage.getItem("screenka_count_"+host_id)
@@ -146,22 +127,62 @@ const AuthProvider = ({children}) => {
 
     //POST CONTEXT
     const getMyDayUploads = async ()=>{
-        let me = getMe();
-        if(me==null) return null;
-        return getUserDayPosts(me.fullname);
+        const loadMyDayUploads=async (me_fullname)=>{
+            const getTicketsUsed=(posts)=>posts.filter(post=>post.screenkaOn).length;
+            return getUserDayPosts(me_fullname).then(posts=>{
+                    dayUploads.current=posts;
+                    ticketsRef.current = Math.max(getMaxTickets()-getTicketsUsed(posts),0);
+            }); 
+        }
+
+        if(getMe()==null) throw new Error("no login");
+        if(dayUploads.current==null) await loadMyDayUploads(getMe().fullname);
+        return dayUploads.current; 
+    }
+    const getMyAppsCounts= async()=>{
+        if(getMe()==null) return null;
+        let posts = await getMyWeekUploads();
+        let counts = {};
+        posts?.forEach(function (post) { counts[post.app] = (counts[post.app] || 0) + 1; });
+        return new Map(Object.entries(counts));
     }
 
     const getMyWeekUploads = async ()=>{
-        let me = getMe()
-        return getUserWeekPosts(me.fullname);
+        const loadMyWeekUploads=async (me_fullname)=>{
+            return getUserWeekPosts(me_fullname).then(posts=>{
+                    weekUploads.current=posts;
+            }); 
+        }
+
+        if(getMe()==null) throw new Error("no login");
+        if(weekUploads.current==null) await loadMyWeekUploads(getMe().fullname);
+        return weekUploads.current; 
     }
 
-    const setMyUserPostComment = async (user_fullname,id,comment=null)=>{
+    const trySetMyUserPostComment = async (user_fullname,id,comment)=>{
         let me = getMe();
-        setUserPostComment(user_fullname,id,me.fullname,comment)
+        return trySetUserPostComment(user_fullname,id,me.fullname,comment)
     }
 
-    //post extra
+    const getTickets = ()=>ticketsRef.current;
+    const getMaxTickets = ()=>{
+        const [,host,week] = getMeAndMyHostAndMyWeek();
+        return week?.max_tickets?week.max_tickets: (host?.max_tickets?host.max_tickets:0);
+    }
+
+    const postMyPost = async (post, file)=>{
+        let [me,host,week] = getMeAndMyHostAndMyWeek();
+        if(ticketsRef.current<=0) post.screenkaOn=false;
+        post.host_id = host? host.id : null;
+        post.week_name = week? week.name : null;
+        post.upload_date = NOW();
+
+        return postPost(me.fullname,post,file)
+            .then(()=>ticketsRef.current = Math.max(ticketsRef.current-1,0))
+            .then(()=>{if(dayUploads.current!=null) dayUploads.current.push(post)})
+            .then(()=>{if(weekUploads.current!=null) weekUploads.current.push(post)})
+    }
+
     const [hideIfAppsState,setHideIfAppsState2]=useState();
     const setHideIfAppsState=(user,host)=>{
         let diff = host.personalized_apps.filter(app => !user.personalized_apps.includes(app));
@@ -183,12 +204,12 @@ const AuthProvider = ({children}) => {
     const getMeAndMyHostAndMyWeek=()=>{
         let me = userRef.current;
         let host = hostRef.current;
-        let week = weekRef.current;
+        let week = weekState;
         return [me,host,week];
     }
 
-    const getMyFriendsFullnames = ()=>{
-        return friendsFullnamesRef.current;
+    const getMyFriendsFullnames = ()=>{//return array
+        return friendsRef.current;
     }
 
     /* LOCALS */
@@ -197,26 +218,32 @@ const AuthProvider = ({children}) => {
         let date = localStorage.getItem(`${name}_view_${host_id}`);
         date = new Date(date);
         if(name==="oneshot") return date!=null && isLessThenMinutes(date,12*60);
-        if(name==="rnshot") return date!=null && isLessThenMinutes(date,5);
+        if(name==="rnshot") return date!=null && isLessThenMinutes(date,15);
         return date!=null && weekEqual(Date.parse(date),NOW());
     }
     const setMyViewLocal = (name,host_id=null)=>{
         if(!host_id) host_id = getMeAndMyHost()[1]?.id;
         localStorage.setItem(`${name}_view_${host_id}`,NOW());
     }
-    
+
     const value = {  tryLogMeInTemporarly,saveMe,getMe,//me
                                 getMyHostWeekNumber,//host
-                                getMyHostWeekNames,weekSnapshot,getMyHostWeekSpecialDays,//week
-                                getMyDayUploads,getMyWeekUploads,setMyUserPostComment,hideIfAppsState,setHideIfAppsState, //post
+                                getMyHostWeekNames,weekState,//week
+                                getMyDayUploads,getMyWeekUploads,trySetMyUserPostComment,hideIfAppsState,setHideIfAppsState,postMyPost,getTickets,getMaxTickets, getMyAppsCounts,//post
                                 getMeAndMyHost,getMeAndMyHostAndMyWeek, //getters
 
-                                trySetMyUsername,setMyPersonalizedApps, //setters
+                                trySetMyUsername,trySetMyPersonalizedApps, //setters
                                 
                                 
-                                amIScreenkaViewLocal,setMyScreenkaView, //Screenka
+                                amIScreenkaViewLocal,trySetMyScreenkaView, //Screenka
                                 amIViewLocal,setMyViewLocal ,//view local
-                                getMyFriendsFullnames}
+                                getMyFriendsFullnames,
+
+                                UserService:useUserService(demo),
+                                HostService:useHostService(demo),
+                                WeekService:useWeekService(demo),
+                                PostService:usePostService(demo),
+                            }
     return ( 
     <AuthContext.Provider value={value}>
         {authLoaded ? children : <Loading logo/>}
@@ -237,7 +264,7 @@ export default AuthProvider;
      useEffect(()=>{
          if(!auth) if(tryUseRoutingPermission() || ADMIN) setAuth(true);
  
-         if(auth) getUserHostWeekPosts(user_fullname,host_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
+         if(auth) getUserHostWePrzestarzaleekPosts(user_fullname,host_id,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
  
          const requestTimeout = setTimeout(()=>{
              if(!auth) navigate("/");

@@ -2,18 +2,19 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import App from '../../../Objects/App/App';
 import './Home.css';
 import { AuthContext } from '../../../Contexts/AuthContext';
-import { PostContext } from '../../../Contexts/PostContext';
 import { BottomTabContext } from '../../../Contexts/BottomTabContext';
 import { TimeFor } from '../../../Objects/TimeFor';
 import { useNavigate } from 'react-router-dom';
-import { MAX_TICKETS, delay } from '../../../aFunctions';
-import { ButtonScreenka,ButtonPlus,ButtonWeekUploads, ButtonText } from './components/Buttons';
+import { MAX_SCREENKA, datesWeekDelta, delay } from '../../../aFunctions';
+import { ButtonScreenka,ButtonPlus,ButtonWeekUploads, ButtonText, ButtonRn } from './components/Buttons';
 import { AppClass } from '../../../Objects/App/AppClass';
 import User from '../../../Objects/User/User';
 import { Day } from '../../../Objects/Day/Day';
 import A from '../../../Components/A';
+import useConst from '../../../Hooks/useConst';
+import { ButtonPageNext } from '../../../Components/Buttons';
 
-const height = 75;
+const height = 70;
 const userHeight=32;
 const borderRadius = 15;
 const buttonStyle = {height:height+"px",borderRadius:borderRadius+"px"}
@@ -21,116 +22,121 @@ const buttonStyle = {height:height+"px",borderRadius:borderRadius+"px"}
 const HOME_APPS_SIZE = 6;
 
 const Home = ({onAboutWeekClick,weekNumber,week}) => {
-    const {getMe,getMeAndMyHost,amIScreenkaViewLocal,getMyDayUploads,amIViewLocal,getMyFriendsFullnames} = useContext(AuthContext)
+    const {getMe,getMeAndMyHost,amIScreenkaViewLocal,amIViewLocal,getMyFriendsFullnames,PostService,getMyAppsCounts} = useContext(AuthContext)
     const {setBottomTab,isBottomTab,equalObject} = useContext(BottomTabContext);
-    const {getUserWeekPosts} = useContext(PostContext);
 
     const navigate = useNavigate();
     
-    const me = useRef(getMe());
-    const host = useRef(getMeAndMyHost()[1]);
-    const uploadApps = useRef(loadApps(me.current,host.current,week));
+    const me = useConst(getMe());
+    const host = useConst(getMeAndMyHost()[1]);
+    const uploadApps = useRef(loadApps(me,host,week));
     const [homeApps,setHomeApps] = useState(uploadApps.current);//max_len = HOME_APPS_SIZE
     
     const [participantsCount,setParticipantsCount] = useState(0);
     const [friendParticipants,setFriendParticipants] = useState([]) //user_fullnames
-    //const [appsMap,setAppsMap] = useState(new Map()) //Map: (appname,count ) //aka uploaders
+    const [appsCountsMap,setAppsCountsMap] = useState(new Map()) //Map: (appname,count )
 
     const [isUploadMode,setIsUploadMode] = useState(false);
 
-    const tickets=useRef(-1);
-
     //buttons    
     const isDay = [Day.OneShot,Day.OhPreview,Day.ThrowBack].find(day=>TimeFor.Day(day,weekNumber) && !amIViewLocal(day.toString()))
-    const [isRnShotData,setIsRnShotData] = useState(amIViewLocal("rnshot")?false:null);
+    const [isRnShotData,setIsRnShotData] = useState();
     const [isScreenka,setIsScreenka] = useState(false);
-    //end buttons
 
-    const loadParticipants = async (me,week_participants)=>{
-        if(!week_participants) return;
-    
-        let friends_fullnames = getMyFriendsFullnames();
-        let friends_participants_fullnames = week_participants.filter(parti=>friends_fullnames.includes(parti) || parti===me.fullname );
-        setFriendParticipants( [...friends_participants_fullnames] )
-        setParticipantsCount(week_participants.length)
-    }
+   
     useEffect(()=>{
-        loadParticipants(me.current,week?.participants)
+        const loadParticipants = async (me,week_participants)=>{
+            if(!week_participants) return;
+        
+            let friends_fullnames = getMyFriendsFullnames();
+            let friends_participants_fullnames = week_participants.filter(parti=>friends_fullnames.includes(parti) || parti===me.fullname );
+            setFriendParticipants( [...friends_participants_fullnames] )
+            setParticipantsCount(week_participants.length)
+        }
+
+        loadParticipants(me,week?.participants)
     },[week?.participants]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const loadRnShot = async (me,week_latest_uploader)=>{
-        if(week_latest_uploader && week_latest_uploader !== me.fullname && isRnShotData===null) getUserWeekPosts(week_latest_uploader).then((posts)=>{
-            if(posts==null || posts.length===0) return;
-            posts?.forEach(post=> {if(TimeFor.RnShot(post) && post.comment_user_fullname===null) setIsRnShotData({user_fullname:week_latest_uploader,post_id:post.id})})
-        })
-    }
     useEffect(()=>{
-        loadRnShot(me.current,week?.latest_uploader);
-    },[week?.latest_uploader])// eslint-disable-line react-hooks/exhaustive-deps
+        const loadRnShot = async (me,week_latest_map)=>{
+            if(week_latest_map.size===0)return;
+            if(amIViewLocal("rnshot"))return;
+            let uploader = week_latest_map.get("user");
+            if(uploader===me.fullname) return;
+            if(!TimeFor.RnShot(week_latest_map.get("date"))) return;
+            if(!getMyFriendsFullnames().includes(uploader)) return;
+            PostService.getUserLatestPost(uploader).then((post)=>{
+                setIsRnShotData({user_fullname:uploader,post_id:post.id})})
+            }
 
-    const loadTickets = async ()=>
-    {
-        getMyDayUploads()
-        .then(posts=> posts.filter(post=>post.screenkaOn).length)
-        .then(ticketsUsed=>MAX_TICKETS-ticketsUsed)
-        .then(ticketsLeft=> tickets.current = ticketsLeft);
-    }
-    useEffect(()=>{
-        if(tickets.current === -1) loadTickets();
-        if(!week?.latest_uploader) return;
-        if(week.latest_uploader===me.current.fullname) tickets.current -=1;
-    },[week?.latest_uploader])// eslint-disable-line react-hooks/exhaustive-deps
-
-    const sortHomeApps = (appsMap=new Map())=>{
-        const isFirstInGroup=(arr,app)=>{
-            let first = arr.find(a=>a.getGroup()===app.getGroup());
-            return first === app;
-        }
-
-        let apps = uploadApps.current;
-
-        if(apps && appsMap ) {//&& appsMap.length>0
-            //sort by notification count
-            apps = [...apps].sort((a,b)=>(  (appsMap.get(b.name) ||0 - appsMap.get(a.name) ||0) *100+  (a.label-b.label)));
-
-            //get firsts in group
-            let copy = [...apps];
-            copy = copy.filter(app=>isFirstInGroup(apps,app));
-            copy = copy.slice(0,HOME_APPS_SIZE);
-            
-            //add extra apps
-            let extra = HOME_APPS_SIZE - copy.length;
-            apps.every(app => {
-                if(extra===0) return false;
-                if(!copy.includes(app)) {copy.push(app);extra--;}
-                return true;
-            });
-
-            //final sort
-            copy.sort((a,b)=>a.label-b.label);
-
-            setHomeApps(copy)
-        }   
-    }
+        if(week?.latest_map) loadRnShot(me,week.latest_map);
+    },[week?.latest_map])// eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
-        sortHomeApps(week?.apps_counts_map)
-    },[week?.apps_counts_map])// eslint-disable-line react-hooks/exhaustive-deps
+        const sortHomeApps = (appsMap=new Map())=>{
+            const isFirstInGroup=(arr,app)=>{
+                let first = arr.find(a=>a.getGroup()===app.getGroup());
+                return first === app;
+            }
     
-    const loadScreenka = async (host,week)=>
-    {
-        if(TimeFor.Screenka(week))
-        {
-            //isButtonScreenkaDisabled
-            if(host==null) return true;
-
-            let res = amIScreenkaViewLocal(host.id);
-            if(!res) await delay(2000);
-            setIsScreenka(true)
+            let apps = uploadApps.current;
+    
+            if(apps && appsMap ) {//&& appsMap.length>0
+                //sort by notification count
+                apps = [...apps].sort((a,b)=>(  (appsMap.get(b.name) ||0 - appsMap.get(a.name) ||0) *100+  (a.label-b.label)));
+    
+                //get firsts in group
+                let copy = [...apps];
+                copy = copy.filter(app=>isFirstInGroup(apps,app));
+                copy = copy.slice(0,HOME_APPS_SIZE);
+                
+                //add extra apps
+                let extra = HOME_APPS_SIZE - copy.length;
+                apps.every(app => {
+                    if(extra===0) return false;
+                    if(!copy.includes(app)) {copy.push(app);extra--;}
+                    return true;
+                });
+    
+                //final sort
+                copy.sort((a,b)=>a.label-b.label);
+    
+                setHomeApps(copy)
+            }   
         }
-    }
+
+        sortHomeApps(appsCountsMap)
+    },[appsCountsMap])// eslint-disable-line react-hooks/exhaustive-deps
+    
+
     useEffect(()=>{
-        if(host.current && week) loadScreenka(host.current,week);
+            if(week) setAppsCountsMap(week.apps_counts_map);
+    },[week?.apps_counts_map]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const tryGetMyAppsCounts = async (force=false)=>{
+        if(!week && me && ((!isBottomTab() && isUploadMode )|| force) ) {
+            let map = await getMyAppsCounts();
+            setAppsCountsMap(map);
+            if(map.size!==0) {setParticipantsCount(1);setFriendParticipants([me.fullname])}
+    } }
+    useEffect(()=>{tryGetMyAppsCounts(true)},[]) // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(()=>{tryGetMyAppsCounts(); },[isBottomTab()]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(()=>{
+        const loadScreenka = async (host,week)=>
+        {
+            if(TimeFor.Screenka(week))
+            {
+                //isButtonScreenkaDisabled
+                if(host==null) return true;
+    
+                let res = amIScreenkaViewLocal(host.id);
+                if(!res) await delay(2000);
+                setIsScreenka(true)
+            }
+        }
+
+        if(host && week) loadScreenka(host,week);
     },[week]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const getApps = ()=>{
@@ -138,17 +144,17 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
     }
 
     const handleAppClick=(app)=>{
-        if(!isUploadMode) setBottomTab({id:0,object:app,total_uploads: week?.apps_counts_map.get(app.name)?week.apps_counts_map.get(app.name):0})
-        else setBottomTab({id:1,object:app,tickets:tickets.current})
+        if(!isUploadMode) setBottomTab({id:0,object:app,total_uploads: appsCountsMap.get(app.name)?appsCountsMap.get(app.name):0})
+        else setBottomTab({id:1,object:app})
     }
     const handleUserClick=(user_fullname)=>{
-        setBottomTab({id:2,object:user_fullname,host:host.current});
+        let since_week = datesWeekDelta(host.start_date,host.members_map.get(user_fullname)?.join_date);
+        setBottomTab({id:2,object:user_fullname,since_week:since_week, role: host.members_map.get(user_fullname)?.role});
     }
 
     const getNotificationValue=(app)=>{
         if(isUploadMode) return "+";
-        if(!week?.apps_counts_map) return;
-        return week.apps_counts_map.get(app.name);
+        return appsCountsMap.get(app.name);
     }
 
     const defaultClassName=()=>{
@@ -165,10 +171,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
     }
     const userClassName=(user_fullname)=>{
     let res =  "home-blur-dark-pre ";
-    if(isBottomTab())
-    {
-        if (!equalObject(user_fullname)) res+= "home-blur-dark"
-    } 
+    if(isBottomTab())  if (!equalObject(user_fullname)) res+= "home-blur-dark"
     return res;  }
 
 
@@ -178,15 +181,23 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
 
     const onRnShotClick=()=>{   navigate(`post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/rnshot`);  }
     
-    const isButtonScreenkaDisabled = ()=>{
-        if(host.current===null) return true;
-        let res = amIScreenkaViewLocal(host.current.id);
-        return res;  }
+    const isButtonScreenkaDisabled = useConst(()=>{
+        if(host===null) return true;
+        let res = amIScreenkaViewLocal(host.id);
+        return res;  
+    });
+
     const onButtonScreenkaClick = ()=>{
-        if(host.current==null) return;
-        //let agree = window.confirm("This content could be viewed once. Continue?")
-        //if(agree) 
-        navigate("/screenka/"+host.current.id);  }
+        if(host==null) return;
+
+        let count_str = localStorage.getItem("screenka_count_"+host.id);
+
+        let message = "Are you sure you want to see this content?";
+        if(count_str && Number(count_str)===MAX_SCREENKA-1) message = "You will see this content for the last time. Continue?";
+
+        if(window.confirm(message)) 
+            navigate("/screenka/"+host.id);
+    }
 
     return (
     <div className={"home "+( isBottomTab()?'noclick':"")}>
@@ -194,10 +205,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
             <h1 className='home-title'>
                 <span>WEEK</span> 
                 #{weekNumber?weekNumber:0}
-                <span className='week-span'
-                    onClick={()=>{if(week!=null && weekNumber!==null) onAboutWeekClick()}}
-                    style={(week==null || weekNumber===null)?{opacity:"0",cursor:"default"}:{}}
-                >{">"}</span>
+                <ButtonPageNext   onClick={()=>{if(week!=null && weekNumber!==null) onAboutWeekClick()}}  disabled={(week==null || weekNumber===null)}/>
             </h1>
         </div>
 
@@ -208,7 +216,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
 
         {isRnShotData &&
         <div className={defaultClassName()+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
-            <ButtonText onClick={onRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
+            <ButtonRn onClick={onRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
         </div>}
 
         {TimeFor.WeekUploads() &&
@@ -218,11 +226,11 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
     
         {isScreenka &&
         <div className={defaultClassName()+" home-button-effect"} style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}} >
-            <ButtonScreenka disabled={isButtonScreenkaDisabled()} onClick={onButtonScreenkaClick} style={buttonStyle}/>
+            <ButtonScreenka disabled={isButtonScreenkaDisabled} onClick={onButtonScreenkaClick} style={buttonStyle}/>
         </div>}
             
         <div className={defaultClassName()} >
-            <ButtonPlus disabled={!TimeFor.Upload(week)} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
+            <ButtonPlus disabled={!TimeFor.Upload()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
         </div>
        
         <div className='home-app-conteiner'  style={{"gridTemplateColumns":"repeat(auto-fill, "+height+"px)"}}>
@@ -231,6 +239,7 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
                 <App
                 onClick={()=>handleAppClick(app)}
                 notificationValue = {getNotificationValue(app)}
+                notificationBlue={week?.latest_map.get("app") === app.name && TimeFor.RnShot(week.latest_map.get("date"))}
                 application={app} 
                 height={height} />
             </div>
@@ -243,13 +252,15 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
                  <User user_fullname={fullname} height={userHeight} onClick={()=>handleUserClick(fullname)}/>
             </div>
             ))}
-            {participantsCount-friendParticipants.length>0 && <User count={participantsCount-friendParticipants.length} height={userHeight}/>}
+            {participantsCount-friendParticipants.length>0 && 
+            <div className={defaultClassName()} >
+                <User count={participantsCount-friendParticipants.length} height={userHeight}/>
+            </div>}
         </div>}
        
-        {!isUploadMode &&<div className='home-info-filler'></div>}     
-
+        {!isUploadMode && isBottomTab()  &&<div style={{height:"290px"}}></div>}     
+        {!isUploadMode && !isBottomTab() && <footer className='center'><A color={false} onClick={()=>setBottomTab({id:4})}>SCREENKA Ⓡ</A></footer>}
         {isUploadMode && <footer className='center'><A underline href="/uploads/day">manage uploads</A></footer>}
-
         
     </div>
 

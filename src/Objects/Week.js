@@ -2,7 +2,7 @@ import { toMap } from "../aFunctions";
 import { Day, toWeekDay } from "./Day/Day";
 
 export class Week{
-    constructor(   name,start_date,  description,emoji, blocked_apps, extra_apps, force_screenka_show, participants,apps_counts_map,latest_uploader, special_days=null, screenka_views=null) {
+    constructor(   name,start_date,  description,emoji, blocked_apps, extra_apps,special_days_map=new Map(), force_screenka_show, participants,apps_counts_map=new Map(),latest_map=new Map(),  screenka_views_map=new Map(),max_tickets=null) {
         /***/ this.name = name; //gdy bedziemy chcieli sobie wziac po week_namie z posta,
         this.start_date = start_date; // filtrujemy czy currweekdate===newdate, filtrujemy po datach ktore so przed teraz, a pozniej sortujemy po najwyzszej i nia bierzemy - tym samym nowy week odbedzie wtedy kiedy start_date - wraz ze screenka!
         this.description = description; // opis tygodnia, zawierac moze uwagi tygodnia np. spersonalizuj by dodac settingsy! (wejdz na /login)
@@ -13,53 +13,37 @@ export class Week{
 
         this.participants = participants
         this.apps_counts_map = apps_counts_map;
-        this.latest_uploader = latest_uploader;
+        this.latest_map = latest_map;
 
-        this.screenka_views = screenka_views;
-        this.special_days = special_days;
+        this.screenka_views_map = screenka_views_map; // user_fullname => view_date, /*SOON*/ comment, rate...
+
+        this.special_days_map = special_days_map; //week_day => name, description  /*SOON */ // fromHour, toHour
 
         /*4DEMO*/ this.force_screenka_show = force_screenka_show;
 
-        /*SOON*/ //max_tickets - np. 1 (one-ticket-week), 5 (dla wiekszych kontenciarzy)
+        this.max_tickets = max_tickets;//- np. 1 (one-ticket-week), 5 (dla wiekszych kontenciarzy) / jesli nie ma weeka, i ograniczenie sie pozniej pojawi, to good for you (goscia co zapostowal juz z 3 ticketami.. prawdziwy fan co postuje juz od poczatku tygodnia!...
 
     }
 
-    static fromDoc=(doc,special_days=null,screenka_views=null)=>{
-        return doc?new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.blocked_apps,doc.extra_apps,doc.force_screenka_show,doc.participants,toMap(doc.apps_counts_map),doc.latest_uploader,special_days,screenka_views):null;
-    }
-}
-
-export class ScreenkaView{
-    constructor(user_fullname, view_date)
-    {
-        /***/ this.user_fullname = user_fullname;
-        this.view_date = view_date;
-        
-        /*MAYBE*/ //comment?? - nieee... to ma byc fresh and clean, a z drugiej strony cos w stylu - opisz emocje?
-        /*MAYBE*/ //rate?? - daj gwiazdki???
+    getSpecialDays =()=>{
+        let days = []
+        this.special_days_map.forEach((value,week_name)=> days.push(new Day(value.name,toWeekDay(week_name),"",value.description)))
+        return days;
     }
 
     static fromDoc=(doc)=>{
-        return doc?new ScreenkaView(doc.id,doc.view_date.toDate()):null
-    }
-}
+        if(!doc) return;
 
-export class SpecialDay{
-    constructor(week_day,name,description)
-    {
-        /***/ this.week_day = week_day
-        this.name = name
-        this.description = description
-        
-        /*SOON */ // fromHour, toHour
-    }
+        let screenka_views = toMap(doc.screenka_views_map);
+        //var newEntries = Array.from(screenka_views, ([key, value]) => [key, {...value,view_date:value.view_date.toDate()}]);
+        //screenka_views = new Map(newEntries);
+        screenka_views.forEach((value,)=>value.view_date= value.view_date.toDate());
 
-    toDay()
-    {
-        return new Day(this.name,toWeekDay(this.week_day),"",this.description)
-    }
+        let latest = toMap(doc.latest_map);
+        //var newEntries = Array.from(latest, ([key, value]) => [key, {...value,date:value.date?.toDate()}]);
+        //screenka_views = new Map(newEntries);
+        latest.set("date",latest.get("date").toDate());
 
-    static fromDoc=(doc)=>{
-        return doc?new SpecialDay(doc.id,doc.name,doc.description):null
+        return new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.blocked_apps,doc.extra_apps,toMap(doc.special_days_map),doc.force_screenka_show,doc.participants,toMap(doc.apps_counts_map),latest,screenka_views,doc.max_tickets);
     }
 }

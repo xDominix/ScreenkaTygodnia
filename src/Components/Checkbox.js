@@ -1,13 +1,13 @@
 import React from 'react';
 import "./Checkbox.css"
 
-const Checkbox = ({checked,onChange}) => {
+const Checkbox = ({checked,disabled,onChange}) => {
     return (  
         <label className="container">
             <input 
                 type="checkbox" 
                 checked={checked}
-                disabled={onChange==null}
+                disabled={disabled || onChange==null}
                 onChange={onChange?onChange:()=>{}}
             />
             <span className="checkmark"></span>

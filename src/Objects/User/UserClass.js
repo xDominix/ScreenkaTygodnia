@@ -1,3 +1,5 @@
+import { shortenFullname } from "../../aFunctions";
+
 export class UserClass{
     constructor (fullname,username, hosts, personalized_apps, posts=null){
         /***/ this.fullname = fullname; //name + surname
@@ -10,6 +12,7 @@ export class UserClass{
     }
 
     getName = () => this.fullname.split(" ")?.at(0);
+    getShortenFullname=()=>shortenFullname(this.fullname);
 
     static fromDoc=(doc)=>{
         return doc?new UserClass(doc.id,doc.username,doc.hosts,doc.personalized_apps):null;
