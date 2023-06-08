@@ -2,17 +2,17 @@ import React, {  useContext, useEffect, useState } from 'react';
 import { getPath } from '../../aFunctions';
 import { AuthContext } from '../../Contexts/AuthContext';
 
-const User = ({user_fullname,count=null,onClick, height=32}) => {
-    const {UserService} = useContext(AuthContext)
+const User = ({user_fullname,count=null,onClick, height=32,disabled}) => {
+    const {getUserSrcUrl} = useContext(AuthContext)
     const [srcUrl,setSrcUrl] = useState(getPath('default_profile_picture.png'));
 
     useEffect(()=>{
-        if(count==null) UserService.getUserSrcUrl(user_fullname).then(setSrcUrl);
+        if(count==null) getUserSrcUrl(user_fullname).then(setSrcUrl);
     },[user_fullname])// eslint-disable-line react-hooks/exhaustive-deps
 
     if(count!=null)
     return ( 
-        <div className='fromdown' onClick={onClick?onClick:()=>{}}>
+        <div className={'fromdown '+(disabled ? "opacity":"")} onClick={(onClick&&!disabled)?onClick:()=>{}}>
         <span className='bcolor-dark-gray shadow'  style={{
             display:"block",
             height:height+"px",width:height+"px",
@@ -27,7 +27,7 @@ const User = ({user_fullname,count=null,onClick, height=32}) => {
         </div> );
 
     return ( 
-    <button className='fromdown' onClick={onClick?onClick:()=>{}}>
+    <button className={'fromdown '+(disabled ? "opacity":"")} onClick={(onClick&&!disabled)?onClick:()=>{}}>
         <img alt={"user"}
         className={"shadow"}
         style={{

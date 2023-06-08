@@ -2,10 +2,9 @@ import React from 'react';
 import { ButtonClose } from '../../Components/Buttons';
 import "./BottomTab.css"
 
-const BottomTab = ({title,subtitle,image,children,footer,style,onClose,footerCenter,}) => {
-
+const BottomTab = ({title,subtitle,image,children,footer,onClose,footerCenter, maxHeight}) => {
     return ( 
-    <div className="bottom-tab bcolor-dark-gray-solid" style={{minHeight:"250px",...style}}>
+    <div className="bottom-tab bcolor-dark-gray-solid" style={maxHeight?{height:"calc(100% + (-100px))",minHeight:"400px", }:{minHeight:"350px"}}>
         <div className='head'>
             {image &&  <img src={image} alt=""/>}
             <div style={image?{flexDirection:"column"}:{}}>
@@ -14,7 +13,7 @@ const BottomTab = ({title,subtitle,image,children,footer,style,onClose,footerCen
             </div>
         </div>
 
-
+        
         {children && <div className='bottom-tab-content'>
             {children}
         </div>}

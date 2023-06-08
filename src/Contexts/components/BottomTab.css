@@ -46,24 +46,18 @@
     position: absolute;
 }
 
+.bottom-tab .subtitle{
+    margin-left: 7px;
+}
 
+/*CONTENT*/
 .bottom-tab-content
 {
-    font-weight: bold;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.bottom-tab-content>*{
+.bottom-tab .margin>*{
     margin-bottom: 15px;
-}
-
-.bottom-tab-content>:nth-child(2){
-    /*margin-bottom: 40px;*/
-    margin-top: auto;
-}
-
-.bottom-tab .subtitle{
-    margin-left: 7px;
 }

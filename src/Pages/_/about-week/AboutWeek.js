@@ -1,110 +1,90 @@
 import "./AboutWeek.css"
-import React, { useContext, useEffect, useState } from 'react';
-import { Day, WeekDay } from "../../../Objects/Day/Day";
-import { getMonday , isDayToday, MonthNames} from "../../../aFunctions";
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { getMonday , isDayToday, MonthNames, toWeekDay, WeekDay} from "../../../aFunctions";
 import { BottomTabContext } from "../../../Contexts/BottomTabContext";
 import A from "../../../Components/A";
-import { ButtonPageBack } from "../../../Components/Buttons";
+import { ButtonPrevPage } from "../../../Components/Buttons";
+import { AuthContext } from "../../../Contexts/AuthContext";
+import { DayEvent } from "../../../Objects/Event/DayEvent";
+import { CustomEvent } from "../../../Objects/Event/CustomEvent";
 
-const AboutWeek = ({onClose,weekNumber,week}) => {
+const AboutWeek = ({onClose}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
+    const {week,weekNumber,myDayEvents,friendsDisabled,screenkaDisabled,isRnShotEvent} = useContext(AuthContext);
 
-    const [days,setDays] = useState([]);
+    const everyDayDays= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null && day!==DayEvent.DayUploads),[myDayEvents?.length])
+    const weekDayDays= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,event:myDayEvents.find(event=>event.weekDay === weekDayIndex)}}),[myDayEvents?.length])
+
     const [isDayLetter,setIsDayLetter] = useState(true)
 
-    useEffect(()=>{
-        let days = [Day.ClearMind,Day.DeadLine,Day.OhPreview, Day.ThrowBack, Day.OneShot].filter((day) =>  weekNumber>=day.fromWeek);
- 
-        week.getSpecialDays().forEach(special_day => {
-            days.push(special_day)
-         });
-        setDays(days);
-    },[]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    const getEveryDayDays= ()=>{return days.filter(day=>day.weekDay===null)}
-    const getDefaultDayByWeekDay=(weekDay)=>{return days.filter(day=>day.weekDay===weekDay).at(0)}
-
-    const handleDayNameClick =(weekDayIndex,day)=>{
-        if(!isDayToday(weekDayIndex)) return;
-        setBottomTab({id:3,object:day});
+    const handleDayNameClick =(day,event)=>{
+        if(!isDayToday(day)) return;
+        setBottomTab({id:3,object:event});
     }
 
-    const handleDayLetterClick =(weekDayIndex,mouseDown)=>{
-        if(!isDayToday(weekDayIndex)) return;
-        setIsDayLetter(!mouseDown)
-    }
-
-    const getSpanDate = (weekDayName,weekDayIndex)=>{
-        if(isDayLetter)  return weekDayName.charAt(0)
+    const spanDate = (weekDayName)=>{
+        if(isDayLetter || !week)  return weekDayName.charAt(0);
         let date = getMonday(week.start_date);
-        date.setDate(date.getDate() + weekDayIndex)
+        date.setDate(date.getDate() + WeekDay[weekDayName])
         return date.getDate();
     }
 
-    const getFooter = ()=>{
-        let total_uploads = Array.from(week.apps_counts_map.values()).reduce((acc, value) => acc + value, 0);
-        let total_uploads_string = "TOTAL UPLOADS: "+total_uploads;
+    const footer = useMemo(()=>{
+        if(!week) return "";
+        let total_uploads_string = "TOTAL UPLOADS: "+week.today_total_uploads;
 
         let date = getMonday(week.start_date);
         let full_date_string =(MonthNames[date.getMonth()].toUpperCase()+" "+date.getFullYear());
         return (<footer>{full_date_string}<br/>{total_uploads_string}</footer>)
-    }
+    },[week?.today_total_uploads])
 
     return (
         <div className={"aweek "+( isBottomTab()?'noclick aweek-blur-dark':"")}>
         <h1>
-            <ButtonPageBack onClick={onClose}/>
+            <ButtonPrevPage onClick={onClose}/>
              {"#"+(weekNumber?weekNumber:0)} 
-             <span className="color-green-highlight">{week.name.toUpperCase()}</span>
-             <span role="img" aria-label="emoji">{week.emoji}</span>
+             <span className="color-green-highlight">{week? week.name.toUpperCase(): "WEEK"}</span>
+             {week && <span role="img" aria-label="emoji">{week.emoji}</span>}
         </h1>
-        <div className="description initial-letter">{week.description}</div>
+        <div className="description initial-letter">{week?week.description:""}</div>
         <div className="aweek-calendar">
             <div className="aweek-rows">   
 
-            {Object.entries(WeekDay).map(([weekDayName, weekDayIndex]) => {return ( 
-            <div key={weekDayIndex}>
-            
-                { getDefaultDayByWeekDay(WeekDay[weekDayName]) && 
-                <div style={{display:"flex"}} > 
-                    {days.filter(day=>day.weekDay===WeekDay[weekDayName]).map((day,key2)=>{
-                        if(isDayToday(weekDayIndex))  return(
-                            <A key={key2} onClick={()=>handleDayNameClick(weekDayIndex,day)}>
-                                    {key2!==0?", ":""}{day.name.toUpperCase()}
-                            </A>)
-                        else return (
-                            <div key={key2}>
-                                    {key2!==0?", ":""}{day.name.toUpperCase()}
-                            </div>)}
-                        )    
-                    }
+            {weekDayDays.map(({day_name,event}) => 
+            <div key={day_name}>
+                {event && <div >
+                    <A disabled={!event.checkPermissions({me:true,friends:!friendsDisabled,screenka:!screenkaDisabled}) || (event.isAfterTime() &&isDayToday(WeekDay[day_name]))} nocolor={!isDayToday(WeekDay[day_name])} onClick={()=>handleDayNameClick(WeekDay[day_name],event)}>
+                        {event.name.toUpperCase()}
+                    </A>
                 </div>}
 
                 <span 
-                    className={"noselect "+(isDayToday(weekDayIndex)?"bcolor-green-solid color-black clickable":"bcolor-dark-gray-solid")} 
-                    onMouseDown={()=>handleDayLetterClick(weekDayIndex,true)} 
-                    onPointerDown={()=>handleDayLetterClick(weekDayIndex,true)} 
-                    onMouseUp={()=>handleDayLetterClick(weekDayIndex,false)}
-                    onPointerUp={()=>handleDayLetterClick(weekDayIndex,false)}
-                    /*onMouseLeave={()=>handleDayLetterClick(weekDayIndex,false)}
-                    onPointerLeave={()=>handleDayLetterClick(weekDayIndex,false)}*/>
-                        {getSpanDate(weekDayName,weekDayIndex)}
-                    </span>
+                    className={"noselect "+(isDayToday(WeekDay[day_name])?"bcolor-green-solid color-black clickable":"bcolor-dark-gray-solid")} 
+                    onClick={()=> ((week &&isDayToday(WeekDay[day_name]))? setIsDayLetter(!isDayLetter):{})}>
+                        {spanDate( day_name)}
+                </span>
             </div>
-            )})}
+               )}
 
-        {getEveryDayDays().map((day,key) => { return (   
+            
+
+        {everyDayDays.map((day,key) => { 
+            return (   
                     <div key={key}>
-                        <A onClick={()=>setBottomTab({id:3,object:day})}>{day.name.toUpperCase()}</A>
-                        <span className="bcolor-green-solid color-black"></span>
+                        <div><A disabled={!day.checkPermissions({me:true,friends:!friendsDisabled,screenka:!screenkaDisabled}) || day.isAfterTime()} onClick={()=>setBottomTab({id:3,object:day})}>{day.name.toUpperCase()}</A></div> 
+                        <span className="noselect bcolor-green-solid color-black"></span>
                     </div>
             )})}
+
+        {isRnShotEvent &&<div>
+            <div><A nocolor className="color-orange"  disabled={!CustomEvent.RnShot.checkPermissions({me:true,friends:!friendsDisabled,screenka:!screenkaDisabled})} onClick={()=>setBottomTab({id:3,object:CustomEvent.RnShot})}>{CustomEvent.RnShot.name.toUpperCase()}</A></div> 
+            <span className="noselect bcolor-orange color-black"></span>
+        </div>}
         
-            
             </div>
             <div className="bcolor-dark-gray-solid"></div>
         </div>
-        {getFooter()}
+        {footer}
         </div> 
     );
 }

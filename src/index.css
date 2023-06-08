@@ -12,9 +12,10 @@ tlo - ciemne (0-127) (0.5-1)
   line-height: 20px;
 }
 
+b{font-size: inherit;}
 span[role ="img"]{ color:white ;}
 
-p{font-size: 15px;line-height: 15px;margin-top: 5px;}
+p, p>b{font-size: 17px;line-height: 19px;margin-top: 5px;font-weight: bold;}
 body { margin: 0; background-color: #2F2F2F; }
 
 html,body,div#root {  height: 100%;}
@@ -30,7 +31,7 @@ div#root{overflow: auto;}
 
 }
 
-/*.color-red {color:rgba(255, 49, 49, 0.842)}*/
+.color-red {color:rgba(255, 49, 49, 0.842)}
 
 .color-gray-solid, input, textarea, input[type=file],input[type=file]::file-selector-button, button.paste{
   color: rgb(172,172,172);
@@ -70,7 +71,8 @@ div#root{overflow: auto;}
 {
   background-color: rgb(59,92,152);
 }
-.bcolor-rn{background-color: rgb(255, 119, 56);}
+.bcolor-orange{background-color: rgb(255, 119, 56);}
+.color-orange{color: rgb(255, 119, 56);}
 .bcolor-red{background-color: rgb(255, 56, 56);}
 
 input, textarea, button.paste{
@@ -126,10 +128,9 @@ footer::before {
 footer.light::before {content: "";height:0;display: block;}
 footer{
   opacity: 0.5;
-  margin: 10px 0px;
   margin-top: 15px;
   margin-top: auto;
-  margin-bottom: 30px;
+  margin-bottom: 35px;
   text-align: end;
   font-size: 17px;
 }
@@ -219,3 +220,19 @@ a.underline {text-decoration: underline; color: inherit;font-weight: normal;}
     animation-name: fromdown;
     animation-duration: 0.6s;
 }
+
+@keyframes text-shine {
+  0% {  text-shadow: 0px 0px 0px rgba(255, 255, 255, 0.2);}
+  100% { text-shadow: 0px 0px 40px rgba(255, 255, 255, 0.9);}
+}
+.text-shine{
+  opacity: 1 !important;
+  animation-name: text-shine;
+  animation-duration:2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-delay: 2s;
+}
+
+.text-shine>*{color: rgba(255, 255, 255, 0.61);}

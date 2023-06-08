@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthProvider from "./AuthContext";
-import { DEMONAME } from '../Services/aLocalbase';
+import { DEMONAME } from '../Services/aDemobase';
 
 export const AuthContextWithDemo = ({ children,onDemo }) => {
     const location = useLocation();

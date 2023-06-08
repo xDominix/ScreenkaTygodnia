@@ -34,7 +34,7 @@ button.button-upload
 
     font-weight: bold;
 }
-button.button-upload[disabled]{
+button.button-upload[disabled].bcolor-gray{
     opacity: 1 !important;
   }
 

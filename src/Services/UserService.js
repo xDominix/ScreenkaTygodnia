@@ -1,6 +1,6 @@
-import { delay, getPath, } from "../aFunctions";
-import { DEMOUSERNAME, UserRepository } from "./aLocalbase";
-import { UserClass as User, UserClass} from "../Objects/User/UserClass";
+import { delay, getPath, objectToPermissions, } from "../aFunctions";
+import { DEMOUSERNAME, UserRepository } from "./aDemobase";
+import { UserClass} from "../Objects/User/UserClass";
 import { doc, updateDoc, where } from "firebase/firestore";
 import { db, getDoc, getDocWhere, getDocs, getUserSrcFromStorage } from "../Services/aFirebase";
 
@@ -11,19 +11,38 @@ const UserService = {
       if (fullname == null) return null;
       if (sessionStorage.getItem("users/" + fullname)) {
         let obj = JSON.parse(sessionStorage.getItem("users/" + fullname));
-        return User.fromDoc(obj);
+        return UserClass.fromDoc(obj);
       }
       let doc = await getDoc("users", fullname);
+      if(!doc) return null;
       sessionStorage.setItem("users/" + fullname, JSON.stringify(doc));
-      return User.fromDoc(doc);
+      let user= UserClass.fromDoc(doc);
+      //if (!user.preferences.me) return null;
+      return user;
     },
   
     getUserByUsername: async (username) => {
       return getDocWhere("users", "username", username).then(UserClass.fromDoc);
     },
+
+    changeUserPreferences: async(user_fullname,preferences)=>{
+      if(user_fullname==null) return null;
+      console.log("user "+user_fullname+ " change preferences");
+
+   
+
+      return updateDoc(doc(db, "users", user_fullname), "preferences",preferences).then(()=>{
+        if (sessionStorage.getItem("users/" + user_fullname)) {
+          let obj = JSON.parse(sessionStorage.getItem("users/" + user_fullname));
+          let user = UserClass.fromDoc(obj);
+          user.preferences = objectToPermissions(preferences,user.preferences);
+          sessionStorage.setItem("users/" + user_fullname, JSON.stringify(user));
+        }
+      })
+    },
   
-    trySetUsername: async (fullname, username) => {
-      if (username == null || username.length <= 0 || username.length > 20) return false;
+    trySetUsername: async (fullname, username) => { //return true or false
+      if (username == null || username.length <= 3 || username.length > 20) return false;
   
       let user = await UserService.getUser(fullname);
       if (user == null) throw new Error("Wrong your fullname");
@@ -32,15 +51,26 @@ const UserService = {
       let docs = await getDocs(`users`,where("hosts","array-contains-any",user.hosts),where("username","==",user.username))
       if(!docs || docs.length!==0) return false;
 
-      await updateDoc(doc(db, "users", fullname), { username: username });
-  
-      return true;
+      return updateDoc(doc(db, "users", fullname), { username: username }).then(()=>{
+        if (sessionStorage.getItem("users/" + fullname)) {
+          let obj = JSON.parse(sessionStorage.getItem("users/" + fullname));
+          let user = UserClass.fromDoc(obj);
+          user.username = username;
+          sessionStorage.setItem("users/" + fullname, JSON.stringify(user));
+        }
+      }).then(()=>true);
     },
   
     trySetPersonalizedApps: async (fullname, apps) => {
       if (fullname == null || apps == null) return false;
-      await updateDoc(doc(db, "users", fullname), { personalized_apps: apps });
-      return true;
+      return updateDoc(doc(db, "users", fullname), { personalized_apps: apps }).then(()=>{
+        if (sessionStorage.getItem("users/" + fullname)) {
+          let obj = JSON.parse(sessionStorage.getItem("users/" + fullname));
+          let user = UserClass.fromDoc(obj);
+          user.personalized_apps = apps;
+          sessionStorage.setItem("users/" + fullname, JSON.stringify(user));
+        }
+      }).then(()=>true);
     },
   
     getUserSrcUrl: async (user_fullname) => {
@@ -59,7 +89,7 @@ const UserService = {
 const UserServiceDemo = {
     getUser: async (fullname) => {
       await delay(1000);
-      if (fullname === undefined) return undefined;
+      if (fullname == null) return null;
       return UserRepository.find(
         (user) => user.fullname.toLowerCase() === fullname.toLowerCase()
       );
@@ -72,9 +102,14 @@ const UserServiceDemo = {
         (user) => user.username.toLowerCase() === DEMOUSERNAME.toLowerCase()
       );
     },
+
+    changeUserPreferences: async(user_fullname,preferences)=>{
+      console.log("user "+user_fullname+ " change preferences");
+      await delay(500);
+    },
   
-    trySetUsername: async (fullname, username) => {
-      if (username == null || username.length <= 0 || username.length > 20)
+    trySetUsername: async (fullname, username) => { //return true or false
+      if (username == null || username.length <= 3 || username.length > 20)
         return false;
   
       let user = await UserServiceDemo.getUser(fullname);
@@ -82,7 +117,7 @@ const UserServiceDemo = {
   
       //todo
       
-      await delay(1000); // set
+      await delay(500); // set
   
       return true;
     },

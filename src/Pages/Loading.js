@@ -1,12 +1,12 @@
 import React from 'react';
 import { getPath } from '../aFunctions';
-
+import pack from "../../package.json"
 const Loading = ({logo=false}) => {
 
     if(logo)
-        return (<div>
+        return (<div style={{display:"flex",flexDirection:"column"}}>
             {<div className='centered'> <img className='fromdown' alt="logo" src={getPath("logo.png")} style={{width:"200px"}}/></div>}
-            {/*<div className='centered'>SCREENKA <br/> TYGODNIA</div>*/}
+            <footer className='center'>v{pack.version}</footer>
         </div>)
 
 

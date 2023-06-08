@@ -22,6 +22,7 @@
     font-size: 20px;
     text-align: justify;
     margin-bottom: 30px;
+    min-height: 20px;
 }
 
 .aweek h1>span{font-size: 30px;margin-left: 10px}

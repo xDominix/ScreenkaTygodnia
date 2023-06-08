@@ -1,3 +1,5 @@
+export const AppType = {Personalized:0,Popular:1,Group:2,SuperPersonalized:3}
+
 export const Format = { None:"None", String:"String",LongString:"LongString" ,Url:"Url", Path:"Path",}
 
 export const LABEL_STEP = 10
@@ -36,7 +38,7 @@ export class AppClass {
     static Photos = new AppClass("Photos","photo, video","upload saved photo, saved video, screenshot, screen recording.",Format.Path,11)
     static Camera = new AppClass("Camera","photo, video","upload a photo, selfie, portrait, panorama, video taken by you.",Format.Path,12)
     //irl
-    static Maps = new AppClass("Maps","place","recommend new place you recently visited, your favorite spot to hang out.",Format.String,20);
+    static Maps = new AppClass("Maps","place","recommend new places you recently visited, your favorite spots to hang out.",Format.String,20);
     static Contacts = new AppClass("Contacts","person","suggest a friend you want to add to the community!",Format.Url,21)
 
     //App

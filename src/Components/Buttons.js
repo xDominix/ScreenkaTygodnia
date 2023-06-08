@@ -18,11 +18,12 @@ export const ButtonNext = ({onClick,disabled}) =>{
     </button>)
 }
 
-export const ButtonUpload = ({onClick,disabled,tickets}) =>{
+export const ButtonUpload = ({onClick,disabled,tickets,noTicketAnimation=false}) =>{
     return (
-    <button disabled={disabled} className={"button-upload"+(!disabled?" focus":" bcolor-gray")} onClick={onClick}>
-        {!disabled && (tickets>0 ?  "UPLOAD" : "UPLOAD*")}
-        {disabled &&  <h5><span role="img" aria-label="ticket" >🎟️</span>x{tickets}</h5>/*style={{fontSize:"17px"}} */} 
+    <button disabled={disabled} className={"button-upload"+(!disabled?" focus":(noTicketAnimation ? " focus opacity ":" bcolor-gray"))} onClick={onClick}>
+        {noTicketAnimation &&  ("UPLOAD" )}
+        {!noTicketAnimation && !disabled && (tickets>0 ?  "UPLOAD" : "UPLOAD*")}
+        {!noTicketAnimation && disabled &&  <h5><span role="img" aria-label="ticket" >🎟️</span>x{tickets}</h5>/*style={{fontSize:"17px"}} */} 
     </button>)
 }
 
@@ -34,19 +35,19 @@ export const ButtonPaste = ({onClick,disabled}) =>{
 }
 
 /*USEFULL WITH H1 */
-export const ButtonPageNext=({onClick,disabled})=>{
+export const ButtonNextPage=({style,onClick,focus,disabled})=>{
     const navigate = useNavigate();
     const defaultClick = ()=>navigate(1);
-    return (<span className='button-page'
-        onClick={onClick?onClick:defaultClick}
-        style={disabled?{opacity:"0",cursor:"default"}:{}}
+    return (<span className={'button-page'+((!disabled &&focus) ? " color-green-highlight":"")}
+        onClick={!disabled?(onClick?onClick:defaultClick):undefined}
+        style={{...style, float:"right",...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
     >{">"}</span>)
 }
-export const ButtonPageBack=({onClick,disabled})=>{
+export const ButtonPrevPage=({style,onClick,disabled})=>{
     const navigate = useNavigate();
     const defaultClick = ()=>navigate(-1);
     return (<span className='button-page'
-    onClick={onClick?onClick:defaultClick}
-        style={disabled?{opacity:"0",cursor:"default"}:{}}
+    onClick={!disabled?(onClick?onClick:defaultClick):undefined}
+    style={{...style,...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
     >{"<"}</span>)
 }

@@ -1,17 +1,19 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import "./A.css"
 
-const A = ({className,underline,color=true,href,onClick,children,disable}) => {
-    const navigate = useNavigate();
-
+const A = ({
+        className="", nocolor=false,bold,underline,red=false,
+        onClick= ()=>{},disabled=false,active=true,
+        children
+    }) => {
     const handleOnClick = ()=>{
-        if(disable) return;
-        if(href) navigate(href);
-        else if(onClick) onClick();
+        if(disabled) return;
+        else onClick();
     }
     
-    return ( <div className={"A "+className+(color?" color ":"")+(underline?' underline':" ")+(disable?" opacity":"")} onClick={handleOnClick}>{children}</div> );
+    return ( <span className={"A noselect "+className+((nocolor||!onClick)?"":(red?" color-red ":" color "))+(underline?' underline':" ")+((disabled||!active)?" opacity":"")} 
+    style={bold?{fontWeight:"bold"}:{}}
+    onClick={handleOnClick}>{children}</span> );
 }
  
 export default A;

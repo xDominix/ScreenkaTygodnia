@@ -32,17 +32,6 @@
     margin-bottom: 15px;
 }
 
-.home-app-conteiner{
-    display: grid;
-    justify-content: center;
-    gap: 35px;
-    margin-top: 20px;
-}
-.home-user-conteiner{
-    display: flex;
-    flex-direction: row-reverse;
-}
-
 .home-blur-dark-pre
 {
     transition: filter 0.4s ease-in-out;
@@ -66,12 +55,4 @@
     transition: height 0.2s ease-in-out;
     animation: show 0.2s ease-in;
     will-change: height;
-}
-
-/**/
-
-.home-user-conteiner img, .home-user-conteiner span{
-    width: 40px;
-    height: 40px;
-    margin: 5px;
 }

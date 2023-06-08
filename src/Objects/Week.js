@@ -1,8 +1,10 @@
-import { toMap } from "../aFunctions";
-import { Day, toWeekDay } from "./Day/Day";
+import { NOW, dateToWeekDay, toMap } from "../aFunctions";
 
 export class Week{
-    constructor(   name,start_date,  description,emoji, blocked_apps, extra_apps,special_days_map=new Map(), force_screenka_show, participants,apps_counts_map=new Map(),latest_map=new Map(),  screenka_views_map=new Map(),max_tickets=null) {
+    constructor(  name,start_date,  description,emoji, //required
+                            blocked_apps=[], extra_apps=[], max_tickets=null, force_screenka=false,//optional
+                        ) 
+    {
         /***/ this.name = name; //gdy bedziemy chcieli sobie wziac po week_namie z posta,
         this.start_date = start_date; // filtrujemy czy currweekdate===newdate, filtrujemy po datach ktore so przed teraz, a pozniej sortujemy po najwyzszej i nia bierzemy - tym samym nowy week odbedzie wtedy kiedy start_date - wraz ze screenka!
         this.description = description; // opis tygodnia, zawierac moze uwagi tygodnia np. spersonalizuj by dodac settingsy! (wejdz na /login)
@@ -10,40 +12,54 @@ export class Week{
 
         /*?*/ this.blocked_apps = blocked_apps; //- np. #1 week bez person section , innego robisz zen-week itp. 
         /*?*/ this.extra_apps = extra_apps; // sa one jakby popular apps
-
-        this.participants = participants
-        this.apps_counts_map = apps_counts_map;
-        this.latest_map = latest_map;
-
-        this.screenka_views_map = screenka_views_map; // user_fullname => view_date, /*SOON*/ comment, rate...
-
-        this.special_days_map = special_days_map; //week_day => name, description  /*SOON */ // fromHour, toHour
-
-        /*4DEMO*/ this.force_screenka_show = force_screenka_show;
-
         this.max_tickets = max_tickets;//- np. 1 (one-ticket-week), 5 (dla wiekszych kontenciarzy) / jesli nie ma weeka, i ograniczenie sie pozniej pojawi, to good for you (goscia co zapostowal juz z 3 ticketami.. prawdziwy fan co postuje juz od poczatku tygodnia!...
+        this.force_screenka = force_screenka;
 
+        //realtime
+        this.today_participants = [];
+        this.today_apps_counts = new Map(); //map
+        this.today_total_uploads = 0;
+        this.latest = {}; // {date, user, app}
+        this.screenka_views = new Map(); // user_fullname => view_date
+        
+        //realtime references
+        this.screenka_comments = [];//ref
+        this.events = []; // ref      
     }
 
-    getSpecialDays =()=>{
-        let days = []
-        this.special_days_map.forEach((value,week_name)=> days.push(new Day(value.name,toWeekDay(week_name),"",value.description)))
-        return days;
+    static DefaultWeek = new Week("Week",NOW(),"Default Week","")
+
+    setTodayAppsCounts=(day_apps_counts)=>{
+        if(!day_apps_counts) return;
+        let apps_counts = day_apps_counts[dateToWeekDay(NOW())];
+        if(apps_counts) this.today_apps_counts = toMap(apps_counts);
+        if(apps_counts) this.today_total_uploads = Object.values(apps_counts).reduce((acc, value) => acc + value, 0)
+        return this;
+    }
+
+    setTodayParticipants=(day_participats)=>{
+        if(!day_participats) return;
+        let today_participants = day_participats[dateToWeekDay(NOW())];
+        if(today_participants) this.today_participants = today_participants;
+        return this;
     }
 
     static fromDoc=(doc)=>{
-        if(!doc) return;
+        if(!doc) return null;
 
-        let screenka_views = toMap(doc.screenka_views_map);
-        //var newEntries = Array.from(screenka_views, ([key, value]) => [key, {...value,view_date:value.view_date.toDate()}]);
-        //screenka_views = new Map(newEntries);
+        let screenka_views = toMap(doc.screenka_views);
         screenka_views.forEach((value,)=>value.view_date= value.view_date.toDate());
 
-        let latest = toMap(doc.latest_map);
-        //var newEntries = Array.from(latest, ([key, value]) => [key, {...value,date:value.date?.toDate()}]);
-        //screenka_views = new Map(newEntries);
-        latest.set("date",latest.get("date").toDate());
+        let latest2 = doc.latest
+        if(latest2) latest2.date = latest2.date.toDate();
 
-        return new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.blocked_apps,doc.extra_apps,toMap(doc.special_days_map),doc.force_screenka_show,doc.participants,toMap(doc.apps_counts_map),latest,screenka_views,doc.max_tickets);
+        let res =  new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.blocked_apps,doc.extra_apps,doc.max_tickets,doc.force_screenka,);
+        res.latest = latest2;
+        res.screenka_views = screenka_views;
+        res.screenka_comments = doc.screenka_comments;
+        res.events = doc.events;
+        res.setTodayAppsCounts(doc.day_apps_counts)
+        res.setTodayParticipants(doc.day_participants)
+        return res;
     }
 }

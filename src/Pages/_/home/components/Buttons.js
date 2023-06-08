@@ -2,8 +2,8 @@ import React from 'react';
 import { getPath } from '../../../../aFunctions';
 import "./Buttons.css"
 
-export const ButtonText = ({style, onClick,text}) => {
-    return (  <button
+export const ButtonText = ({style,disabled, onClick,text}) => {
+    return (  <button disabled={disabled}
      className={"bcolor-blue button-week-uploads shadow"}
       style={style} onClick={onClick}>
         <h2  style={{margin:"5px",fontSize:"30px",lineHeight:"28px",color:"white"}}>{text.toUpperCase()}</h2>
@@ -11,14 +11,14 @@ export const ButtonText = ({style, onClick,text}) => {
 }
 export const ButtonRn = ({style, onClick,text}) => {
     return (  <button
-     className={"bcolor-rn button-week-uploads shadow"}
+     className={"bcolor-orange button-week-uploads shadow"}
       style={style} onClick={onClick}>
         <h2  style={{margin:"5px",fontSize:"30px",lineHeight:"28px",color:"white"}}>{text.toUpperCase()}</h2>
     </button> );
 }
 
-export const ButtonWeekUploads = ({style, onClick}) => {
-    return (  <button
+export const ButtonWeekUploads = ({style,disabled, onClick}) => {
+    return (  <button disabled={disabled}
      className={"bcolor-dark-gray-solid button-week-uploads shadow"}
       style={style} onClick={onClick}>
         <h2 style={{margin:"5px",fontSize:"30px",lineHeight:"28px"}}>YOUR WEEK<br/>UPLOADS</h2>

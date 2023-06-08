@@ -9,7 +9,7 @@ import { MultipleError } from '../../../Services/aFirebase';
 
 const TempLogin = ({onTempLogin}) => {
 
-    const {getMe,tryLogMeInTemporarly,UserService} = useContext(AuthContext);
+    const {getMyUsername,getMe,tryLogMeInTemporarly,getUserSrcUrl} = useContext(AuthContext);
 
     const [meSrc,setMeSrc] = useState(getPath("default_profile_picture.png"))
     const inputRef = useRef();
@@ -20,11 +20,11 @@ const TempLogin = ({onTempLogin}) => {
     useEffect(()=>{
 
         const timeout = setTimeout(()=>{
-            let me =getMe();
-            if(me== null) return;
-            inputRef.current.value=me.username; 
+            let username = getMyUsername();
+            if(username) inputRef.current.value=username; 
 
-            UserService.getUserSrcUrl(me.fullname).then(setMeSrc);
+            let me = getMe()
+            if(me) getUserSrcUrl(me.fullname).then(setMeSrc);
         },500);
     
         return ()=> clearTimeout(timeout);
@@ -34,15 +34,15 @@ const TempLogin = ({onTempLogin}) => {
     const handleOnEnter = async () => {
         setIsInputFieldLoading(true)
         
-        tryLogMeInTemporarly(inputRef.current.value).then(res=>{
-            setIsInputFieldRed(!res);
-            if(res) onTempLogin();
-        }).catch(err=>{
-            if(err instanceof MultipleError) window.alert("Multiple users with same username. Contact the host.");
-            else window.alert(err.message);
-        });
-
-        setIsInputFieldLoading(false);
+        tryLogMeInTemporarly(inputRef.current.value)
+            .then(res=>{
+                setIsInputFieldRed(!res);
+                if(res) onTempLogin();  })
+            .catch(err=>{
+                if(err instanceof MultipleError) window.alert("Multiple users with same username. Contact the host.");
+                else window.alert(err.message);
+            })
+            .then(()=>setIsInputFieldLoading(false))
        };
 
     return ( 

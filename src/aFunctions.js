@@ -1,7 +1,7 @@
 //CONSTS
 export const MAX_SCREENKA = 3;
-export const ADMIN = false;
-export const NOW = ()=> new Date(); //new Date(2021,3,3,10,10)
+export const DAY_EVENT_POSTS = 3;
+export const NOW = ()=> new Date(Date.now()) ; //new Date(2021,3,3,10,10)
 
 //PATH
 export const getPath=(file)=>{
@@ -19,6 +19,23 @@ export function delay(milliseconds){
     return new Promise(resolve => {
         setTimeout(resolve, milliseconds);
     });
+}
+
+//Week Day
+export const WeekDay = {"Monday":0, "Tuesday":1, "Wednesday":2, "Thursday":3, "Friday":4, "Saturday":5, "Sunday":6}
+
+export const toWeekDay = (obj)=>{//string or number
+  if(typeof obj === 'string')
+    return WeekDay[obj];
+
+  if(obj>=0 && obj<=6)
+    return Object.keys(WeekDay).find(key => WeekDay[key] === obj)
+  return undefined
+}
+
+export const dateToWeekDay = (date) =>{//return string 
+  let index= (date.getDay()+6)%7;
+  return toWeekDay(index);
 }
 
 //DATE
@@ -61,8 +78,8 @@ export const isTime=(weekIndex,fromHour,toHour) =>{
     
 export const dateToHourStringPretty = (date)=>{ //prettier version of date
     if(isLessThenMinutes(date,15)) return "NOW";
-    if(isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN AGO`;
-    if(isLessThenMinutes(date,60+59)) return "1H AGO";
+    if(isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN`;
+    if(isLessThenMinutes(date,60+59)) return "1H";
     return (
         date.getHours().toLocaleString('en-US', { minimumIntegerDigits: 1, useGrouping: false })+ ":"+ 
         date.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }))
@@ -102,6 +119,11 @@ export const randomElement = (array)=>{
     return array[Math.floor(Math.random() * array.length)];
 }
 
+export const randomElements=(array,size)=>{
+    const shuffled = array.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, size);
+}
+
 //MAP
 export const toMap=(doc={})=>{
     const map = new Map();
@@ -124,3 +146,13 @@ export const shortenFullname=(fullname)=>{
     return splits.join(" ");
 }
 
+//me friends screenka
+
+export const objectToPermissions = (obj,old_permissions={me:false,friends:false,screenka:false})=>{
+    if(!obj) return old_permissions;
+    return {
+        me: obj.me==null? old_permissions.me : (obj.me===true ? true : false),
+        friends: obj.friends==null? old_permissions.friends : (obj.friends===true ? true : false),
+        screenka: obj.screenka==null? old_permissions.screenka : (obj.screenka===true ? true : false),
+      };
+}

@@ -3,7 +3,7 @@ import { ButtonPaste } from './Buttons';
 import "./InputField.css"
 
 const InputField = (props ) => {
-    const  {    autofocus,reff,placeholder, h5,readOnly=false, 
+    const  {    autofocus,reff,placeholder,readOnly=false, //h5 - nie bo umniejsza elementom
                     onEnter=()=>{},onChange=()=>{},
                     isRed,isLoading,value=undefined,
                     longer,file,paste=false} = props;
@@ -39,7 +39,7 @@ const InputField = (props ) => {
     if(file)
     {
         return (<input className={((isRed && !isLoading)?"bcolor-red":"")}  
-        style={{...(h5?{fontSize:"17px"}:{}) , ...(isLoading?{opacity:"0.4"}:{})}} 
+        style={{ ...(isLoading?{opacity:"0.4"}:{})}} 
         readOnly={isLoading || readOnly}   type="file" accept="image/*"  tilte="file..." onChange={onChange}/>)
     }
 
@@ -48,7 +48,7 @@ const InputField = (props ) => {
     <textarea className={(isRed && !typed && !isLoading)?"bcolor-red":""}   
                         cols="8" rows="5" placeholder={placeholder} ref={reff} value={value}
                         readOnly={isLoading || readOnly} 
-                        style={{...(h5?{fontSize:"17px"}:{}) , ...(isLoading?{opacity:"0.4"}:{})}} 
+                        style={{ ...(isLoading?{opacity:"0.4"}:{})}} 
                         autoFocus={autofocus}
                         onKeyDown={handleKeyDown} onChange={onChange}
                         >
@@ -58,7 +58,7 @@ const InputField = (props ) => {
         <input className={(isRed && !typed && !isLoading)?"bcolor-red":""} 
         placeholder={placeholder}
         readOnly={isLoading || readOnly} 
-        style={{...(h5?{fontSize:"17px"}:{}) , ...(isLoading?{opacity:"0.4"}:{})}} 
+        style={{ ...(isLoading?{opacity:"0.4"}:{})}} 
         autoFocus={autofocus} ref={reff} value={value}
         onKeyDown={handleKeyDown} onChange={onChange}
         />

@@ -85,8 +85,8 @@ export async function getDocs(collection,...queryConstraints){
 
 //storage
 export const getUserSrcFromStorage= (fullname)=> {
-  console.log(fullname+"/src.jpg");
-  return getDownloadURL(ref(storage, fullname+"/src.jpg"));
+  console.log("_user_src/"+fullname+".jpg");
+  return getDownloadURL(ref(storage, "_user_src/"+fullname+".jpg"));
 }
 
 export const getPostContentSrcFromStorage=(fullname,content)=>{ //jak narazie zakladamy ze to zdjecia

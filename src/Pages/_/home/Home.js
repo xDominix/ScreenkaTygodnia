@@ -1,18 +1,19 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import App from '../../../Objects/App/App';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import './Home.css';
 import { AuthContext } from '../../../Contexts/AuthContext';
 import { BottomTabContext } from '../../../Contexts/BottomTabContext';
-import { TimeFor } from '../../../Objects/TimeFor';
 import { useNavigate } from 'react-router-dom';
 import { MAX_SCREENKA, datesWeekDelta, delay } from '../../../aFunctions';
 import { ButtonScreenka,ButtonPlus,ButtonWeekUploads, ButtonText, ButtonRn } from './components/Buttons';
-import { AppClass } from '../../../Objects/App/AppClass';
-import User from '../../../Objects/User/User';
-import { Day } from '../../../Objects/Day/Day';
+import { AppClass, AppType } from '../../../Objects/App/AppClass';
 import A from '../../../Components/A';
-import useConst from '../../../Hooks/useConst';
-import { ButtonPageNext } from '../../../Components/Buttons';
+import { ButtonNextPage } from '../../../Components/Buttons';
+import { DayEvent } from '../../../Objects/Event/DayEvent';
+import AppContainer from './components/AppContainer';
+import UserContainer from './components/UserContainer';
+import { CustomEvent } from '../../../Objects/Event/CustomEvent';
+import { Event } from '../../../Objects/Event/Event';
+import { DEFAULT_APP_NAMES } from '../../../Services/aLocalbase';
 
 const height = 70;
 const userHeight=32;
@@ -21,57 +22,70 @@ const buttonStyle = {height:height+"px",borderRadius:borderRadius+"px"}
 
 const HOME_APPS_SIZE = 6;
 
-const Home = ({onAboutWeekClick,weekNumber,week}) => {
-    const {getMe,getMeAndMyHost,amIScreenkaViewLocal,amIViewLocal,getMyFriendsFullnames,PostService,getMyAppsCounts} = useContext(AuthContext)
-    const {setBottomTab,isBottomTab,equalObject} = useContext(BottomTabContext);
+const Home = ({onAboutWeekClick}) => {
+
+    const {user,host,week,weekNumber,getMyFriends,getFriendLatestPost,getMyAppsCounts,friendsDisabled,screenkaDisabled,myDayEvents,isRnShotEvent,isScreenkaEvent,isUploadEvent} = useContext(AuthContext)
+    const {setBottomTab,isBottomTab,getObject} = useContext(BottomTabContext);
 
     const navigate = useNavigate();
-    
-    const me = useConst(getMe());
-    const host = useConst(getMeAndMyHost()[1]);
-    const uploadApps = useRef(loadApps(me,host,week));
+
+    const uploadApps = useRef(loadApps(user,host,week));
     const [homeApps,setHomeApps] = useState(uploadApps.current);//max_len = HOME_APPS_SIZE
     
     const [participantsCount,setParticipantsCount] = useState(0);
-    const [friendParticipants,setFriendParticipants] = useState([]) //user_fullnames
+    const [friendParticipants,setFriendParticipants] = useState([]) //user_fullnames, + ja
     const [appsCountsMap,setAppsCountsMap] = useState(new Map()) //Map: (appname,count )
 
     const [isUploadMode,setIsUploadMode] = useState(false);
 
     //buttons    
-    const isDay = [Day.OneShot,Day.OhPreview,Day.ThrowBack].find(day=>TimeFor.Day(day,weekNumber) && !amIViewLocal(day.toString()))
+    const currDayEvent = useMemo(()=> myDayEvents
+        .filter(event=>event.checkPermissions({friends:!friendsDisabled,screenka:!screenkaDisabled}))
+        .filter((event)=> event.hasPage && event.isTime())
+        .filter(event=>event !==DayEvent.DayUploads)?.at(0), //DayUploads nizej
+    [myDayEvents,friendsDisabled,screenkaDisabled]) 
+
+    const isCurrDayEventDisabled = useMemo(()=>!Event.canViewPage(currDayEvent),[currDayEvent])
+
+    const isDayUploads = useMemo(()=> myDayEvents.find(event=>event === DayEvent.DayUploads && event.isTime() )!=null ,[myDayEvents]) 
+
     const [isRnShotData,setIsRnShotData] = useState();
+
     const [isScreenka,setIsScreenka] = useState(false);
 
-   
     useEffect(()=>{
-        const loadParticipants = async (me,week_participants)=>{
+        const loadParticipants = async (user,friends,week_participants)=>{
             if(!week_participants) return;
         
-            let friends_fullnames = getMyFriendsFullnames();
-            let friends_participants_fullnames = week_participants.filter(parti=>friends_fullnames.includes(parti) || parti===me.fullname );
-            setFriendParticipants( [...friends_participants_fullnames] )
+            let friends_participants_fullnames = week_participants.filter(parti=>friends.includes(parti));
+            if(week_participants.includes(user.fullname)) friends_participants_fullnames.push(user.fullname);//!
+            setFriendParticipants( friends_participants_fullnames)
             setParticipantsCount(week_participants.length)
         }
 
-        loadParticipants(me,week?.participants)
-    },[week?.participants]) // eslint-disable-line react-hooks/exhaustive-deps
+        loadParticipants(user,getMyFriends(),week?.today_participants)
+    },[week?.today_participants]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
-        const loadRnShot = async (me,week_latest_map)=>{
-            if(week_latest_map.size===0)return;
-            if(amIViewLocal("rnshot"))return;
-            let uploader = week_latest_map.get("user");
-            if(uploader===me.fullname) return;
-            if(!TimeFor.RnShot(week_latest_map.get("date"))) return;
-            if(!getMyFriendsFullnames().includes(uploader)) return;
-            PostService.getUserLatestPost(uploader).then((post)=>{
-                setIsRnShotData({user_fullname:uploader,post_id:post.id})})
+        const loadRnShot = async (me_fullname,week_latest)=>{
+            if(week_latest!==null)return;
+            let uploader = week_latest?.user;
+            if(uploader==null) return;
+            if(uploader===me_fullname) return;
+            if(!Event.canViewPage(CustomEvent.RnShot,{date:week_latest?.date})) return;
+            if(!getMyFriends().includes(uploader)) return;
+            getFriendLatestPost(uploader).then((post)=>{
+                if(post) setIsRnShotData({user_fullname:uploader,post_id:post.id})})
             }
 
-        if(week?.latest_map) loadRnShot(me,week.latest_map);
-    },[week?.latest_map])// eslint-disable-line react-hooks/exhaustive-deps
+        if(week?.latest && isRnShotEvent) loadRnShot(user.fullname,week.latest);
+    },[week?.latest,isRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
 
+    const rnAppName = useMemo(()=>{
+        if(isRnShotEvent && CustomEvent.RnShot.isTime({date:week?.latest?.date})) return week?.latest?.app
+        return null;
+    },[week?.latest,isRnShotEvent]) 
+    
     useEffect(()=>{
         const sortHomeApps = (appsMap=new Map())=>{
             const isFirstInGroup=(arr,app)=>{
@@ -104,88 +118,70 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
                 setHomeApps(copy)
             }   
         }
-
         sortHomeApps(appsCountsMap)
     },[appsCountsMap])// eslint-disable-line react-hooks/exhaustive-deps
     
 
+    //CASE 1
     useEffect(()=>{
-            if(week) setAppsCountsMap(week.apps_counts_map);
-    },[week?.apps_counts_map]) // eslint-disable-line react-hooks/exhaustive-deps
+        if(week) setAppsCountsMap(week.today_apps_counts);
+    },[week?.today_apps_counts]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    //CASE 2
     const tryGetMyAppsCounts = async (force=false)=>{
-        if(!week && me && ((!isBottomTab() && isUploadMode )|| force) ) {
+        if(!week && user && ((!isBottomTab() && isUploadMode )|| force) ) {
             let map = await getMyAppsCounts();
             setAppsCountsMap(map);
-            if(map.size!==0) {setParticipantsCount(1);setFriendParticipants([me.fullname])}
+            if(map.size!==0) {setParticipantsCount(1);setFriendParticipants([user.fullname])}
     } }
     useEffect(()=>{tryGetMyAppsCounts(true)},[]) // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(()=>{tryGetMyAppsCounts(); },[isBottomTab()]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
-        const loadScreenka = async (host,week)=>
+        const loadScreenka = async (week)=>
         {
-            if(TimeFor.Screenka(week))
-            {
-                //isButtonScreenkaDisabled
-                if(host==null) return true;
-    
-                let res = amIScreenkaViewLocal(host.id);
-                if(!res) await delay(2000);
-                setIsScreenka(true)
+                if( CustomEvent.Screenka.isTime({week:week})) 
+                {
+                    if(Event.canViewPage(CustomEvent.Screenka,{week:week})) await delay(2000);
+                    setIsScreenka(true)
+                }
             }
-        }
 
-        if(host && week) loadScreenka(host,week);
-    },[week]) // eslint-disable-line react-hooks/exhaustive-deps
+        if(week && isScreenkaEvent) loadScreenka(week);
+    },[week,isScreenkaEvent]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const getApps = ()=>{
+    const apps = useMemo(()=>{
         return isUploadMode? uploadApps.current : homeApps.slice(0,HOME_APPS_SIZE);
-    }
+    },[isUploadMode,homeApps])
 
     const handleAppClick=(app)=>{
         if(!isUploadMode) setBottomTab({id:0,object:app,total_uploads: appsCountsMap.get(app.name)?appsCountsMap.get(app.name):0})
-        else setBottomTab({id:1,object:app})
+        else setBottomTab({id:1,object:app,app_type: getAppType(app,host)})
     }
+
     const handleUserClick=(user_fullname)=>{
-        let since_week = datesWeekDelta(host.start_date,host.members_map.get(user_fullname)?.join_date);
-        setBottomTab({id:2,object:user_fullname,since_week:since_week, role: host.members_map.get(user_fullname)?.role});
-    }
-
-    const getNotificationValue=(app)=>{
-        if(isUploadMode) return "+";
-        return appsCountsMap.get(app.name);
-    }
-
-    const defaultClassName=()=>{
-        return "home-blur-dark-pre "+(isBottomTab()?"home-blur-dark":"")
-    }
-    const appClassName = (app)=>{
-        let res =  "home-blur-dark-pre ";
-        if(isBottomTab())
+        if(host==null)  setBottomTab({id:2,object:user_fullname,since_week:0});
+        else
         {
-            if(equalObject(app)) res+="home-scale-app";
-            else  res+= "home-blur-dark"
-        } 
-        return res;
+            let since_week = datesWeekDelta(host.start_date,host.subscribers.get(user_fullname)?.join_date);
+            setBottomTab({id:2,object:user_fullname,since_week:since_week, role: host.subscribers.get(user_fullname)?.role});
+        }
     }
-    const userClassName=(user_fullname)=>{
-    let res =  "home-blur-dark-pre ";
-    if(isBottomTab())  if (!equalObject(user_fullname)) res+= "home-blur-dark"
-    return res;  }
 
-
+    const defaultClassName=useMemo(()=>{
+        return "home-blur-dark-pre "+(isBottomTab()?"home-blur-dark":"")
+    },[isBottomTab])
+   
     /* BUTTONS START */
 
-    const onDayClick = (day)=> {navigate(`day/${day.name}`)}
+    const onDayEventClick = (event)=> {navigate(`/event/${event.toString()}`)}
 
-    const onRnShotClick=()=>{   navigate(`post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/rnshot`);  }
+    const onRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${CustomEvent.RnShot.toString()}`);  }
     
-    const isButtonScreenkaDisabled = useConst(()=>{
-        if(host===null) return true;
-        let res = amIScreenkaViewLocal(host.id);
-        return res;  
-    });
+    const isButtonScreenkaDisabled = useMemo(()=>{
+        if(screenkaDisabled || !isScreenkaEvent) return true;
+        return !Event.canViewPage(CustomEvent.Screenka,{week:true});
+    },[host?.id, isScreenkaEvent]);
 
     const onButtonScreenkaClick = ()=>{
         if(host==null) return;
@@ -201,66 +197,50 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
 
     return (
     <div className={"home "+( isBottomTab()?'noclick':"")}>
-        <div className={defaultClassName()} >
+        <div className={defaultClassName} >
             <h1 className='home-title'>
                 <span>WEEK</span> 
                 #{weekNumber?weekNumber:0}
-                <ButtonPageNext   onClick={()=>{if(week!=null && weekNumber!==null) onAboutWeekClick()}}  disabled={(week==null || weekNumber===null)}/>
+                <ButtonNextPage style={(week==null || weekNumber==null)?{"opacity":0}:{}} onClick={(week==null || weekNumber==null)?(()=>{}):onAboutWeekClick}/>
             </h1>
         </div>
 
-        {isDay &&
-        <div className={defaultClassName()+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
-            <ButtonText onClick={()=>onDayClick(isDay)} day={isDay} style={buttonStyle} text={isDay.name.toUpperCase()}/>
+        {currDayEvent &&
+        <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
+            {currDayEvent !== DayEvent.WeekUploads && <ButtonText disabled={isCurrDayEventDisabled} onClick={()=>onDayEventClick(currDayEvent)} style={buttonStyle} text={currDayEvent.name.toUpperCase()}/>}
+            {currDayEvent === DayEvent.WeekUploads &&<ButtonWeekUploads disabled={isCurrDayEventDisabled} onClick={()=>onDayEventClick(currDayEvent)}  style={buttonStyle}/>}
         </div>}
 
-        {isRnShotData &&
-        <div className={defaultClassName()+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
+        {isRnShotData && !currDayEvent &&
+        <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
             <ButtonRn onClick={onRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
         </div>}
-
-        {TimeFor.WeekUploads() &&
-        <div className={defaultClassName()+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
-            <ButtonWeekUploads onClick={()=>{navigate("/uploads/week")}} style={buttonStyle}/>
-        </div>}
     
-        {isScreenka &&
-        <div className={defaultClassName()+" home-button-effect"} style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}} >
+        {isScreenka && !isRnShotData && !currDayEvent &&
+        <div className={defaultClassName+" home-button-effect"} style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}} >
             <ButtonScreenka disabled={isButtonScreenkaDisabled} onClick={onButtonScreenkaClick} style={buttonStyle}/>
         </div>}
-            
-        <div className={defaultClassName()} >
-            <ButtonPlus disabled={!TimeFor.Upload()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
-        </div>
-       
-        <div className='home-app-conteiner'  style={{"gridTemplateColumns":"repeat(auto-fill, "+height+"px)"}}>
-            {getApps().map(app => 
-            <div key={app.name} className={appClassName(app)} >
-                <App
-                onClick={()=>handleAppClick(app)}
-                notificationValue = {getNotificationValue(app)}
-                notificationBlue={week?.latest_map.get("app") === app.name && TimeFor.RnShot(week.latest_map.get("date"))}
-                application={app} 
-                height={height} />
-            </div>
-        )}
-        </div>
 
-        {!isUploadMode && <div className='home-user-conteiner'>
-            {friendParticipants.map((fullname) => (
-            <div key={fullname} className={userClassName(fullname)} >
-                 <User user_fullname={fullname} height={userHeight} onClick={()=>handleUserClick(fullname)}/>
-            </div>
-            ))}
-            {participantsCount-friendParticipants.length>0 && 
-            <div className={defaultClassName()} >
-                <User count={participantsCount-friendParticipants.length} height={userHeight}/>
-            </div>}
-        </div>}
+        <div className={defaultClassName} >
+            <ButtonPlus disabled={!isUploadEvent || !CustomEvent.Upload.isTime()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
+        </div>
+        
+        <AppContainer 
+            apps={apps} notificationCountsMap={appsCountsMap} disabled={!user.preferences.me} 
+            appHeight={height} onAppClick={handleAppClick} appClassName='home-blur-dark-pre' 
+            specialAppName={getObject()?.name} specialClassName='home-scale-app' notSpecialClassName='home-blur-dark'
+            orangeAppName={rnAppName} isUploadMode={isUploadMode} 
+        />
+    
+        {user.preferences.me && !isUploadMode && <UserContainer
+            user_fullnames={friendParticipants} more={participantsCount-friendParticipants.length}
+            userHeight={userHeight} onUserClick={handleUserClick} userClassName='home-blur-dark-pre'
+            specialUserFullname={getObject()?.fullname} notSpecialClassName='home-blur-dark'
+        />}
        
         {!isUploadMode && isBottomTab()  &&<div style={{height:"290px"}}></div>}     
-        {!isUploadMode && !isBottomTab() && <footer className='center'><A color={false} onClick={()=>setBottomTab({id:4})}>SCREENKA Ⓡ</A></footer>}
-        {isUploadMode && <footer className='center'><A underline href="/uploads/day">manage uploads</A></footer>}
+        {!isUploadMode && !isBottomTab() && <footer className={'center '+(!user.preferences.me ?" text-shine":"")}><A nocolor onClick={()=>setBottomTab({id:4})}>SCREENKA Ⓡ</A></footer>}
+        {isUploadMode && isDayUploads && <footer className='center'><A underline onClick={()=>onDayEventClick(DayEvent.DayUploads)} >manage uploads</A></footer>}
         
     </div>
 
@@ -269,7 +249,8 @@ const Home = ({onAboutWeekClick,weekNumber,week}) => {
 export default Home;
 
 const loadApps=(me,host,week)=>{
-    
+    if(!me || !host || !week) return DEFAULT_APP_NAMES.map(name=>AppClass.get(name));
+
     var apps = [...host.popular_apps,...me.personalized_apps];
     
     if(week?.extra_apps!=null) apps = apps.concat(week?.extra_apps);
@@ -277,4 +258,12 @@ const loadApps=(me,host,week)=>{
     apps = apps.map(app=>AppClass.get(app));
     apps.sort((a,b)=>a.label-b.label);
     return apps;
+}
+
+const getAppType = (app,host)=>{
+    if(!host) return AppType.Popular;
+    if(host.personalized_apps.includes(app.name)) return AppType.Personalized;
+    if(host.popular_apps.includes(app.name)) return AppType.Popular;
+    if(host.group_apps.includes(app.name)) return AppType.Group;
+    return AppType.SuperPersonalized;
 }

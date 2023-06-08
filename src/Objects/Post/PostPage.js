@@ -1,42 +1,57 @@
-import React, { useState } from 'react';
-import {  useParams } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import {  useLocation, useNavigate, useParams } from 'react-router-dom';
 import Post from './Post';
-import { Day } from '../Day/Day';
 import { AuthContext } from '../../Contexts/AuthContext';
-import TimeFor from '../TimeFor';
 import { useContext } from 'react';
 import NothingToShow from '../../Pages/NothingToShow';
+import { DayEvent } from '../Event/DayEvent';
+import { ButtonNextPage, ButtonPrevPage } from '../../Components/Buttons';
+import { Event } from '../Event/Event';
+import { CustomEvent } from '../Event/CustomEvent';
 
-const PostPage = ({oneshot,rnshot,preview}) => {
+const PostPage = () => {
 
-    const {user_fullname,id} = useParams();
-    const {getMe,setMyViewLocal,amIViewLocal,getMyHostWeekNumber} = useContext(AuthContext);
-    const day = oneshot?Day.OneShot:null;
+    const location = useLocation();
+    const nextPages = location.state?.nextPages;
+    const navigate = useNavigate();
+    const {user_fullname,id,event} = useParams();
+    const event_ = useMemo(()=>Event.fromString(event),[event]);
+    const isOneShot = useMemo(()=>event_ === DayEvent.OneShot,[event_]);
+    const isRnShot = useMemo(()=>event_ === CustomEvent.RnShot,[event_]);
 
     const isNothingToShow = ()=>{
-        if(day && (!TimeFor.Day(day,getMyHostWeekNumber()) || amIViewLocal(day.toString()))) return true;
-        if(rnshot && amIViewLocal("rnshot")) return true;
-        if(preview && user_fullname !== getMe().fullname) return true;
+        if(!user_fullname || !id) return true;
+        if(isOneShot && !Event.canViewPage(event_)) return true;
         return false; }
     const [nothingToShow,setNothingToShow] = useState(isNothingToShow());
 
     const handleOnLoad = (post=null)=>{
         if(post==null) return;
-        else if(rnshot && !TimeFor.RnShot(post.upload_date)) setNothingToShow(true);
-        else if(day && post.comment_user_fullname!==null) setNothingToShow(true);
-        else if(day || rnshot) setMyViewLocal(day?day.toString():"rnshot");
+        else if(isRnShot && !Event.canViewPage(event_,{date:post.upload_date})) setNothingToShow(true);
+        else if(isOneShot && post.view!==null) setNothingToShow(true);
+        else if(isOneShot || isRnShot) Event.setView(event_);
     }
 
-    const getTitle = ()=> day?day.name.toUpperCase():(rnshot?"RN-SHOT":"Post")
-    const getDescription =()=>day?day.description:(rnshot?"- z ostatniej chwili!":null)
+    const title = useMemo(()=>event_ ? event_.name.toUpperCase():"User Post",[event_])
+
+    const handleOnBackClick = ()=>{
+        if (!nextPages || nextPages.length===0 || window.confirm("Are you sure you want to leave?"))  navigate('/');
+    }
+
+    const handleOnNextClick = ()=>{
+        navigate(nextPages[0],{state:{nextPages:nextPages.slice(1)}});
+    }
 
     if(nothingToShow) return <NothingToShow/>
     return ( <div>
 
-        <h1 style={{marginLeft: "15px",marginTop:"25px"}}>{getTitle()}</h1>
-        {getDescription() &&<h4 style={{textAlign:"right",marginRight:"15px",marginBottom:"20px"}}>{getDescription()}</h4>}
+        <h2>
+            <ButtonPrevPage onClick={handleOnBackClick}/>
+            {title}
+            {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
+        </h2>
 
-        <Post id={id} user_fullname={user_fullname} tryComment={day || rnshot} hideComment={preview} onLoad={handleOnLoad}/>
+        <Post id={id} user_fullname={user_fullname} setView={isOneShot || isRnShot} onLoad={handleOnLoad}/>
     </div> );
 }
  

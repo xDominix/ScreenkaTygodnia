@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Contexts/AuthContext';
 import { BottomTabProvider } from '../../Contexts/BottomTabContext';
@@ -9,25 +9,31 @@ import AboutWeek from './about-week/AboutWeek';
 const Start = () => {
     const navigate = useNavigate();
 
-    const {getMe,getMyHostWeekNumber,weekState} = useContext(AuthContext)
-
-    const weekNumber = useRef(getMyHostWeekNumber());
+    const {user} = useContext(AuthContext)
 
     const [aboutToggled,setAboutToggled] = useState(false);
-    
+    const [aboutToggledDelay,setAboutToggledDelay] = useState(false);
+
     useEffect(()=>{
-        if(getMe()==null) {navigate("/login");return;}
-    },[]) // eslint-disable-line react-hooks/exhaustive-deps
+      const timeout = setTimeout(()=>{
+        setAboutToggledDelay(aboutToggled);
+      },200)
+      return ()=>clearTimeout(timeout);
+    },[aboutToggled])
+
+    useEffect(()=>{
+        if(user==null) {navigate("/login");return;}
+    },[user])
 
     return ( 
         <div className='start'>
           <BottomTabProvider>
-          <div className="start-pages" style={aboutToggled?{transform:"translateX(-50%)"}:{}}>
+          <div className="start-pages" style={(aboutToggledDelay && aboutToggled)?{transform:"translateX(-50%)"}:{}}>
             <div>
-              {getMe() && <Home weekNumber={weekNumber.current} week={weekState} onAboutWeekClick={()=>setAboutToggled(true)}/>}
+              {user && <Home onAboutWeekClick={()=>setAboutToggled(true)}/>}
             </div>
             <div>
-                {weekState && <AboutWeek weekNumber={weekNumber.current} week={weekState} onClose={()=>setAboutToggled(false)}/>}
+              { (aboutToggled || aboutToggledDelay) && <AboutWeek onClose={()=>setAboutToggled(false)}/>}
             </div>
             
         </div>
