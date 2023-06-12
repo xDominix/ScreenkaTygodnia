@@ -1,6 +1,6 @@
 import "./AboutWeek.css"
 import React, { useContext, useMemo, useState } from 'react';
-import { getMonday , isDayToday, MonthNames, WeekDay} from "../../../aFunctions";
+import { dateToWeekDay, GET_NOW, getMonday , isDayToday, MonthNames, WeekDay} from "../../../aFunctions";
 import { BottomTabContext } from "../../../Contexts/BottomTabContext";
 import A from "../../../Components/A";
 import { ButtonPrevPage } from "../../../Components/Buttons";
@@ -10,9 +10,8 @@ const AboutWeek = ({onClose}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
     const {week,weekNumber,myDayEvents,friendsDisabled,screenkaDisabled,myRnShotEvent} = useContext(AuthContext);
 
-    const everyDayEvents= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null),[myDayEvents?.length])
     const weekDayEvents= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,events:myDayEvents.filter(event=>event.weekDay === weekDayIndex)}}),[myDayEvents?.length])
-
+    const everyDayEvents= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null) ,[myDayEvents?.length])
     const [isDayLetter,setIsDayLetter] = useState(true)
 
     const handleDayNameClick =(day,event)=>{
@@ -69,13 +68,15 @@ const AboutWeek = ({onClose}) => {
             </div>
                )}
 
-                <div >
-                    <div>
+                <div style={{width:"100%"}}>
+                    <div className="noscroll" style={{width:"100%",overflow:"auto",direction: "rtl"}}>
+                        <div style={{whiteSpace:"nowrap"}}>
                         {everyDayEvents.map((event,index)=> 
                         <A key={index} disabled={!event.checkPermissions({me:true,friends:!friendsDisabled,screenka:!screenkaDisabled})} onClick={()=>setBottomTab({id:3,object:event})}>
                                 {index!==0 && ", "}
                                 {event.name.toUpperCase()}
                         </A>)}
+                    </div>
                     </div>
                     <span className="noselect bcolor-green-solid color-black"></span>
                 </div>
@@ -94,3 +95,14 @@ const AboutWeek = ({onClose}) => {
 }
  
 export default AboutWeek;
+/*.filter(everyday_event => {
+        //jesli sie naklada weekday z everyday to priorytet wiekszy ma weekday, wiec dlatego wyzucamy to z informacji aboutWeeka
+        let todayName = dateToWeekDay(GET_NOW());
+        for (const weekday_event of weekDayEvents.find(obj=>obj.day_name === todayName).events)
+        {
+            if(weekday_event.fromHour>= everyday_event.fromHour && weekday_event.fromHour< everyday_event.toHour ) return false; //przecina sie toHour
+            if(weekday_event.toHour> everyday_event.fromHour && weekday_event.toHour <= everyday_event.toHour ) return false; //przecina sie fromHour
+            if(weekday_event.fromHour< everyday_event.fromHour && weekday_event.toHour > everyday_event.toHour ) return false; //jest w srodku
+        }
+        return true;
+    } */

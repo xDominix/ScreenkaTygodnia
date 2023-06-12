@@ -26,14 +26,14 @@ export const WeekDay = {"Monday":0, "Tuesday":1, "Wednesday":2, "Thursday":3, "F
 
 export const toWeekDay = (obj)=>{//string or number
   if(typeof obj === 'string')
-    return WeekDay[obj];
+    return WeekDay[obj]; //tu numerek zwraca  lool
 
   if(obj>=0 && obj<=6)
-    return Object.keys(WeekDay).find(key => WeekDay[key] === obj)
+    return Object.keys(WeekDay).find(key => WeekDay[key] === obj) //tu nazwe zwraca loool
   return undefined
 }
 
-export const dateToWeekDay = (date) =>{//return string 
+export const dateToWeekDay = (date=GET_NOW()) =>{//return string 
   let index= (date.getDay()+6)%7;
   return toWeekDay(index);
 }

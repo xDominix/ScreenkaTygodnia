@@ -8,13 +8,13 @@ export const EventFor = {me:0,friends:1,screenka:2}
 export const EventViewsTill ={Week:0,Day:1,FifteenMinutes:2}
 
 
-//sortowanie po czasie, then extenderach
+//kolejnosc ma znaczenie, wybieramy pierwszy result w home
 const DayEvents = [
     DayEvent.ClearMind, DayEvent.ClearMindForMe, //mon
     DayEvent.OhPreview, //thu
     DayEvent.ThrowBack, //fri
     DayEvent.DeadLine,DayEvent.WeekUploads, //sun    //DayEvent.Reset HIDDEN
-    DayEvent.OneShot, DayEvent.MorningShot, DayEvent.DayUploads //everyday
+    DayEvent.MorningShot, DayEvent.DayUploads, DayEvent.OneShot,  //everyday     //maja najmniejszy priorytet 
 ];
 const CustomEvents = [
     CustomEvent.ManageUploads,

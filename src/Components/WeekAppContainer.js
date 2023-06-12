@@ -15,7 +15,7 @@ const WeekAppContainer = ({host_id, week_name}) => {
     },[host_id,week_name]);
 
     const apps = useMemo(()=>{
-        if(!week) return [AppClass.Default,AppClass.Default,AppClass.Default];
+        if(!week) return  new Array(APPS_SIZE).fill(AppClass.Default);
         let arr= Object.entries(week.apps_counts)
             .sort((a, b) => b[1] - a[1])
             .slice(0, APPS_SIZE)

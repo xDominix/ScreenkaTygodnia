@@ -41,8 +41,8 @@ const Home = ({onAboutWeekClick}) => {
     //buttons    
     const currDayEvent = useMemo(()=> myDayEvents
         .filter(event=>event.checkPermissions({friends:!friendsDisabled,screenka:!screenkaDisabled}))
-        .filter((event)=> event.hasPage && event.isTime())
-    [myDayEvents,friendsDisabled,screenkaDisabled]) 
+        .filter((event)=> event.hasPage && event.isTime())?.at(0)
+    ,[myDayEvents,friendsDisabled,screenkaDisabled]) 
 
     const isCurrDayEventDisabled = useMemo(()=>!Event.canView(currDayEvent),[currDayEvent])
 
