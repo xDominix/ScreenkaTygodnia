@@ -43,11 +43,15 @@ export const ButtonNextPage=({style,onClick,focus,disabled})=>{
         style={{...style, float:"right",...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
     >{">"}</span>)
 }
-export const ButtonPrevPage=({style,onClick,disabled})=>{
+export const ButtonPrevPage=({style,disabled,onClick=null,gohome=false,no_alert=false})=>{
     const navigate = useNavigate();
-    const defaultClick = ()=>navigate(-1);
+    const handleClick = ()=> {
+        if(onClick) onClick();
+        else if(!gohome) navigate(-1);
+        else if(no_alert || window.confirm("Are you sure you want to leave?"))  navigate('/');
+    }
     return (<span className='button-page'
-    onClick={!disabled?(onClick?onClick:defaultClick):undefined}
+    onClick={!disabled?(handleClick):undefined}
     style={{...style,...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
     >{"<"}</span>)
 }

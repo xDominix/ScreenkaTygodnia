@@ -1,6 +1,8 @@
 import { MAX_SCREENKA, WeekDay, isDayToday, isLessThenMinutes } from "../../aFunctions";
 import { DayEvent } from "./DayEvent";
-import { EventFor, EventViewsTill, Event } from "./Event";
+
+const EventFor = {me:0,friends:1,screenka:2}
+const EventViewsTill ={Week:0,Day:1,FifteenMinutes:2}
 
 export class CustomEvent {
     constructor(name, description, for_=null,fromWeekNumber=0,//implements event
@@ -17,9 +19,12 @@ export class CustomEvent {
 
     static Upload = new CustomEvent("Upload","- uchwyć chwilę.",EventFor.me,0)
 
-    static Screenka = new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,1,MAX_SCREENKA,EventViewsTill.Week)
+    static Screenka = new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,2,MAX_SCREENKA,EventViewsTill.Week)
 
-    static RnShot = new CustomEvent("Rn-Shot","- z ostatniej chwili! Podglądnij ostatniego posta innego uczestnika do 15min po dodaniu.",EventFor.friends,0,1,EventViewsTill.FifteenMinutes)
+    static RnShot = new CustomEvent("Rn-Shot","- z ostatniej chwili! Podglądnij najnowszego posta innego uczestnika do 15min po dodaniu.",EventFor.friends,0,1,EventViewsTill.FifteenMinutes)
+
+    static ManageUploads = new CustomEvent("Manage Uploads","- zarządzaj swoimi uploadami.",EventFor.me,0)
+   
 
     checkPermissions = ({me,friends,screenka}) => (this.for === EventFor.me && me === true) ||  (this.for === EventFor.friends && friends === true)  ||  (this.for === EventFor.screenka && screenka === true); //implements event
     //implements event
@@ -31,13 +36,14 @@ export class CustomEvent {
                 return props.week!=null && (DayEvent.ClearMind.isTime() || props.week.force_screenka)
             case(CustomEvent.RnShot): //date
                 return props.date!=null && isLessThenMinutes(props.date,15);
+            case(CustomEvent.ManageUploads):
+                return true;
             default:
                 return false;
             }
     }
 
     toString=()=> this.name.replace("-","").toLowerCase() //implements event
-    static fromString = (string)=> Event.getCustomEvents(null,null,true).find(event=>event.toString()===string); //implements event
 
     getSubtitle= ()=>"";  //implements event
     getNote = ()=>"";   //implements event

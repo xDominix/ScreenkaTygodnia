@@ -1,7 +1,7 @@
 //CONSTS
 export const MAX_SCREENKA = 3;
 export const DAY_EVENT_POSTS = 3;
-export const NOW = ()=> new Date(Date.now()) ; //new Date(2021,3,3,10,10)
+export const GET_NOW = ()=> new Date(Date.now()) ; //new Date(2021,3,3,10,10)
 
 //PATH
 export const getPath=(file)=>{
@@ -43,12 +43,12 @@ export const MonthNames = ["January", "February", "March", "April", "May", "June
 "July", "August", "September", "October", "November", "December"
 ];
 
-export const isDayToday=(dayIndex)=>{ return (NOW().getDay()+6)%7 === dayIndex;}
+export const isDayToday=(dayIndex)=>{ return (GET_NOW().getDay()+6)%7 === dayIndex;}
 
-export const dayIndexToday=()=>{ return (NOW().getDay()+6)%7 }
+export const dayIndexToday=()=>{ return (GET_NOW().getDay()+6)%7 }
 
 export function getMonday(d=null) {
-    d =d? new Date(d): NOW();
+    d =d? new Date(d): GET_NOW();
     d.setHours(0,0,0,0);
     var day = d.getDay(),
         diff = d.getDate() - day + (day === 0 ? -6:1); // adjust when day is sunday
@@ -65,7 +65,7 @@ export function weekEqual(date1, date2) {
 }
 
 const isBetweenHour = (fromHour,toHour)=>{
-    let hour=NOW().getHours();
+    let hour=GET_NOW().getHours();
     return fromHour<=hour && hour<toHour;
 }
 
@@ -76,10 +76,10 @@ export const isTime=(weekIndex,fromHour,toHour) =>{
     return true;
 }
     
-export const dateToHourStringPretty = (date)=>{ //prettier version of date
-    if(isLessThenMinutes(date,15)) return "NOW";
-    if(isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN`;
-    if(isLessThenMinutes(date,60+59)) return "1H";
+export const dateToHourString = (date, pretty=false)=>{ //prettier version of date
+    if(pretty && isLessThenMinutes(date,15)) return "NOW";
+    if(pretty && isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN`;
+    if(pretty && isLessThenMinutes(date,60+59)) return "1H";
     return (
         date.getHours().toLocaleString('en-US', { minimumIntegerDigits: 1, useGrouping: false })+ ":"+ 
         date.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }))
@@ -99,14 +99,14 @@ export const isLessThenMinutes = (date,minutes)=>{
     return minutes >= diff;
 }
 
-export const datesMinuteDifference=(date_past,date=NOW())=>{
+export const datesMinuteDifference=(date_past,date=GET_NOW())=>{
     var diff = date - date_past;
     return Math.floor((diff/1000)/60);
 }
 
 export const YY_MMDD_HHMM=(date)=>{
     function pad2(n) {  return (n < 10 ? '0' : '') + n; }
-    if(!date) date=NOW();
+    if(!date) date=GET_NOW();
     return (date.getFullYear()%100) +"_"+
         pad2(date.getMonth() + 1) + 
         pad2(date.getDate()) +"_"+

@@ -1,4 +1,4 @@
-import { NOW, dateToWeekDay, toMap } from "../aFunctions";
+import { GET_NOW, dateToWeekDay, toMap } from "../aFunctions";
 
 export class Week{
     constructor(  name,start_date,  description,emoji, //required
@@ -18,7 +18,8 @@ export class Week{
         //realtime
         this.today_participants = [];
         this.today_apps_counts = new Map(); //map
-        this.today_total_uploads = 0;
+        this.apps_counts = new Map(); //map, total counts for app, ala week_apps_counts
+        this.total_uploads = 0; // ala week_total_uploads
         this.latest = {}; // {date, user, app}
         this.screenka_views = new Map(); // user_fullname => view_date
         
@@ -27,19 +28,31 @@ export class Week{
         this.events = []; // ref      
     }
 
-    static DefaultWeek = new Week("Week",NOW(),"Default Week","")
+    static DefaultWeek = new Week("Week",GET_NOW(),"Default Week","")
 
     setTodayAppsCounts=(day_apps_counts)=>{
+        const calcAppsCounts = (day_apps_counts)=>{
+            return Object.values(day_apps_counts).reduce((acc, day) => {
+                Object.entries(day).forEach(([app, count]) => {
+                    if (acc.has(app)) acc.set(app, acc.get(app) + count);
+                    else acc.set(app, count); 
+                });
+                return acc;
+            }, new Map());
+        }
         if(!day_apps_counts) return;
-        let apps_counts = day_apps_counts[dateToWeekDay(NOW())];
-        if(apps_counts) this.today_apps_counts = toMap(apps_counts);
-        if(apps_counts) this.today_total_uploads = Object.values(apps_counts).reduce((acc, value) => acc + value, 0)
+        //additional
+        this.total_uploads = Object.values(day_apps_counts).reduce((acc, apps_counts)=> acc + Object.values(apps_counts).reduce((acc, counts) => acc + counts, 0),0);
+        this.apps_counts = calcAppsCounts(day_apps_counts);
+        //today
+        let today_apps_counts = day_apps_counts[dateToWeekDay(GET_NOW())];
+        if(today_apps_counts) this.today_apps_counts = toMap(today_apps_counts);
         return this;
     }
 
     setTodayParticipants=(day_participats)=>{
         if(!day_participats) return;
-        let today_participants = day_participats[dateToWeekDay(NOW())];
+        let today_participants = day_participats[dateToWeekDay(GET_NOW())];
         if(today_participants) this.today_participants = today_participants;
         return this;
     }

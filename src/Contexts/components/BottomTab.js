@@ -6,7 +6,7 @@ const BottomTab = ({title,subtitle,image,children,footer,onClose,footerCenter, m
     return ( 
     <div className="bottom-tab bcolor-dark-gray-solid" style={maxHeight?{height:"calc(100% + (-100px))",minHeight:"400px", }:{minHeight:"350px"}}>
         <div className='head'>
-            {image &&  <img src={image} alt=""/>}
+            {image &&  <img src={image} alt="main" style={{marginBottom:"5px"}}/>}
             <div style={image?{flexDirection:"column"}:{}}>
                 <h3 style={image?{marginBottom:"5px"}:{}} className="color-white">{title}</h3>
                 <h4 style={image?{marginTop:"0"}:{}} className={image?"subtitle":'subtitle opacity'} >{subtitle}</h4>

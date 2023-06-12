@@ -14,7 +14,7 @@ const MiniPostsPagePlus = () => {
     const {user_fullname,host_id,week_name,event} = useParams(); // event_string
     const navigate = useNavigate();
 
-    const day_event = useMemo(()=>DayEvent.fromString(event),[event]);
+    const event_ = useMemo(()=>Event.fromString(event),[event]);
     const {getMyPastWeekPosts,getFriendPastWeekPosts} = useContext(AuthContext)
     const [posts,setPosts] = useState(null);
 
@@ -29,11 +29,11 @@ const MiniPostsPagePlus = () => {
 
 
     useEffect(()=>{
-        if(!day_event || !user_fullname || !host_id || !week_name) navigate("/")
+        if(!event_ || !user_fullname || !host_id || !week_name) navigate("/")
 
-        if(!Event.canViewPage(day_event)) navigate("/");
+        if(!Event.canView(event_)) navigate("/");
 
-        switch(day_event){
+        switch(event_){
             case DayEvent.ThrowBack:
                 getMyPastWeekPosts(week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
@@ -48,22 +48,18 @@ const MiniPostsPagePlus = () => {
     },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
-        if(day_event && posts && posts.length>0) Event.setView(day_event);
+        if(event_ && posts && posts.length>0) Event.setView(event_);
     },[posts]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnNextPageClick = ()=>{
-        let tos = Array.from(postCheckboxMap.current.keys()).map(post_id=> `/post/${user_fullname}/${post_id}/${day_event.toString()}`);
+        let tos = Array.from(postCheckboxMap.current.keys()).map(post_id=> `/post/${user_fullname}/${post_id}/${event_.toString()}`);
         
-        return navigate(tos[0],{state:{nextPages: tos.slice(1)}})
-    }
-
-    const handleOnBackClick = ()=>{
-        if (window.confirm("Are you sure you want to leave?"))  navigate('/');
+        return navigate(tos[0],{replace:true,state:{nextPages: tos.slice(1)}})
     }
 
     return (
         <div>
-            <h2> <ButtonPrevPage onClick={handleOnBackClick}/>{day_event.name?.toUpperCase()}<ButtonNextPage focus disabled={checks===0} onClick={handleOnNextPageClick} /></h2>
+            <h2> <ButtonPrevPage gohome/>{event_.name?.toUpperCase()}<ButtonNextPage focus disabled={checks===0} onClick={handleOnNextPageClick} /></h2>
             
             <MiniPosts posts={posts} title = {`${week_name}`}
             maxChecks={DAY_EVENT_POSTS} 

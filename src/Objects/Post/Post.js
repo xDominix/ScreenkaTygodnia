@@ -4,7 +4,7 @@ import App from '../App/App';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { AppClass } from '../App/AppClass';
-import { dateToHourStringPretty, dateToWeekDay, delay, getPath } from '../../aFunctions';
+import { dateToHourString, dateToWeekDay, getPath } from '../../aFunctions';
 import Checkbox from '../../Components/Checkbox';
 import User from '../User/User';
 import { AuthContext } from '../../Contexts/AuthContext';
@@ -45,12 +45,12 @@ const Post = ({
 
             let app = AppClass.get(post.app), content = post.content;
             switch(app?.format){
-                case Format.LongString: return <h4>{content}</h4>
+                case Format.LongString: return <h4 style={{padding: "3px"}} >{content}</h4>
                 case Format.String: return <h3 className='centered' >{content}</h3>
                 case Format.Url: return <a className='centered'  href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
                 case Format.Path: 
                     let src = await getPathPostContentUrl(user_fullname,content);
-                    return <img alt="post content" className='centered' src={src}></img>;
+                    return <img alt="post content" className='centered' style={{height:"100%",}} src={src}></img>;
                 default: return content;
             }
         }
@@ -84,7 +84,7 @@ const Post = ({
     const getDate = ()=>{
         if(!postState) return "------- --:--";
         let date = postState.upload_date;
-        return `${dateToWeekDay(date).toUpperCase()} ${dateToHourStringPretty(date)}`
+        return `${dateToWeekDay(date).toUpperCase()} ${dateToHourString(date)}`
     }
 
     return ( 
@@ -104,7 +104,7 @@ const Post = ({
                 <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
                     <div className='body' style={isHide?{opacity:"0"}:{}}>
                         <div className='content'>{content?content:<NothingToShow/>}</div>
-                        <h4 className='context'>{postState?.context}</h4>
+                        <h4>{postState?.context}</h4>
                     </div>
                     {isHide && <A bold className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>tap</A>}
                 </div>
@@ -117,7 +117,7 @@ const Post = ({
 export default Post;
 
 export const MiniPost = ({
-        post,hourDate=false,no_crossed_eye=false,
+        post,hourDate=false,crossed_eye=false,
         checkboxDisabled,uncheckedCheckboxDisabled,defaultChecked=null,onCheckboxChange=()=>{},onCheckboxChangeDelay=()=>{},
         edit=false,onEdit=()=>{},delete_=false,onDelete=()=>{},preview=false,onPreview=()=>{}})=>
     {
@@ -160,8 +160,8 @@ export const MiniPost = ({
             <div className='infos abs'>
                 {preview && <div><A onClick={()=>onPreview(post.id)}>Link</A></div>}
                 {delete_ && <div><A red onClick={()=>onDelete(post.id)}>Delete</A></div>}
-                {!post.view &&<img alt='view' style={{height:"16px",filter:"invert(0.6)"}} src={getPath(no_crossed_eye?"view16.png":"no_view16.png")}/>}
-                <div>{hourDate===true? dateToHourStringPretty(post.upload_date): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}</div>
+                {!post.view &&<img alt='view' style={{height:"16px",filter:"invert(0.6)"}} src={getPath(!crossed_eye?"view16.png":"no_view16.png")}/>}
+                <div>{hourDate===true? dateToHourString(post.upload_date,true): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}</div>
             </div>
         </div>
     </div>

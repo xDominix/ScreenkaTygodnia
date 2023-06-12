@@ -3,11 +3,12 @@ import { Host } from "../Objects/Host"
 import { UserClass } from "../Objects/User/UserClass"
 import { Week } from "../Objects/Week"
 import { toMap } from "../aFunctions";
-import { DEFAULT_APP_NAMES } from "./aLocalbase";
+import { DEFAULT_APP_NAMES } from "../Objects/App/AppClass";
 
 export const DEMONOW = new Date(2023,4-1,24,20,17);
 export const DEMONAME = "Demo User" 
 export const DEMOUSERNAME = "demo_user"
+export const DEMOFUNNYNAME = "demo_user"
 
 export const PostRepositoryMap = new Map([
     [DEMONAME,[
@@ -22,15 +23,16 @@ export const PostRepositoryMap = new Map([
     new Post("123","-1","Glassy Week",new Date(2023,4-1,24,14,30),"Spotify","https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO","Hejka!",{me:true,friends:true,screenka:true},null,null,null),
     ]]])
 export const UserRepository = [
-    new UserClass(DEMONAME,DEMOUSERNAME,["-1"],{me:true,friends:true,screenka:true},),//["Maps"]
-    new UserClass("Tola Bajka","bayka",["-1"],{me:true,friends:true,screenka:true}),
-    new UserClass("Mia Muller","miam",["-1"],{me:true,friends:true,screenka:true})
+    new UserClass(DEMONAME,DEMOFUNNYNAME,DEMOUSERNAME,["-1"],{me:true,friends:true,screenka:true},),//["Maps"]
+    new UserClass("Tola Bajka","bayka","bayka",["-1"],{me:true,friends:true,screenka:true}),
+    new UserClass("Mia Muller","miam","miam",["-1"],{me:true,friends:true,screenka:true})
 ]
 
 let week =new Week("Glassy Week",new Date(2023,4-1,24,8,0),"New week, new you. Have fun. We are waiting for some new fresh and dope things! Use your glasses against burning sun! ...","🕶️",null,null,null,true);
 week.today_participants= [DEMONAME,"Mia Muller"];
 week.today_apps_counts =  toMap({Spotify:1,Maps:1,Safari:1,Camera:1});
-week.today_total_uploads = 4;
+week.total_uploads = 4;
+week.apps_counts = toMap({Spotify:1,Maps:1,Safari:1,Camera:1});
 export const WeekRepository =[week];
 
 const subscribers = new Map([
@@ -41,7 +43,7 @@ const subscribers = new Map([
 
 export const HostRepository = [ new Host("-1",DEMONAME,new Date(2023,4-1,10),
 DEFAULT_APP_NAMES,
-["Maps","Instagram"],null,new Map([["FirstGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
+["Maps","Instagram","Pinterest"],null,new Map([["SuperGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
 
 
 

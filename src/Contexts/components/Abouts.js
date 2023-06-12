@@ -13,20 +13,32 @@ import { useNavigate } from 'react-router-dom';
 
 export const AboutScreenka = ({onClose}) => {
 
-    const {friendsDisabled,screenkaDisabled,changeMyPreferences,user} = useContext(AuthContext);
+    const {friendsDisabled,screenkaDisabled,changeMyPreferences,user,getMyGroups} = useContext(AuthContext);
     const userRef = useRef(user);
     
-    const [you, setYou] = useState(userRef.current.preferences.me); 
-    const [friends,setFriends] = useState(userRef.current.preferences.friends); 
-    const [screenka,setScreenka] = useState(userRef.current.preferences.screenka); 
+    const [you, setYou] = useState(); 
+    const [friends,setFriends] = useState(); 
+    const [screenka,setScreenka] = useState(); 
 
+    const [isEditMode,setIsEditMode] = useState(false)
     const [loading,setLoading] = useState(false);
+
+    const myGroups = useRef(getMyGroups());
 
     const title="Screenka";
     const subtitle="app";
     
-    const footer="Tap the tagline to define the app by your own. " //and set up your preferences
+    //const footer="Tap the tagline to define the app by your own. " //and set up your preferences
    
+    useEffect(()=>{
+        if(!isEditMode) 
+        {
+            setYou(userRef.current.preferences.me)
+            setFriends(userRef.current.preferences.friends)
+            setScreenka(userRef.current.preferences.screenka)
+        }
+    },[isEditMode])
+
     const isChanged = ()=> !(userRef.current.preferences.me === you && userRef.current.preferences.friends === friends && userRef.current.preferences.screenka === screenka);
 
     const changePreferences = ()=>{
@@ -34,22 +46,49 @@ export const AboutScreenka = ({onClose}) => {
         Promise.all([changeMyPreferences({me:you,friends:(friends&&you),screenka:(screenka&&you)}),delay(1000)]).then(()=>onClose())
     }
 
+    const getTextAboutMyGroups = ()=>{
+        if(!myGroups.current) return "";
+        return `Your groups: ${myGroups.current.join(", ")}`;
+    }
+
     return (  
         <BottomTab maxHeight onClose={!loading?onClose:()=>{}} 
-        title={title} subtitle={subtitle} footerCenter={footer}  >
-                <h4 style={{fontWeight:"bold",marginTop:"30px"}}>
-                    <span>
-                        <A active={you} onClick={!loading?()=>setYou(!you):()=>{}}>You. </A>
-                        <A active={(friends && you)} onClick={!loading?()=>{if(!friends)setYou(true);setFriends(!friends)}:()=>{}} disabled={friendsDisabled} nocolor={friendsDisabled}>Friends. </A>
-                        <A active={(screenka && you)} onClick={!loading?()=>{if(!screenka)setYou(true);setScreenka(!screenka)}:()=>{}} disabled={screenkaDisabled} nocolor={screenkaDisabled} >And Screenka Tygodnia. </A>
+        title={title} subtitle={subtitle} >
+                <h4 style={{fontWeight:"bold",marginTop:"30px",textAlign:'center'}}>
+                    <span >
+                        {!isEditMode && "\""}
+                        <A 
+                            active={you}    
+                            nocolor={!isEditMode}
+                            onClick={(!loading && isEditMode)?()=>setYou(!you):()=>{}}>
+                            You.
+                        </A> 
+                        <A 
+                            active={(friends && you)}
+                            nocolor={!isEditMode || friendsDisabled} 
+                            onClick={(!loading && isEditMode)?()=>{if(!friends)setYou(true);setFriends(!friends)}:()=>{}} 
+                            disabled={friendsDisabled} > Friends.
+                        </A> 
+                        <A 
+                            active={(screenka && you)} 
+                            nocolor={!isEditMode || screenkaDisabled} 
+                            onClick={(!loading && isEditMode)?()=>{if(!screenka)setYou(true);setScreenka(!screenka)}:()=>{}} 
+                            disabled={screenkaDisabled} > and Screenka Tygodnia.
+                        </A>
+                        {!isEditMode && "\""}
                      </span>
                 </h4>
                 {isChanged() &&<div style={{textAlign:"center"}}><A disabled={loading} onClick={changePreferences} bold>Change </A> </div>}
-                <div className='margin' style={{marginTop:"auto",marginBottom:"30px"}} >
+                <div className='margin' style={{marginTop:"auto",}} >
                     <p style={!you  ? {opacity:0}:undefined}><b>You. </b> Capture the happiness. Upload posts and preview them at the end of the day.</p>
-                    {!friendsDisabled &&<p style={!(friends&&you)  ? {opacity:0}:undefined}><b>Friends. </b> Have fun with your friends. Participate in special events during the week. </p>}
-                    {!screenkaDisabled && <p style={!(screenka&&you)  ? {opacity:0}:undefined} ><b>Screenka Tygodnia. </b>Join the story. Selected uploads can apply for the weekly gazette.</p>}
+                    {!friendsDisabled &&<p style={!(friends&&you)  ? {opacity:0}:undefined}><b>Friends. </b> Have fun with your friends. Participate in special events during the week. {getTextAboutMyGroups()}</p>}
+                    {!screenkaDisabled && <p style={!(screenka&&you)  ? {opacity:0}:undefined} ><b>Screenka Tygodnia. </b>Join the story. Posts you choose can apply for the weekly gazette.</p>}
                 </div>
+
+                <footer className='center' style={{marginTop:0}}>
+                    You can change the tagline by your own.
+                    <A onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}>{!isEditMode?" Edit":" Cancel"}</A>
+                </footer>
             
         </BottomTab>
         );
@@ -164,6 +203,9 @@ export const AboutUserMini = ({user_fullname,since_week,onClose}) => {//role=nul
         getFriend(user_fullname).then(setUser);
     },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    const onDayUploadsClick = ()=>{
+        navigate(`/posts/${user_fullname}/${GET_HOST_ID()}/dayuploads`)
+    }
     const onWeekUploadsClick = ()=>{
         navigate(`/posts/${user_fullname}/${GET_HOST_ID()}/weekuploads`)
     }
@@ -175,7 +217,11 @@ export const AboutUserMini = ({user_fullname,since_week,onClose}) => {//role=nul
             footer={`Since: #${since_week} week`}
             image={srcUrl} 
             onClose={onClose} 
-             >{AM_I_HOST() && <A bold onClick={onWeekUploadsClick}>WEEK</A>}
+             >
+            {AM_I_HOST() && <div>
+                <A bold onClick={onDayUploadsClick}>DAY</A>, 
+                <A bold onClick={onWeekUploadsClick}> WEEK</A>
+            </div>}
         </BottomTab>
     );
 }

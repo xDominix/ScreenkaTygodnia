@@ -6,23 +6,31 @@ import { DayEvent } from '../Objects/Event/DayEvent';
 import {MiniPosts} from '../Objects/Post/MiniPosts';
 import { delay } from '../aFunctions';
 import { Event } from '../Objects/Event/Event';
+import { CustomEvent } from '../Objects/Event/CustomEvent';
 
 const Uploads = () => {
 
     const navigate = useNavigate();
 
-    const {user,getMyDayUploads,getMaxTickets,getMyWeekUploads,changeMyPostPermissions,AM_I_HOST,screenkaDisabled} = useContext(AuthContext)
+    const {user,getMyDayUploads,getMaxTickets,getMyWeekUploads,changeMyPostPermissions,screenkaDisabled} = useContext(AuthContext)
     const {type} = useParams();
 
     const [posts,setPosts]=useState(null);
 
     useEffect(()=>{
-        if(type==="day") {
-            if(!Event.canViewPage(DayEvent.DayUploads)) navigate("/");
+        if(type==="manage") {
+            if(!Event.canView(CustomEvent.ManageUploads)) navigate("/");
             getMyDayUploads().then(setPosts).catch(()=>navigate("/"))
+        } else
+        if(type==="day") {
+            if(!Event.canView(DayEvent.DayUploads)) navigate("/");
+            getMyDayUploads().then((posts)=>{
+                setPosts(posts);
+                if(posts?.length>0) Event.setView(DayEvent.DayUploads);
+            })
         } 
         else if(type==="week") {
-            if(!Event.canViewPage(DayEvent.WeekUploads)) navigate("/");
+            if(!Event.canView(DayEvent.WeekUploads)) navigate("/");
             getMyWeekUploads().then((posts)=>{
                 setPosts(posts);
                 if(posts?.length>0) Event.setView(DayEvent.WeekUploads);
@@ -47,25 +55,20 @@ const Uploads = () => {
     const handleOnPostPreview = (post_id)=>{
         navigate(`/post/${user.fullname}/${post_id}`)
     }
-    const handleOnPostEdit = (post_id)=>{
-        //todo
-    }
 
     return (
         <div>
+            {type==="manage" && <h2> <ButtonPrevPage/>Manage Uploads:</h2>}
             {type==="day" && <h2> <ButtonPrevPage/>Your Day Uploads:</h2>}
             {type==="week" && <h2> <ButtonPrevPage/> Your Week Uploads:</h2>}
 
             <MiniPosts posts={posts} 
-                checkboxesDisabled={!user.preferences.screenka || screenkaDisabled} maxChecks={type==="day"?getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
-                hourDate={type==="day"}
-                preview={AM_I_HOST} onPostPreview={handleOnPostPreview}
-                edit={false}
-                onPostEdit={handleOnPostEdit}
-                delete_={AM_I_HOST}
-                onPostDelete={handleOnPostDelete}
+                checkboxesDisabled={!user.preferences.screenka || screenkaDisabled} maxChecks={type==="manage"?getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
+                hourDate={type==="day" || type==="manage"}
+                preview={type==="day" || type==="week"} onPostPreview={handleOnPostPreview}
+                delete_={type==="manage"}  onPostDelete={handleOnPostDelete}
                 hideTickets={!user.preferences.screenka}
-                no_crossed_eye={type==="week"}
+                crossed_eye={type==="manage"}
                 no_crossed_eye_funny_info={type==="week"}
             />
 

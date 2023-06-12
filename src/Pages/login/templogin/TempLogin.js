@@ -9,7 +9,7 @@ import { MultipleError } from '../../../Services/aFirebase';
 
 const TempLogin = ({onTempLogin}) => {
 
-    const {getMyUsername,getMe,tryLogMeInTemporarly,getUserSrcUrl} = useContext(AuthContext);
+    const {getMyFunnyname,getMe,tryLogMeInTemporarly,getUserSrcUrl} = useContext(AuthContext);
 
     const [meSrc,setMeSrc] = useState(getPath("default_profile_picture.png"))
     const inputRef = useRef();
@@ -20,8 +20,8 @@ const TempLogin = ({onTempLogin}) => {
     useEffect(()=>{
 
         const timeout = setTimeout(()=>{
-            let username = getMyUsername();
-            if(username) inputRef.current.value=username; 
+            let funnyname = getMyFunnyname();
+            if(funnyname) inputRef.current.value=funnyname; 
 
             let me = getMe()
             if(me) getUserSrcUrl(me.fullname).then(setMeSrc);
@@ -50,7 +50,7 @@ const TempLogin = ({onTempLogin}) => {
         <div className='login-user'>
             <img src={meSrc} alt="profile"/>
             <div>
-                <h4>Username:</h4>
+                <h4>Enter Secret Username:</h4>
                 <InputField autofocus reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isLoading={isInputFieldLoading} />
             </div>
         

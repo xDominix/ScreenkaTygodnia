@@ -21,8 +21,6 @@ export const BottomTabProvider = ({children}) => {
     const isBottomTab = ()=>object!==null
     const getObject = ()=>{return object?.object}
     const equalObject = (object2) => {return object?.object===object2}
-    //const isObjectApp = ()=>{return object?.object.constructor.name ===AppClass.name}
-    //const isObjectUser = ()=>{return object?.object.constructor.name ===UserClass.name}
 
     const value = {
         setBottomTab,

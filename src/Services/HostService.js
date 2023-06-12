@@ -1,4 +1,4 @@
-import { NOW, datesWeekDelta, delay, } from "../aFunctions";
+import { GET_NOW, datesWeekDelta, delay, } from "../aFunctions";
 import { DEMONOW, HostRepository } from "./aDemobase";
 import { Host } from "../Objects/Host";
 import { getDoc } from "../Services/aFirebase";
@@ -12,9 +12,9 @@ const HostService = {
       return Host.fromDoc(doc);
     },
 
-    getHostWeekNumber: (host) => {
-      if (host == null) return 0;
-      return datesWeekDelta(host.start_date, NOW());
+    getHostWeekNumber: (host_start_date) => { //dziala na bazie czasu demo. wiec nigdzie indziej byc nie moze
+      if (host_start_date == null) return 0;
+      return datesWeekDelta(host_start_date, GET_NOW());
     },
 };
 
@@ -25,9 +25,9 @@ const HostServiceDemo = {
       return HostRepository.find((host) => host.id === id);
     },
   
-    getHostWeekNumber: (host) => {
-      if (host == null) return 0;
-      return datesWeekDelta(host.start_date, DEMONOW);
+    getHostWeekNumber: (host_start_date) => {
+      if (host_start_date == null) return 0;
+      return datesWeekDelta(host_start_date, DEMONOW);
     },
 };
   

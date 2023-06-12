@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import Post from '../Objects/Post/Post';
 import "./Screenka.css"
+import WeekAppContainer from '../Components/WeekAppContainer';
 
 const WEEK_NAME = "First Week";
+const HOST_ID = "0";
 
 const ScreenkaT0 = ({onLoad}) => {
    
@@ -15,10 +17,8 @@ const ScreenkaT0 = ({onLoad}) => {
         <div className='Screenka noscroll'>
             <h1>Witamy bardzo serdeczenie na Screence Tygodnia!</h1>
             <h4 style={{textAlign:"end"}}>APRIL 2023 EDITION</h4>
-            <Post id="dsnanaaiaocsn" user_fullname="Default User"/>
-            <h2>To co dzis przygotowalismy jest genialne!</h2>
-            <Post id="dsnasddsxccsn" user_fullname="Default User"/> 
-            <Post id="123123" user_fullname="Tola Bajka"/>
+            <h4>Wyniki prezentuja się przepieknie! </h4>
+           <WeekAppContainer host_id={HOST_ID} week_name={WEEK_NAME}/>
             <footer style={{marginTop:"50px"}}>Screenka Tygodnia ®</footer>
         </div> );
 }

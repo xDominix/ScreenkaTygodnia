@@ -10,7 +10,7 @@ export const MiniPosts = ({posts, title, //essentials
                                 hourDate, //first row
                                 preview=false,onPostPreview,edit=false,onPostEdit,delete_=false,onPostDelete, // options
                                 hideFooter=false, hideTickets = false,
-                                no_crossed_eye=false,no_crossed_eye_funny_info=false,
+                                crossed_eye=false,no_crossed_eye_funny_info=false,
                                 }) => 
 {
     const getCheckesCount = ()=>{
@@ -31,7 +31,7 @@ export const MiniPosts = ({posts, title, //essentials
         onPostCheckboxChange(e);
     }
 
-    if(posts===null) return <div></div>
+    if(posts===null) return <Loading/>
     if(posts.length===0) return <NothingToShow/>
 
     return (
@@ -56,9 +56,9 @@ export const MiniPosts = ({posts, title, //essentials
 
                 {posts?.length>0 &&  
                 <div className='miniposts-list noscroll'>
-                    {posts?.map((post,i) =>( <MiniPost key={post.id} post={post} hourDate={hourDate} no_crossed_eye={no_crossed_eye} uncheckedCheckboxDisabled={checks>=maxChecks-1} checkboxDisabled={checkboxesDisabled} defaultChecked={customCheckboxes?false:null}  onCheckboxChange={handleOnCheckboxChange} onCheckboxChangeDelay={onPostCheckboxChangeDelay} edit={edit} delete_={delete_} preview={preview} onEdit={()=>onPostEdit(post.id)} onDelete={()=>onPostDelete(post.id)} onPreview={()=>onPostPreview(post.id)}/> ))} 
+                    {posts?.map((post,i) =>( <MiniPost key={post.id} post={post} hourDate={hourDate} crossed_eye={crossed_eye} uncheckedCheckboxDisabled={checks>=maxChecks} checkboxDisabled={checkboxesDisabled} defaultChecked={customCheckboxes?false:null}  onCheckboxChange={handleOnCheckboxChange} onCheckboxChangeDelay={onPostCheckboxChangeDelay} edit={edit} delete_={delete_} preview={preview} onEdit={()=>onPostEdit(post.id)} onDelete={()=>onPostDelete(post.id)} onPreview={()=>onPostPreview(post.id)}/> ))} 
                     {(!customCheckboxes && !hideFooter && !hideTickets) && <footer className={'center' + (checkboxesDisabled ? " opacity":"")} >Uploads with tickets will apply for<br/>Screenka Tygodnia ™</footer>}
-                    {!hideFooter && no_crossed_eye && no_crossed_eye_funny_info && <footer className={'center'} >Kto zobaczył, ten zobaczył.<br/>Teraz pójdzie w zapomnienie. <span role="img" aria-label="ghost">👻</span></footer>}
+                    {!hideFooter && !crossed_eye && no_crossed_eye_funny_info && <footer className={'center'} >Kto zobaczył, ten zobaczył.<br/>Teraz pójdzie w zapomnienie. <span role="img" aria-label="ghost">👻</span></footer>}
                 </div>}
 
                 </div>)

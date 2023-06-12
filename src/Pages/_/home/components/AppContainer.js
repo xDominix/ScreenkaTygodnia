@@ -3,7 +3,7 @@ import App from '../../../../Objects/App/App';
 import "./Container.css"
 
 const AppContainer = ({
-    apps,notificationCountsMap, disabled,
+    apps,notificationCountsMap= new Map(), disabled,
     appHeight=70, onAppClick=()=>{},  appClassName="",
     specialAppName=null,specialClassName="", notSpecialClassName="",
     orangeAppName=null, isUploadMode=false, 
@@ -20,10 +20,11 @@ const AppContainer = ({
         return notificationCountsMap.get(app_name);
     }
 
+    if(!apps ||  !notificationCountsMap) return;
     return ( 
     <div className={'app-conteiner' + (disabled ? (" opacity noclick"):"")}  style={{"gridTemplateColumns":"repeat(auto-fill, "+appHeight+"px)"}}>
-        {apps.map(app => 
-        <div key={app.name} className={appClassName+" "+getAppClassName(app.name)} >
+        {apps.map((app,index) => 
+        <div key={index} className={appClassName+" "+getAppClassName(app.name)} >
             <App
             onClick={()=>onAppClick(app)}
             notificationValue = {getNotificationValue(app.name)}

@@ -1,4 +1,4 @@
-import { NOW, YY_MMDD_HHMM, dateToWeekDay, dayEqual, delay, getMonday, getPath, } from "../aFunctions";
+import { GET_NOW, YY_MMDD_HHMM, dateToWeekDay, dayEqual, delay, getMonday, getPath, } from "../aFunctions";
 import { DEMONOW, PostRepositoryMap } from "./aDemobase";
 import { PostClass } from "../Objects/Post/PostClass";
 import { doc, updateDoc , arrayUnion, increment, setDoc, orderBy, where, limit} from "firebase/firestore";
@@ -31,8 +31,8 @@ const PostService = {
 
     getUserCurrentDayRandomPost: async (user_fullname,host_id,forFriends=null,okApps=[]) => {//today post
       if(user_fullname || host_id) return null;
-      let fromDate =new Date(NOW().setHours(0,0,0,0))
-      let toDate = NOW();
+      let fromDate =new Date(GET_NOW().setHours(0,0,0,0))
+      let toDate = GET_NOW();
 
       let random = Math.random(); 
       let opStr = Math.random() >= 0.5?">=":"<=";
@@ -59,8 +59,8 @@ const PostService = {
 
     getUserCurrentDayPosts: async (user_fullname,host_id,forScreenka=null) => { //czesciowo host_id jest uzywne, dla postow z dnia jest muli-host rezultat
       if(!user_fullname) return [];
-      let fromDate =new Date(NOW().setHours(0,0,0,0))
-      let toDate = NOW();
+      let fromDate =new Date(GET_NOW().setHours(0,0,0,0))
+      let toDate = GET_NOW();
       let docs;
       if(forScreenka!==null) 
       {
@@ -75,7 +75,7 @@ const PostService = {
       if (user_fullname == null) return null;
   
       let queries;
-      let fromDate =getMonday(), toDate = NOW();
+      let fromDate =getMonday(), toDate = GET_NOW();
       queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("permissions.me","==",true)];
       if(host_id!==null) queries.push(where("host_id","==",host_id))
       queries.push(orderBy("upload_date","desc"),limit(30));
@@ -83,20 +83,37 @@ const PostService = {
       return docs.map((doc) => PostClass.fromDoc(doc));
     },
 
-    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,forScreenka=false,okApps=[], no_view=false)=> {
+    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,okApps=[], no_view=false)=> {
       if (user_fullname == null || week_name==null) return null;
   
       let queries;
       if(week_name) queries = [where("week_name","==",week_name)];
       if(host_id!==null) queries.push(where("host_id","==",host_id))
       queries.push(where("permissions.me","==",true));
-      if(forScreenka!==null) queries.push(where("permissions.screenka","==",forScreenka))
       if(no_view) queries.push(where("view","==",null));
       if(okApps) queries.push("app","in",okApps);
       queries.push(orderBy("upload_date","desc"),limit(30));
 
       let docs = await getDocs(`users/${user_fullname}/posts`,...queries);
       return docs.map((doc) => PostClass.fromDoc(doc));
+    },
+
+    getUserYesterdayRandomPost:async(user_fullname,host_id=null)=>{
+      if(!user_fullname) return null;
+      const fromDate = GET_NOW();
+      fromDate.setDate(fromDate.getDate() - 1);
+      fromDate.setHours(0,0,0,0);
+      let toDate = new Date(fromDate.getTime());
+      toDate.setHours(23,59,59);
+
+      let random = Math.random(); 
+      let opStr = Math.random() >= 0.5?">=":"<=";
+
+      let queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("permissions.me","==",true)]
+      if(host_id) queries.push(where("host_id","==",host_id));
+      let docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr,random),orderBy("random"),limit(1));
+      if(!docs|| docs.length!== 1) docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr===">="?"<=":">=",random),orderBy("random"),limit(1));
+      return PostClass.fromDoc(docs?.at(0));
     },
   
     getPathPostContentUrl: async (user_fullname, content) => {
@@ -125,7 +142,7 @@ const PostService = {
         const uploadFile = async () => {
             if (file == null) return Promise.resolve();
             if (file.size > 4e6) throw new Error("Please upload a file smaller than 4MB");
-            let secure_filename = YY_MMDD_HHMM(post.upload_date)+ ( post.context ? ("_"+ post.context.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0,15)):"")
+            let secure_filename = YY_MMDD_HHMM(post.upload_date)+ ( post.context ? ("_"+ post.context.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0,25)):"")
             post.content = secure_filename;
             let fileRef = ref(storage, user_fullname + "/" + secure_filename);
         
@@ -142,10 +159,10 @@ const PostService = {
             let host_id = post.host_id, week_name = post.week_name;
             if(!host_id || !week_name) return Promise.resolve();
             let data = {
-              latest: (post.permissions.friends?{user:user_fullname,app:post.app,date:NOW()}:{app:post.app,date:NOW()}),
+              latest: (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()}),
             };
-            data[`day_participants.${dateToWeekDay(NOW())}`] = arrayUnion(user_fullname); //zeby nie bylo ze jest ghosted
-            data[`day_apps_counts.${dateToWeekDay(NOW())}.${post.app}`] = increment(1);
+            data[`day_participants.${dateToWeekDay(GET_NOW())}`] = arrayUnion(user_fullname); //zeby nie bylo ze jest ghosted
+            data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
             return updateDoc(doc(db, "hosts", host_id, "weeks", week_name), data);
         };
           
@@ -200,10 +217,15 @@ const PostServiceDemo = {
       return PostService.getUserPastWeekPosts(user_fullname,host_id)
     },
     
-    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,forScreenka=false,okApps=[])=> {
+    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,okApps=[])=> {
         await delay(1000);
         if (user_fullname == null || host_id == null || week_name==null) return null;
         return PostRepositoryMap.get(user_fullname)?.filter((post) => post.host_id === host_id && post.week_name === week_name);
+    },
+
+    getUserYesterdayRandomPost:async(user_fullname,host_id)=>{
+      await delay(500);
+      return null;
     },
     
     getPathPostContentUrl: async () => {

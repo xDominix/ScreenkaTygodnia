@@ -1,5 +1,5 @@
 import React, {  useEffect, useMemo, useRef, useState } from "react";
-import { NOW, objectToPermissions, weekEqual } from "../aFunctions";
+import { GET_NOW, objectToPermissions } from "../aFunctions";
 import Loading from "../Pages/Loading";
 import { useHostService } from "../Services/HostService";
 import { useUserService } from "../Services/UserService";
@@ -7,6 +7,7 @@ import { useWeekService } from "../Services/WeekService";
 import { usePostService } from "../Services/PostService";
 import { Event } from "../Objects/Event/Event";
 import { CustomEvent } from "../Objects/Event/CustomEvent";
+import { DayEvent } from "../Objects/Event/DayEvent";
 
 export const AuthContext = React.createContext();
 
@@ -15,11 +16,11 @@ const NONE = false;
 const AuthProvider = ({children, demo}) => {
 
     //services
-    const {getUser,getUserByUsername,getUserSrcUrl,trySetUsername,trySetPersonalizedApps,changeUserPreferences} = useUserService(demo);
+    const {getUser,getUserByFunnyname,getUserSrcUrl,trySetUsername,trySetPersonalizedApps,changeUserPreferences} = useUserService(demo);
     const {getHost,getHostWeekNumber} = useHostService(demo);
     const {getHostWeek,trySetHostWeekScreenkaView,onWeekSnapshot,getHostLastWeekName} = useWeekService(demo);
     const {getUserCurrentDayPosts,getUserCurrentWeekPosts,getUserPostTicketsUsed,changePostPermissions,postPost,getUserLatestPost,
-    getUserCurrentDayRandomPost,getUserPastWeekPosts,getUserPost,getUserPostAndTrySetView,getPathPostContentUrl}=usePostService(demo);
+    getUserCurrentDayRandomPost,getUserPastWeekPosts,getUserPost,getUserPostAndTrySetView,getPathPostContentUrl,getUserYesterdayRandomPost}=usePostService(demo);
 
     //states
     const [user,setUser] = useState(NONE);
@@ -39,7 +40,7 @@ const AuthProvider = ({children, demo}) => {
 
     //refs
     const userTemp = useRef(null); const getTempMe = ()=>userTemp.current; // used for temp login
-    const userUsernameRef = useRef(null); const getMyUsername = ()=>userUsernameRef.current;
+    const userFunnynameRef = useRef(null); const getMyFunnyname = ()=>userFunnynameRef.current;
     const hostIdRef = useRef(null);
     const hostPopularAppsRef = useRef(null);
     const hostFriendsRef = useRef([]);
@@ -58,15 +59,18 @@ const AuthProvider = ({children, demo}) => {
 
     useEffect(()=>{
         const _getUser= async ()=>{ 
-            const isStartOfWeek = ()=>{
-                let last = localStorage.getItem("last_permissions_change"); //setter in change user permissions
-                if(NOW().getDay()===0 && (!last || !weekEqual(Date.parse(last),NOW())))  return true;//is sunday
-               return false;
+            const isResetDay = ()=>{
+                if(Event.canView(DayEvent.Reset))
+                {
+                   //Reset zawieta fromWeekNumber niezerowy, ale... nie musi byc sprawdzany week_number bo 0 i tak zmienisz, a 1 sie zacznie. (changeMyPrefs setuje view za kazdym razem)
+                    return true
+                }
+                return false;
             }
             let fullname = localStorage.getItem("fullname");
             let user = await getUser(fullname);
-            if(user) userUsernameRef.current = user.username;
-            if(user && isStartOfWeek()) user.preferences.me=false;
+            if(user) userFunnynameRef.current = user.funnyname;
+            if(user && isResetDay()) {return changeUserPreferences(user.fullname,{me:false}).then(()=>null)}
             if(!user || !user.preferences.me) return null;
             return user;
         }
@@ -81,7 +85,7 @@ const AuthProvider = ({children, demo}) => {
             /*2*/if(!defaultHost || !defaultHost.subscribers.has(user.fullname)) return null;
             /*1*/if(user.preferences.friends){
                 /*2*/let leave_date = defaultHost.subscribers.get(user.fullname).leave_date;
-                /* */if(leave_date==null || leave_date>NOW()) setFriends(user,defaultHost);
+                /* */if(leave_date==null || leave_date>GET_NOW()) setFriends(user,defaultHost);
             }
             return defaultHost;
         }
@@ -100,7 +104,7 @@ const AuthProvider = ({children, demo}) => {
             if(!user || !host) return null;
             /*1*/if(!user.preferences.me) return null;
             /*2*/ let join_date = host.subscribers.get(user.fullname).join_date;
-            /* */if(join_date==null || join_date>NOW()) return null;
+            /* */if(join_date==null || join_date>GET_NOW()) return null;
             let week = getHostWeek(host.id);
             if(user.preferences.screenka) await loadTickets(user,host,week);
             return week;
@@ -118,21 +122,21 @@ const AuthProvider = ({children, demo}) => {
     const friendsDisabled = useMemo(()=>{
         if(!host || !user || !host?.subscribers || !user?.fullname || !host?.subscribers?.has(user.fullname)) return true;// || !user.preferences.friends
         let sub = host.subscribers.get(user.fullname);
-        return !(sub.leave_date == null || sub.leave_date>NOW());
+        return !(sub.leave_date == null || sub.leave_date>GET_NOW());
     },[user_fullname,host_subscribers])
 
     //nie ukrywa jesli jestes subskrybujacy miedzy data - logiczne
     const screenkaDisabled = useMemo(()=>{
         if(!host || !user || !host.subscribers || !user.fullname || !host.subscribers.has(user.fullname)) return true; // || !user.preferences.screenka
         let sub = host.subscribers.get(user.fullname);
-        return !(sub.join_date!=null && sub.join_date<NOW() && !(sub.leave_date!=null && sub.leave_date < NOW()));
+        return !(sub.join_date!=null && sub.join_date<GET_NOW() && !(sub.leave_date!=null && sub.leave_date < GET_NOW()));
     },[user_fullname, host_subscribers])
 
 
     //USER CONTEXT
 
-    const tryLogMeInTemporarly = async (username)=>{ //gdy ustawisz sobie username o takiej samej nazwie co inny uzytkownik to pisz do admina
-        return getUserByUsername(username)
+    const tryLogMeInTemporarly = async (funnyname)=>{
+        return getUserByFunnyname(funnyname)
             .then(user=>{
                 if(user==null) return false;
                 userTemp.current = user;
@@ -149,7 +153,7 @@ const AuthProvider = ({children, demo}) => {
     }
    
     const changeMyPreferences=async(preferences)=> {
-        localStorage.setItem("last_preferences_change",NOW());
+        Event.setView(DayEvent.Reset);
         if(friendsDisabled) preferences.friends = true; //!
         if(screenkaDisabled) preferences.screenka = true; //!
         return changeUserPreferences(user.fullname,preferences).then(()=>{
@@ -171,29 +175,33 @@ const AuthProvider = ({children, demo}) => {
     const getFriendSrcUrl = async (user_fullname)=> getFriendFunction(getUserSrcUrl,user_fullname)
     const getFriendLatestPost = async (user_fullname)=>getFriendFunction(getUserLatestPost,user_fullname,hostIdRef.current);
     const getFriendCurrentDayRandomPost=async (user_fullname)=>getFriendFunction(getUserCurrentDayRandomPost,user_fullname,hostIdRef.current,true,[...user.personalized_apps,...hostPopularAppsRef.current]);
-    const getFriendPastWeekPosts = async (user_fullname,week_name)=> getFriendFunction(getUserPastWeekPosts,user_fullname,week_name,hostIdRef.current,true,[...user.personalized_apps,...hostPopularAppsRef.current],true)
+    const getFriendPastWeekPosts = async (user_fullname,week_name)=> getFriendFunction(getUserPastWeekPosts,user_fullname,week_name,hostIdRef.current,[...user.personalized_apps,...hostPopularAppsRef.current],true)
     const getFriendCurrentDayPosts = async (user_fullname,host_id=null)=>{
     let host = (host_id===null && AM_I_HOST())? null : hostIdRef.current;
     return getFriendFunction(getUserCurrentDayPosts,user_fullname,host);
     }
+    const getFriendCurrentWeekPosts = async (user_fullname,host_id=null)=>{
+        let host = (host_id===null && AM_I_HOST())? null : hostIdRef.current;
+        return getFriendFunction(getUserCurrentWeekPosts,user_fullname,host);
+        }
 
 
     //users
-    const getMyPastWeekPosts = async (week_name)=>{
-        let [me,host_id] = getMeAndMyHostId()
-        return getUserPastWeekPosts(me.fullname,week_name,host_id,true)
-    }
 
     //Host CONTEXT
 
-    const weekNumber = useMemo(() => getHostWeekNumber(host), [host?.start_date]);
+    const weekNumber = useMemo(() => getHostWeekNumber(host?.start_date), [host?.start_date]);
     
+    const getMyGroups = ()=> host?.getMyGroups(user?.fullname);  // returns undefined, null or array
+
     //WEEK CONTEXT
     /*
     const getMyHostWeekNames = async (from_date)=>{
         let [,host] = getMeAndMyHost()
         return getHostWeekNames(host.id,from_date);
     }*/
+
+    const getHostWeekForScreenka  = getHostWeek;
 
     const trySetMyScreenkaView = async(host_id,week_name)=>{//host_id, week_name - ala klucze do wysetowania
         if(!host_id || !week_name) return false;
@@ -228,6 +236,14 @@ const AuthProvider = ({children, demo}) => {
         if(weekUploads.current==null) await loadMyWeekUploads(user.fullname,host.id);
         return weekUploads.current.filter(post => post.permissions.me === true);
     }
+    const getMyPastWeekPosts = async (week_name)=>{
+        let [me,host_id] = getMeAndMyHostId()
+        return getUserPastWeekPosts(me.fullname,week_name,host_id)
+    }
+
+    const getMyYesterdayRandomPost = async ()=>{
+        return getUserYesterdayRandomPost(user.fullname,host.id);
+    }
      const getMyAppsCounts= async()=>{
         if(getMe()==null) return null;
         let posts = await getMyDayUploads();
@@ -246,7 +262,7 @@ const AuthProvider = ({children, demo}) => {
     const postMyPost = async (post, file, onlyMe= false)=>{
         post.host_id = host? host.id : null;
         post.week_name = week? week.name : null;
-        post.upload_date = NOW();
+        post.upload_date = GET_NOW();
         post.permissions = {me:user.preferences.me,friends:(!onlyMe && !friendsDisabled && user.preferences.friends),screenka:(!onlyMe && !screenkaDisabled && user.preferences.screenka && ticketsRef.current>0)}
 
         return postPost(user.fullname,post,file)
@@ -286,27 +302,29 @@ const AuthProvider = ({children, demo}) => {
         return null;
     }
 
-    /*DAY EVENTS*/
+    /*EVENTS*/
     const myDayEvents=useMemo(()=>{
-        return Event.getDayEvents(weekNumber,user?.preferences);
+        return Event.getAvailableDayEvents(weekNumber,user?.preferences);
     },[weekNumber, user?.preferences])
 
-    const myCustomEvents=useMemo(()=>{
-        return Event.getCustomEvents(weekNumber,user?.preferences);
+    
+    const myCustomEvents=useMemo(()=>{ //private
+        return Event.getAvailableCustomEvents(weekNumber,user?.preferences);
     },[weekNumber, user?.preferences])
 
-    const isRnShotEvent = useMemo(()=>myCustomEvents.includes(CustomEvent.RnShot),[myCustomEvents])
-    const isScreenkaEvent = useMemo(()=>myCustomEvents.includes(CustomEvent.Screenka),[myCustomEvents])
-    const isUploadEvent = useMemo(()=>myCustomEvents.includes(CustomEvent.Upload),[myCustomEvents])
+    const myRnShotEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.RnShot),[myCustomEvents])
+    const myScreenkaEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.Screenka),[myCustomEvents])
+    const myUploadEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.Upload),[myCustomEvents])
+    const myManageUploadsEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.ManageUploads),[myCustomEvents])
 
     const value = {  
                                 AM_I_HOST,GET_HOST_ID,
-                                tryLogMeInTemporarly,saveMe,getMyUsername,getTempMe,getMe,changeMyPreferences,getMyPastWeekPosts,//me
-                                getFriend,getFriendSrcUrl,getFriendLatestPost,getFriendCurrentDayRandomPost,getFriendCurrentDayPosts,getFriendPastWeekPosts,//friend
+                                tryLogMeInTemporarly,saveMe,getMyFunnyname,getTempMe,getMe,changeMyPreferences,getMyPastWeekPosts,//me
+                                getFriend,getFriendSrcUrl,getFriendLatestPost,getFriendCurrentDayRandomPost,getFriendCurrentDayPosts,getFriendCurrentWeekPosts,getFriendPastWeekPosts,//friend
                                 getUser,getHost,getUserPost,getUserSrcUrl,getPathPostContentUrl,//screenka (public)
-                                weekNumber,getMyFriends,getMyFriendsWithHostId,//host
-                                getMyHostLastWeekName,//week
-                                getMyDayUploads,getMyWeekUploads,hideIfAppsState,setHideIfAppsState,postMyPost,getTickets,getMaxTickets, getMyAppsCounts,getUserPostAndTrySetMyView,//post
+                                weekNumber,getMyFriends,getMyFriendsWithHostId,getMyGroups,//host
+                                getMyHostLastWeekName,getHostWeekForScreenka,//week
+                                getMyDayUploads,getMyWeekUploads,hideIfAppsState,setHideIfAppsState,postMyPost,getTickets,getMaxTickets, getMyAppsCounts,getUserPostAndTrySetMyView,getMyYesterdayRandomPost,//post
                                 changeMyPostPermissions,//post2
                                 getMeAndMyHost,getMeAndMyHostAndMyWeek,getMeAndMyHostId, //getters
 
@@ -314,7 +332,7 @@ const AuthProvider = ({children, demo}) => {
                                 
                                 
                                 trySetMyScreenkaView, //Screenka
-                                myDayEvents,isRnShotEvent,isScreenkaEvent,isUploadEvent,//events
+                                myDayEvents,myRnShotEvent,myManageUploadsEvent,myScreenkaEvent,myUploadEvent,//events
                                 friendsDisabled,screenkaDisabled,//disabled options
 
                                 user,

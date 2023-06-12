@@ -106,7 +106,7 @@ const Setup = ({onSetup}) => {
             <div className='setup-user'>
                 <img src={meSrcUrl} alt="profile"/>
                 <div>
-                    <h4>Username:</h4>
+                    <h4>Change Your Username:</h4>
                     <InputField reff={inputRef} onEnter={handleOnEnter} readOnly={isUsernameSet} isRed={isInputFieldRed} isInputLoading={isInputLoading} />
                     </div>
                

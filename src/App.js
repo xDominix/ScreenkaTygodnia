@@ -26,7 +26,7 @@ const App = () => {
                                 <Route exact path={getPath("/")} element={<Start />}/>
                                 <Route path={getPath("/login")} element={<Prestart />} />
                                 {/*<Route path={getPath("/app/:name")} element={<AppPage/>}/>*/}
-                                <Route path={getPath("/event/:event")} element={<DayEventPage/>}/>
+                                <Route path={getPath("/dayevent/:event")} element={<DayEventPage/>}/>
                                 <Route path={getPath("/uploads/:type")} element={<Uploads/>}/>
                                 <Route path={getPath("/screenka/:host_id")} element={<Screenka />} /> {/*tylko gdy nalezysz do hostu, jest poniedzialek po 8, istnieje plik*/}
                                 

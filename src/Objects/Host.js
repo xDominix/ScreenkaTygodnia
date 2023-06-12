@@ -1,5 +1,5 @@
-import { DEFAULT_APP_NAMES } from "../Services/aLocalbase";
 import { toMap } from "../aFunctions";
+import { DEFAULT_APP_NAMES } from "./App/AppClass";
 
 export class Host {
     constructor(id,fullname,start_date,popular_apps,//required
@@ -33,6 +33,15 @@ export class Host {
           })
         }
       });
+      return res;
+    }
+
+    getMyGroups = (fullname)=>{//return array
+      if(!fullname) return null;
+      let res = [];
+      this.groups.forEach((members, group_name) => {
+        if(members.includes(fullname)) res.push(group_name);
+      })
       return res;
     }
 

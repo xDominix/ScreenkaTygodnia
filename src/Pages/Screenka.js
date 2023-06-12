@@ -1,4 +1,4 @@
-import React, { useContext} from 'react';
+import React, { useCallback, useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom/dist';
 import ScreenkaT0 from '../aScreenkas/ScreenkaT0';
@@ -16,7 +16,7 @@ const Screenka = () => {
     const {getMe,trySetMyScreenkaView,setHideIfAppsState,getHost} = useContext(AuthContext);
 
       const onLoad= async (week_name)=>{
-        if(!Event.canViewPage(CustomEvent.Screenka,{week:week_name}))  {navigate("/");return;}
+        if(!Event.canView(CustomEvent.Screenka,{week:week_name}))  {navigate("/");return;}
         
         let me = getMe();
         if(me===null) navigate("/");
@@ -30,9 +30,9 @@ const Screenka = () => {
         },3000);
       }
 
-      const getContent = ()=>{switch (Number(host_id)){
-        case -1: return <ScreenkaTDEMO/>
-        case 0: return  <ScreenkaT0 onLoad={onLoad}/>
+      const getContent = ()=>{switch (host_id){
+        case "-1": return <ScreenkaTDEMO/>
+        case "0": return  <ScreenkaT0 onLoad={onLoad}/>
         default: return <NothingToShow/>
       }}
 

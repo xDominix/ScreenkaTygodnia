@@ -2,23 +2,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import NothingToShow from '../../Pages/NothingToShow';
 import { AuthContext } from '../../Contexts/AuthContext';
-import Loading from '../../Pages/Loading';
 import {  randomElement } from '../../aFunctions';
 import { DayEvent } from './DayEvent';
 import { Event } from './Event';
 
-const DayEventPage = () => {
+const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
 
     const {event} = useParams();
     const navigate = useNavigate();
 
-    const {getMyFriendsWithHostId,getMeAndMyHostId,getFriendCurrentDayRandomPost,getMyHostLastWeekName} = useContext(AuthContext);
+    const {user,getMyFriendsWithHostId,getMeAndMyHostId,getFriendCurrentDayRandomPost,getMyHostLastWeekName,getMyYesterdayRandomPost} = useContext(AuthContext);
 
     const [isNothingToShow,setIsNothingToShow]=useState(false);
 
     useEffect(()=>{
-        let day_event = DayEvent.fromString(event);
-        if(!Event.canViewPage(day_event)) navigate("/");
+        let day_event = Event.fromString(event);
+        if(!Event.canView(day_event)) navigate("/");
 
         const timeout = setTimeout(async ()=>{
             let nav = await getNavigator(day_event);
@@ -34,11 +33,11 @@ const DayEventPage = () => {
 
     //navigate
     const getNavigator=async (event)=>{
-        const getOneShotNavigator=()=>{
+        const getOneShotNavigator=async ()=>{
             let [friends,]= getMyFriendsWithHostId();
             let friends_random = friends.sort(() => 0.5 - Math.random());
             let tos =[];
-            friends_random.every(async (friend)=>{
+            await friends_random.every(async (friend)=>{
                 let post = await getFriendCurrentDayRandomPost(friend)
                 if(post) tos.push(`/post/${friend}/${post.id}/${DayEvent.OneShot.toString()}`)
                 if(tos.length<3) return true;
@@ -46,6 +45,10 @@ const DayEventPage = () => {
 
             if(tos.length===0) return null;
             return {to:tos[0],options:{state:{nextPages: tos.slice(1)}}}
+        }
+        const getMorningShotNavigator=async ()=>{
+            let post = await getMyYesterdayRandomPost(); if(!post) return null;
+            return {to:`/post/${user.fullname}/${post.id}/${DayEvent.MorningShot.toString()}`};
         }
         const getOhPreviewNavigator=async()=>{
             let [friends,host_id]= getMyFriendsWithHostId();
@@ -60,18 +63,19 @@ const DayEventPage = () => {
         }
 
         switch(event)
-        {
+        { 
             case DayEvent.DayUploads: return {to:"/uploads/day"}
             case DayEvent.WeekUploads: return {to:"/uploads/week"}
             case DayEvent.OneShot: return getOneShotNavigator();
+            case DayEvent.MorningShot: return getMorningShotNavigator();
             case DayEvent.OhPreview: return getOhPreviewNavigator();
             case DayEvent.ThrowBack: return getThrowBackNavigator();
             default: return null;
         }
     }
 
-    if(isNothingToShow) return <NothingToShow/>
-    return <Loading/>
+    if(isNothingToShow) return <NothingToShow goback/>
+    return <div></div>
 }
  
 export default DayEventPage;

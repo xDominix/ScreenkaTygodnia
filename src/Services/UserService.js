@@ -1,5 +1,5 @@
 import { delay, getPath, objectToPermissions, } from "../aFunctions";
-import { DEMOUSERNAME, UserRepository } from "./aDemobase";
+import { DEMOFUNNYNAME, UserRepository } from "./aDemobase";
 import { UserClass} from "../Objects/User/UserClass";
 import { doc, updateDoc, where } from "firebase/firestore";
 import { db, getDoc, getDocWhere, getDocs, getUserSrcFromStorage } from "../Services/aFirebase";
@@ -21,8 +21,9 @@ const UserService = {
       return user;
     },
   
-    getUserByUsername: async (username) => {
-      return getDocWhere("users", "username", username).then(UserClass.fromDoc);
+    getUserByFunnyname: async (funnyname) => {
+      if(!funnyname) return null;
+      return getDocWhere("users", "funnyname", funnyname).then(UserClass.fromDoc);
     },
 
     changeUserPreferences: async(user_fullname,preferences)=>{
@@ -95,11 +96,11 @@ const UserServiceDemo = {
       );
     },
   
-    getUserByUsername: async (username) => {
+    getUserByFunnyname: async (funnyname) => {
       await delay(1000);
-      if (username === undefined) return undefined;
+      if (!funnyname) return null;
       return UserRepository.find(
-        (user) => user.username.toLowerCase() === DEMOUSERNAME.toLowerCase()
+        (user) => user.funnyname.toLowerCase() === DEMOFUNNYNAME.toLowerCase() //wpusci zawsze nie wazne co wpiszesz
       );
     },
 

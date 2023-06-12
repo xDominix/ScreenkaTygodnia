@@ -2,12 +2,13 @@ import { shortenFullname } from "../../aFunctions";
 
 export class UserClass{
     constructor (
-        fullname,username, hosts, preferences, //required
+        fullname,funnyname,username, hosts, preferences, //required
         personalized_apps=[],super_personalized_apps=[]//optional
         )
     {
         /***/ this.fullname = fullname; //name + surname
-        this.username=username; //at first funnyname
+        this.funnyname = funnyname; //to login
+        this.username=username; 
         this.hosts=hosts;
         this.preferences=preferences?preferences:{me:false,friends:false,screenka:false}; //{me,friends,screenka} - jesli null to domyslnie wszystkie true
         
@@ -20,6 +21,6 @@ export class UserClass{
 
     static fromDoc=(doc)=>{
         if(!doc)return null;
-        return new UserClass(doc.id? doc.id: doc.fullname,doc.username,doc.hosts,doc.preferences,doc.personalized_apps,doc.super_personalized_apps);
+        return new UserClass(doc.id? doc.id: doc.fullname,doc.funnyname,doc.username,doc.hosts,doc.preferences,doc.personalized_apps,doc.super_personalized_apps);
     }
 }   

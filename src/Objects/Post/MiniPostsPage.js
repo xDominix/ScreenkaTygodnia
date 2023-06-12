@@ -4,25 +4,26 @@ import { AuthContext } from '../../Contexts/AuthContext';
 import {MiniPosts} from './MiniPosts';
 import { DayEvent } from '../Event/DayEvent';
 import { ButtonPrevPage } from '../../Components/Buttons';
+import { Event } from '../Event/Event';
 
 const MiniPostsPage = () => { //current week posts page
 
     const {user_fullname,host_id,event} = useParams(); // event_string
     const navigate = useNavigate();
 
-    const {getFriendCurrentDayPosts,AM_I_HOST} = useContext(AuthContext)
+    const {getFriendCurrentDayPosts,getFriendCurrentWeekPosts,AM_I_HOST} = useContext(AuthContext)
     const [posts,setPosts] = useState(null);
 
     useEffect(()=>{
         if( !AM_I_HOST && !user_fullname )  navigate("/")
         
-        let day_event = DayEvent.fromString(event);
-        switch(day_event){
+        let event_ = Event.fromString(event);
+        switch(event_){
             case DayEvent.DayUploads:
                 getFriendCurrentDayPosts(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             case DayEvent.WeekUploads:
-                getFriendCurrentDayPosts(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
+                getFriendCurrentWeekPosts(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             default:
                 navigate("/")

@@ -36,6 +36,7 @@ div#root{overflow: auto;}
 .color-gray-solid, input, textarea, input[type=file],input[type=file]::file-selector-button, button.paste{
   color: rgb(172,172,172);
 }
+footer,footer>span{color: rgba(255, 255, 255, 0.3);}
 
 .bcolor-green-solid
 {
@@ -52,7 +53,6 @@ div#root{overflow: auto;}
 {
   background-color: rgba(0, 0, 0, 0.3);
 }
-
 
 .bcolor-red
 {
@@ -127,7 +127,6 @@ footer::before {
 }
 footer.light::before {content: "";height:0;display: block;}
 footer{
-  opacity: 0.5;
   margin-top: 15px;
   margin-top: auto;
   margin-bottom: 35px;

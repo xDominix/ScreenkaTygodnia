@@ -1,4 +1,4 @@
-import { NOW, delay,  getMonday, toMap } from "../aFunctions";
+import { GET_NOW, delay,  getMonday, toMap } from "../aFunctions";
 import { DEMONOW, DEMONAME, WeekRepository } from "./aDemobase";
 import { Week } from "../Objects/Week";
 import { db, getDoc, getDocs } from "../Services/aFirebase";
@@ -23,7 +23,7 @@ const WeekService = {
         }
 
         let fromDate =getMonday();
-        let toDate = NOW();
+        let toDate = GET_NOW();
         let docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date",">=",fromDate),where("start_date","<=",toDate),orderBy("start_date","desc"),limit(1));
         if(docs.length===0) return null;
         return Week.fromDoc(docs.at(0))
@@ -33,15 +33,15 @@ const WeekService = {
     getHostWeekNames : async(host_id,from_date=null)=>{
         if(!host_id) return [];
         let docs;
-        if(from_date) docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date","<=",NOW()),where("start_date",">=",from_date),orderBy("start_date","desc"),limit(20));
-        else docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date","<=",NOW()),orderBy("start_date","desc"),limit(20));
+        if(from_date) docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date","<=",GET_NOW()),where("start_date",">=",from_date),orderBy("start_date","desc"),limit(20));
+        else docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date","<=",GET_NOW()),orderBy("start_date","desc"),limit(20));
         if(!docs)return [];
         return docs.map(doc=>doc.id);
     },*/
 
     getHostLastWeekName : async(host_id)=>{
         if(!host_id) return null;
-        let toDate = NOW();
+        let toDate = GET_NOW();
         toDate.setDate(toDate.getDate() - 7);
         let fromDate =getMonday(toDate);
         let docs;
@@ -52,7 +52,7 @@ const WeekService = {
 
     trySetHostWeekScreenkaView : async (host_id,week_name,user_fullname)=>{
         let data;
-        data[`screenka_views.${user_fullname}`] = { view_date:Timestamp.fromDate(NOW()), };
+        data[`screenka_views.${user_fullname}`] = { view_date:Timestamp.fromDate(GET_NOW()), };
         await updateDoc(doc(db,`hosts/${host_id}/weeks/${week_name}`),data);
         return true;
     }
