@@ -25,7 +25,7 @@ const Post = ({
     const [user,setUser]= useState(null);
     const [isSuperHide,setIsSuperHide] = useState(false);
     const [isHide,setIsHide] = useState(true);
-    const [content,setContent] = useState(null);
+    const [content,setContent] = useState("");
 
     useEffect(()=>{
         if(!hideNickname) getUser(user_fullname).then(setUser);
@@ -50,7 +50,7 @@ const Post = ({
                 case Format.Url: return <a className='centered'  href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
                 case Format.Path: 
                     let src = await getPathPostContentUrl(user_fullname,content);
-                    return <img alt="post content" className='centered' style={{height:"100%",}} src={src}></img>;
+                    return <img alt="post content" className='centered' src={src}></img>;
                 default: return content;
             }
         }
@@ -103,7 +103,7 @@ const Post = ({
                 </div>
                 <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
                     <div className='body' style={isHide?{opacity:"0"}:{}}>
-                        <div className='content'>{content?content:<NothingToShow/>}</div>
+                        <div className='content'>{content!==null?content:<NothingToShow/>}</div>
                         <h4>{postState?.context}</h4>
                     </div>
                     {isHide && <A bold className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>tap</A>}
@@ -117,9 +117,11 @@ const Post = ({
 export default Post;
 
 export const MiniPost = ({
-        post,hourDate=false,crossed_eye=false,
+        post,crossed_eye=false, no_eye=false,
+        hourDate=false,pretty_date=false,
         checkboxDisabled,uncheckedCheckboxDisabled,defaultChecked=null,onCheckboxChange=()=>{},onCheckboxChangeDelay=()=>{},
-        edit=false,onEdit=()=>{},delete_=false,onDelete=()=>{},preview=false,onPreview=()=>{}})=>
+        edit=false,onEdit=()=>{},delete_=false,onDelete=()=>{},preview=false,onPreview=()=>{},
+    })=>
     {
 
     const getInitChecked = ()=>defaultChecked!==null ? defaultChecked : post.permissions.screenka
@@ -160,8 +162,8 @@ export const MiniPost = ({
             <div className='infos abs'>
                 {preview && <div><A onClick={()=>onPreview(post.id)}>Link</A></div>}
                 {delete_ && <div><A red onClick={()=>onDelete(post.id)}>Delete</A></div>}
-                {!post.view &&<img alt='view' style={{height:"16px",filter:"invert(0.6)"}} src={getPath(!crossed_eye?"view16.png":"no_view16.png")}/>}
-                <div>{hourDate===true? dateToHourString(post.upload_date,true): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}</div>
+                {!no_eye && (post.view!=null) === !crossed_eye &&<img alt='view' style={{height:"16px",filter:"invert(0.6)"}} src={getPath(!crossed_eye?"view16.png":"no_view16.png")}/>}
+                <div>{hourDate===true? dateToHourString(post.upload_date,pretty_date): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}</div>
             </div>
         </div>
     </div>

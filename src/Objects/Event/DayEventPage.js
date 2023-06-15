@@ -17,7 +17,7 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
 
     useEffect(()=>{
         let day_event = Event.fromString(event);
-        if(!Event.canView(day_event)) navigate("/");
+        if(!Event.canView(day_event)) {navigate("/"); return;}
 
         const timeout = setTimeout(async ()=>{
             let nav = await getNavigator(day_event);
@@ -44,11 +44,11 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
             })
 
             if(tos.length===0) return null;
-            return {to:tos[0],options:{state:{nextPages: tos.slice(1)}}}
+            return {to:tos[0],options:{state:{nextPages: tos.slice(1),showMyRefPosts:true}}}
         }
         const getMorningShotNavigator=async ()=>{
             let post = await getMyYesterdayRandomPost(); if(!post) return null;
-            return {to:`/post/${user.fullname}/${post.id}/${DayEvent.MorningShot.toString()}`};
+            return {to:`/post/${user.fullname}/${post.id}/${DayEvent.MorningShot.toString()}`,options:{state:{showMyRefPosts:true,showFriendsRefPosts:true}}};//show na poprawe i zaskocznie, w koncu DayUploads ukrywaja friends interactions
         }
         const getOhPreviewNavigator=async()=>{
             let [friends,host_id]= getMyFriendsWithHostId();

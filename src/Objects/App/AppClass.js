@@ -1,4 +1,4 @@
-export const DEFAULT_APP_NAMES = ["Word","Sentence", "Safari","Photos","Camera","Contacts","Settings","Spotify","Youtube","Netflix",];
+export const DEFAULT_APP_NAMES = ["Sentence", "Safari","Photos","Camera","Contacts","Settings","Spotify","Youtube","Netflix",];
 
 export const AppType = {Personalized:0,Popular:1,Group:2,SuperPersonalized:3}
 
@@ -34,7 +34,7 @@ export class AppClass {
 
     static Default = new AppClass("Default","","",Format.None,100)
     //Abstract
-    static Word = new AppClass("Word","","write down a word, phrase or an emoji that describes your day!",Format.String,0)
+    static Word = new AppClass("Word","","write down a word or a pharse that describes your day.",Format.String,0)
     static Sentence = new AppClass("Sentence", "","write a sentence about what you've heard, what you've learned, what you've done...",Format.LongString,1)
     //Apple App
     static Safari = new AppClass("Safari","page","read some interesting content? saw some pretty layout? Share a website!",Format.Url,10)

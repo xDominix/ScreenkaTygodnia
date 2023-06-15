@@ -13,8 +13,8 @@ const DayEvents = [
     DayEvent.ClearMind, DayEvent.ClearMindForMe, //mon
     DayEvent.OhPreview, //thu
     DayEvent.ThrowBack, //fri
-    DayEvent.DeadLine,DayEvent.WeekUploads, //sun    //DayEvent.Reset HIDDEN
-    DayEvent.MorningShot, DayEvent.DayUploads, DayEvent.OneShot,  //everyday     //maja najmniejszy priorytet 
+    DayEvent.Reset,DayEvent.DeadLine,DayEvent.WeekUploads, //sun
+    DayEvent.MorningShot,  DayEvent.OneShot,DayEvent.DayUploads,  //everyday     //maja najmniejszy priorytet 
 ];
 const CustomEvents = [
     CustomEvent.ManageUploads,
@@ -45,7 +45,6 @@ export class Event {
             let count_str = localStorage.getItem(`${event.toString()}_count`);
             if(!count_str || Number(count_str)< event.max_views) return true;
         }
-
         return isDiffTill(event);
     }
 

@@ -37,18 +37,22 @@ export const ButtonPaste = ({onClick,disabled}) =>{
 /*USEFULL WITH H1 */
 export const ButtonNextPage=({style,onClick,focus,disabled})=>{
     const navigate = useNavigate();
-    const defaultClick = ()=>navigate(1);
+    const handleClick = ()=> {
+        if(onClick) onClick();
+        else navigate(1);
+    }
     return (<span className={'button-page'+((!disabled &&focus) ? " color-green-highlight":"")}
-        onClick={!disabled?(onClick?onClick:defaultClick):undefined}
+        onClick={!disabled?(handleClick):undefined}
         style={{...style, float:"right",...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
     >{">"}</span>)
 }
-export const ButtonPrevPage=({style,disabled,onClick=null,gohome=false,no_alert=false})=>{
+export const ButtonPrevPage=({style,disabled,onClick=null,alert=false})=>{
     const navigate = useNavigate();
     const handleClick = ()=> {
-        if(onClick) onClick();
-        else if(!gohome) navigate(-1);
-        else if(no_alert || window.confirm("Are you sure you want to leave?"))  navigate('/');
+        if(!alert || window.confirm("Are you sure you want to leave?")){
+            if(onClick) onClick();
+            else navigate(-1);
+        }  
     }
     return (<span className='button-page'
     onClick={!disabled?(handleClick):undefined}

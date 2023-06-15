@@ -1,17 +1,20 @@
 import "./AboutWeek.css"
 import React, { useContext, useMemo, useState } from 'react';
-import { dateToWeekDay, GET_NOW, getMonday , isDayToday, MonthNames, WeekDay} from "../../../aFunctions";
+import { getMonday , isDayToday, MonthNames, WeekDay} from "../../../aFunctions";
 import { BottomTabContext } from "../../../Contexts/BottomTabContext";
 import A from "../../../Components/A";
 import { ButtonPrevPage } from "../../../Components/Buttons";
 import { AuthContext } from "../../../Contexts/AuthContext";
+import ScrollDiv from "../../../Components/ScrollDiv";
 
 const AboutWeek = ({onClose}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
-    const {week,weekNumber,myDayEvents,friendsDisabled,screenkaDisabled,myRnShotEvent} = useContext(AuthContext);
+    const {week,weekNumber,myDayEvents,disabledDayEvents,myRnShotEvent} = useContext(AuthContext);
 
-    const weekDayEvents= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,events:myDayEvents.filter(event=>event.weekDay === weekDayIndex)}}),[myDayEvents?.length])
-    const everyDayEvents= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null) ,[myDayEvents?.length])
+    //only events with isAboutInfo true.
+    const weekDayEvents= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,events:myDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isAboutInfo),disabled_events:disabledDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isAboutInfo)}}),[myDayEvents?.length,disabledDayEvents?.length])
+    const everyDayEvents= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isAboutInfo)  ,[myDayEvents?.length])
+    const disabledEveryDayEvents= useMemo(()=>disabledDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isAboutInfo) ,[disabledDayEvents?.length])
     const [isDayLetter,setIsDayLetter] = useState(true)
 
     const handleDayNameClick =(day,event)=>{
@@ -39,51 +42,61 @@ const AboutWeek = ({onClose}) => {
 
     return (
         <div className={"aweek "+( isBottomTab()?'noclick aweek-blur-dark':"")}>
+        <ScrollDiv>
         <h1>
             <ButtonPrevPage onClick={onClose}/>
              {"#"+(weekNumber?weekNumber:0)} 
-             <span className={"color-green-highlight"}>{week? week.name.toUpperCase(): "WEEK"}</span>{/* (week?.name.length>12 ? " spansmall":" span") */}
-             {week && <span role="img" aria-label="emoji">{week.emoji}</span>}
+                <span className={"color-green-highlight"}>{week? week.name.toUpperCase(): "WEEK"}</span>{/* (week?.name.length>12 ? " spansmall":" span") */}
+                {week && <span role="img" aria-label="emoji">{week.emoji}</span>}
         </h1>
+        </ScrollDiv>
+    
         <div className="description initial-letter">{week?week.description:""}</div>
         <div className="aweek-calendar">
             <div className="aweek-rows">   
 
-            {weekDayEvents.map(({day_name,events}) => 
-            <div key={day_name}>
-            
+            {weekDayEvents.map(({day_name,events,disabled_events}) => 
+           <div key={day_name} >
                 <div>
                     {events.map((event,index)=> 
-                    <A key={index} disabled={!event.checkPermissions({me:true,friends:!friendsDisabled,screenka:!screenkaDisabled})} nocolor={!isDayToday(WeekDay[day_name])} onClick={()=>handleDayNameClick(WeekDay[day_name],event)}>
+                    <A key={index} nocolor={!isDayToday(WeekDay[day_name])} onClick={()=>handleDayNameClick(WeekDay[day_name],event)}>
+                            {index!==0 && ", "}
+                            {event.name.toUpperCase()}
+                    </A>)}
+                    {disabled_events.map((event,index)=> 
+                    <A key={index} nocolor={!isDayToday(WeekDay[day_name])} disabled>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
                     </A>)}
                 </div>
 
                 <span 
-                    className={"noselect "+(isDayToday(WeekDay[day_name])?"bcolor-green-solid color-black clickable":"bcolor-dark-gray-solid")} 
+                    className={"noselect circle "+(isDayToday(WeekDay[day_name])?"bcolor-green-solid color-black clickable":"bcolor-dark-gray-solid")} 
                     onClick={()=> ((week &&isDayToday(WeekDay[day_name]))? setIsDayLetter(!isDayLetter):{})}>
                         {spanDate( day_name)}
                 </span>
             </div>
                )}
 
-                <div style={{width:"100%"}}>
-                    <div className="noscroll" style={{width:"100%",overflow:"auto",direction: "rtl"}}>
-                        <div style={{whiteSpace:"nowrap"}}>
+                <div style={{maxWidth:'100%'}}>
+                   <ScrollDiv >{/*right */}
                         {everyDayEvents.map((event,index)=> 
-                        <A key={index} disabled={!event.checkPermissions({me:true,friends:!friendsDisabled,screenka:!screenkaDisabled})} onClick={()=>setBottomTab({id:3,object:event})}>
+                        <A key={index} onClick={()=>setBottomTab({id:3,object:event})}>
+                                {index!==0 && ', '}
+                                {event.name.toUpperCase()}
+                        </A>)}
+                        {disabledEveryDayEvents.map((event,index)=> 
+                        <A key={index} disabled>
                                 {index!==0 && ", "}
                                 {event.name.toUpperCase()}
                         </A>)}
-                    </div>
-                    </div>
-                    <span className="noselect bcolor-green-solid color-black"></span>
+                    </ScrollDiv>
+                    <span className="noselect bcolor-green-solid color-black circle"></span>
                 </div>
             
                 {myRnShotEvent &&<div>
-                    <div><A nocolor className="color-orange"  disabled={!myRnShotEvent.checkPermissions({me:true,friends:!friendsDisabled,screenka:!screenkaDisabled})} onClick={()=>setBottomTab({id:3,object:myRnShotEvent})}>{myRnShotEvent.name.toUpperCase()}</A></div> 
-                    <span className="noselect bcolor-orange color-black"></span>
+                    <div><A nocolor className="color-orange" onClick={()=>setBottomTab({id:3,object:myRnShotEvent})}>{myRnShotEvent.name.toUpperCase()}</A></div> 
+                    <span className="noselect bcolor-orange color-black circle"></span>
                 </div>}
         
             </div>

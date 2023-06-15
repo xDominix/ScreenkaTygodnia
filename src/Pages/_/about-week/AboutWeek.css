@@ -52,7 +52,7 @@
     font-weight: bold;
 }
 
-.aweek-rows span{
+.aweek-rows .circle{
     width: 34px;
     height: 34px;
     border-radius: 17px;

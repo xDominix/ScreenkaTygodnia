@@ -11,7 +11,7 @@
     bottom: -20px; /*! couse of offset for animation*/
 
     border-radius: 43px 43px 0px 0px;
-    padding: 17px;
+    padding: 20px;
     margin: 0px !important;
 
     animation: from_bottom 0.3s ease-in-out;

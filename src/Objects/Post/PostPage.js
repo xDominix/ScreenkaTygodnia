@@ -7,10 +7,12 @@ import { ButtonNextPage, ButtonPrevPage } from '../../Components/Buttons';
 import { Event } from '../Event/Event';
 import { CustomEvent } from '../Event/CustomEvent';
 
-const PostPage = () => {
+const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
     const location = useLocation();
     const nextPages = location.state?.nextPages;
+    //const showMyRefPosts = location.state? location.state.showMyRefPosts===true : false;
+    //const showFriendsRefPosts =location.state? location.state.showFriendsRefPosts===true : false;
     const navigate = useNavigate();
     const {user_fullname,id,event} = useParams();
     const event_ = useMemo(()=>Event.fromString(event),[event]);
@@ -33,14 +35,14 @@ const PostPage = () => {
     const title = useMemo(()=>event_ ? event_.name.toUpperCase():"User Post",[event_])
 
     const handleOnNextClick = ()=>{
-        navigate(nextPages[0],{replace:true,state:{nextPages:nextPages.slice(1)}});
+        navigate(nextPages[0],{replace:true,state:{nextPages:nextPages.slice(1)}}); //showMyRefPosts:showMyRefPosts, showFriendsRefPosts:showFriendsRefPosts
     }
 
     if(nothingToShow) return <NothingToShow/>
     return ( <div>
 
         <h2>
-            <ButtonPrevPage gohome no_alert={!nextPages || nextPages.length===0}/>
+            <ButtonPrevPage alert={nextPages?.length>0}/>
             {title}
             {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
         </h2>

@@ -1,4 +1,4 @@
-import { GET_NOW, YY_MMDD_HHMM, dateToWeekDay, dayEqual, delay, getMonday, getPath, } from "../aFunctions";
+import { GET_NOW, YY_MMDD_HHMM, dateToWeekDay, dayEqual, delay, getMonday, getPath, weekEqual, } from "../aFunctions";
 import { DEMONOW, PostRepositoryMap } from "./aDemobase";
 import { PostClass } from "../Objects/Post/PostClass";
 import { doc, updateDoc , arrayUnion, increment, setDoc, orderBy, where, limit} from "firebase/firestore";
@@ -39,7 +39,7 @@ const PostService = {
 
       let queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("host_id","==",host_id),where("permissions.me","==",true)]
       if(forFriends!==null) queries.push(where("permissions.friends","==",forFriends));
-      if(okApps) queries.push("app","in",okApps);
+      if(okApps && okApps.length>0) queries.push(where("app","in",okApps));
       let docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr,random),orderBy("random"),limit(1));
       if(!docs|| docs.length!== 1) docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr===">="?"<=":">=",random),orderBy("random"),limit(1));
       return PostClass.fromDoc(docs?.at(0));
@@ -80,7 +80,7 @@ const PostService = {
       if(host_id!==null) queries.push(where("host_id","==",host_id))
       queries.push(orderBy("upload_date","desc"),limit(30));
       let docs = await getDocs(`users/${user_fullname}/posts`,...queries);
-      return docs.map((doc) => PostClass.fromDoc(doc));
+      return docs? docs.map((doc) => PostClass.fromDoc(doc)):[];
     },
 
     getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,okApps=[], no_view=false)=> {
@@ -91,11 +91,11 @@ const PostService = {
       if(host_id!==null) queries.push(where("host_id","==",host_id))
       queries.push(where("permissions.me","==",true));
       if(no_view) queries.push(where("view","==",null));
-      if(okApps) queries.push("app","in",okApps);
+      if(okApps && okApps.length>0) queries.push(where("app","in",okApps));
       queries.push(orderBy("upload_date","desc"),limit(30));
 
       let docs = await getDocs(`users/${user_fullname}/posts`,...queries);
-      return docs.map((doc) => PostClass.fromDoc(doc));
+      return docs? docs.map((doc) => PostClass.fromDoc(doc)):[];
     },
 
     getUserYesterdayRandomPost:async(user_fullname,host_id=null)=>{
@@ -214,7 +214,7 @@ const PostServiceDemo = {
  
     getUserCurrentWeekPosts: async (user_fullname,host_id) => { //narazie bez
       if(!user_fullname) return null;
-      return PostService.getUserPastWeekPosts(user_fullname,host_id)
+      return PostRepositoryMap.get(user_fullname)?.filter((post) => weekEqual(post.upload_date, DEMONOW)).filter(post=>post.permissions.me === true && post.host_id === host_id);
     },
     
     getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,okApps=[])=> {

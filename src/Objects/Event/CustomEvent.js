@@ -21,7 +21,7 @@ export class CustomEvent {
 
     static Screenka = new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,2,MAX_SCREENKA,EventViewsTill.Week)
 
-    static RnShot = new CustomEvent("Rn-Shot","- z ostatniej chwili! Podglądnij najnowszego posta innego uczestnika do 15min po dodaniu.",EventFor.friends,0,1,EventViewsTill.FifteenMinutes)
+    static RnShot = new CustomEvent("Rn-Shot","- z ostatniej chwili! Najnowszy post innego uczestnika do 15min po jego dodaniu.",EventFor.friends,0,1,EventViewsTill.FifteenMinutes)
 
     static ManageUploads = new CustomEvent("Manage Uploads","- zarządzaj swoimi uploadami.",EventFor.me,0)
    
@@ -33,7 +33,7 @@ export class CustomEvent {
             case(CustomEvent.Upload): //{}
                 return !DayEvent.DeadLine.isTime() && ( DayEvent.ClearMind.isTime()|| !isDayToday(WeekDay.Monday) )
             case(CustomEvent.Screenka): //week (week=true cheat ;))
-                return props.week!=null && (DayEvent.ClearMind.isTime() || props.week.force_screenka)
+                return props.week!=null && (DayEvent.ClearMind.isTime() || props.week ===true || props.week.force_screenka)
             case(CustomEvent.RnShot): //date
                 return props.date!=null && isLessThenMinutes(props.date,15);
             case(CustomEvent.ManageUploads):

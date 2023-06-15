@@ -100,7 +100,7 @@ const Setup = ({onSetup}) => {
 
     if(isLoading) return <Loading/>
     return ( 
-        <div className='setup'>
+        <div className='setup noscroll'>
             <h2 className='color-gray-solid' style={{marginLeft:"15px"}}>Welcome, {getTempMe().getName()}!<span role="img" aria-label="emoji"> ✋🏼</span></h2>
        
             <div className='setup-user'>

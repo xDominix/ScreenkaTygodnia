@@ -24,7 +24,7 @@ const HOME_APPS_SIZE = 6;
 
 const Home = ({onAboutWeekClick}) => {
 
-    const {user,host,week,weekNumber,getMyFriends,getFriendLatestPost,getMyAppsCounts,friendsDisabled,screenkaDisabled,myDayEvents,myRnShotEvent,myScreenkaEvent,myUploadEvent,myManageUploadsEvent} = useContext(AuthContext)
+    const {user,host,week,weekNumber,getMyFriends,getFriendLatestPost,getMyAppsCounts,myDayEvents,myRnShotEvent,myScreenkaEvent,myUploadEvent,myManageUploadsEvent} = useContext(AuthContext)
     const {setBottomTab,isBottomTab,getObject,} = useContext(BottomTabContext);
 
     const navigate = useNavigate();
@@ -40,9 +40,8 @@ const Home = ({onAboutWeekClick}) => {
 
     //buttons    
     const currDayEvent = useMemo(()=> myDayEvents
-        .filter(event=>event.checkPermissions({friends:!friendsDisabled,screenka:!screenkaDisabled}))
         .filter((event)=> event.hasPage && event.isTime())?.at(0)
-    ,[myDayEvents,friendsDisabled,screenkaDisabled]) 
+    ,[myDayEvents]) 
 
     const isCurrDayEventDisabled = useMemo(()=>!Event.canView(currDayEvent),[currDayEvent])
 
@@ -172,10 +171,10 @@ const Home = ({onAboutWeekClick}) => {
     /* BUTTONS START */
 
     const handleDayEventClick = (event)=> {if(event) navigate(`/dayevent/${event.toString()}`)}
-    const handleRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${CustomEvent.RnShot.toString()}`);  }
+    const handleRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${CustomEvent.RnShot.toString()}`,{state:{showMyRefPosts:true,showFriendsRefPosts:false}});  }
     
     const isButtonScreenkaDisabled = useMemo(()=>{
-        if(screenkaDisabled || !myScreenkaEvent) return true;
+        if(!myScreenkaEvent) return true;
         return !Event.canView(CustomEvent.Screenka,{week:true});
     },[host?.id, myScreenkaEvent]);
 
@@ -242,7 +241,7 @@ const Home = ({onAboutWeekClick}) => {
        
         {!isUploadMode && isBottomTab()  &&<div style={{height:"290px"}}></div>}     
         {!isUploadMode && !isBottomTab() && <footer className={'center '+(!user.preferences.me ?" text-shine":"")}><A nocolor onClick={()=>setBottomTab({id:4})}>SCREENKA Ⓡ</A></footer>}
-        {isUploadMode && <footer className='center'><A underline onClick={()=>navigate("/uploads/manage")} >manage uploads</A></footer>}
+        {isUploadMode && myManageUploadsEvent && <footer className='center'><A underline onClick={()=>navigate("/uploads/manage")} >manage uploads</A></footer>}
         
     </div>
 

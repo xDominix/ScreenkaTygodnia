@@ -36,7 +36,7 @@ div#root{overflow: auto;}
 .color-gray-solid, input, textarea, input[type=file],input[type=file]::file-selector-button, button.paste{
   color: rgb(172,172,172);
 }
-footer,footer>span{color: rgba(255, 255, 255, 0.3);}
+footer,footer>span{color: rgba(255, 255, 255, 0.4);opacity: 0.94;}
 
 .bcolor-green-solid
 {
@@ -104,7 +104,7 @@ h2{
 
 h3{
   font-size: 25px;
-  line-height: 20px;
+  line-height: 22px;
   margin: 10px 0px;
 }
 

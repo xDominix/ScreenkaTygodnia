@@ -29,9 +29,9 @@ const MiniPostsPagePlus = () => {
 
 
     useEffect(()=>{
-        if(!event_ || !user_fullname || !host_id || !week_name) navigate("/")
+        if(!event_ || !user_fullname || !host_id || !week_name) {navigate("/"); return;}
 
-        if(!Event.canView(event_)) navigate("/");
+        if(!Event.canView(event_)) {navigate("/"); return;}
 
         switch(event_){
             case DayEvent.ThrowBack:
@@ -54,14 +54,14 @@ const MiniPostsPagePlus = () => {
     const handleOnNextPageClick = ()=>{
         let tos = Array.from(postCheckboxMap.current.keys()).map(post_id=> `/post/${user_fullname}/${post_id}/${event_.toString()}`);
         
-        return navigate(tos[0],{replace:true,state:{nextPages: tos.slice(1)}})
+        return navigate(tos[0],{replace:true,state:{nextPages: tos.slice(1),showMyRefPosts:true,showFriendsRefPosts:true}})
     }
 
     return (
         <div>
-            <h2> <ButtonPrevPage gohome/>{event_.name?.toUpperCase()}<ButtonNextPage focus disabled={checks===0} onClick={handleOnNextPageClick} /></h2>
+            <h2> <ButtonPrevPage/>{event_.name?.toUpperCase()}<ButtonNextPage focus disabled={checks===0} onClick={handleOnNextPageClick} /></h2>
             
-            <MiniPosts posts={posts} title = {`${week_name}`}
+            <MiniPosts posts={posts} title = {`${week_name}`} no_eye
             maxChecks={DAY_EVENT_POSTS} 
             customCheckboxes={true}
             onPostCheckboxChange={handleOnPostCheckboxChange}

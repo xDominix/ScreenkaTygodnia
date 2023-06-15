@@ -23,7 +23,7 @@ export const PostRepositoryMap = new Map([
     new Post("123","-1","Glassy Week",new Date(2023,4-1,24,14,30),"Spotify","https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO","Hejka!",{me:true,friends:true,screenka:true},null,null,null),
     ]]])
 export const UserRepository = [
-    new UserClass(DEMONAME,DEMOFUNNYNAME,DEMOUSERNAME,["-1"],{me:true,friends:true,screenka:true},),//["Maps"]
+    new UserClass(DEMONAME,DEMOFUNNYNAME,DEMOUSERNAME,["-1"],{me:true,friends:true,screenka:true},["Word"]),//["Maps"]
     new UserClass("Tola Bajka","bayka","bayka",["-1"],{me:true,friends:true,screenka:true}),
     new UserClass("Mia Muller","miam","miam",["-1"],{me:true,friends:true,screenka:true})
 ]
@@ -43,7 +43,7 @@ const subscribers = new Map([
 
 export const HostRepository = [ new Host("-1",DEMONAME,new Date(2023,4-1,10),
 DEFAULT_APP_NAMES,
-["Maps","Instagram","Pinterest"],null,new Map([["SuperGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
+["Maps","Instagram","Pinterest","Word"],null,new Map([["SuperGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
 
 
 

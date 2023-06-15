@@ -15,10 +15,21 @@ const ScreenkaT0 = ({onLoad}) => {
 
     return ( 
         <div className='Screenka noscroll'>
-            <h1>Witamy bardzo serdeczenie na Screence Tygodnia!</h1>
-            <h4 style={{textAlign:"end"}}>APRIL 2023 EDITION</h4>
-            <h4>Wyniki prezentuja się przepieknie! </h4>
-           <WeekAppContainer host_id={HOST_ID} week_name={WEEK_NAME}/>
+            <div style={{display:'flex',justifyContent:'center'}}>
+            <h1 style={{opacity:'0.2'}}>Screenka<br/>Tygodnia</h1>
+            <h1>Screenka<br/>Tygodnia</h1>
+            <h1 style={{opacity:'0.2'}}>Screenka<br/>Tygodnia</h1>
+            </div>
+            
+            <h5 style={{textAlign:"center",opacity:'0.6'}}>#1 GLASSY WEEK<br/>APRIL 2023</h5>
+            <br/>      <br/>
+            <h3>Witamy! Nastepny tydzien za nami, a co za tym idzie kolejne wydanie Screenki! Kazdy w okularach? Nie sadzilismy ze u wszystkich tak zle ze wzrokiem...</h3>
+            <h2>Oto nasze wyniki:</h2>
+            <br/>
+            {/*<WeekAppContainer host_id={HOST_ID} week_name={WEEK_NAME}/>*/}
+            <br/><br/>
+            <h2>Poniedziałek</h2>
+            <h4>A wszystko zaczęlo sie od...</h4>
             <footer style={{marginTop:"50px"}}>Screenka Tygodnia ®</footer>
         </div> );
 }

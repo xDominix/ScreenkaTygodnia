@@ -19,25 +19,25 @@ const Uploads = () => {
 
     useEffect(()=>{
         if(type==="manage") {
-            if(!Event.canView(CustomEvent.ManageUploads)) navigate("/");
+            if(!Event.canView(CustomEvent.ManageUploads)) {navigate("/");return;}
             getMyDayUploads().then(setPosts).catch(()=>navigate("/"))
         } else
         if(type==="day") {
-            if(!Event.canView(DayEvent.DayUploads)) navigate("/");
+            if(!Event.canView(DayEvent.DayUploads)) {navigate("/");return;}
             getMyDayUploads().then((posts)=>{
                 setPosts(posts);
                 if(posts?.length>0) Event.setView(DayEvent.DayUploads);
             })
         } 
         else if(type==="week") {
-            if(!Event.canView(DayEvent.WeekUploads)) navigate("/");
+            if(!Event.canView(DayEvent.WeekUploads)) {navigate("/");return;}
             getMyWeekUploads().then((posts)=>{
                 setPosts(posts);
                 if(posts?.length>0) Event.setView(DayEvent.WeekUploads);
             })
             .catch(()=>navigate("/"))
         }
-        else navigate("/")
+        else {navigate("/");return;}
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnPostCheckboxDelay = (e)=>{
@@ -53,7 +53,7 @@ const Uploads = () => {
     }
 
     const handleOnPostPreview = (post_id)=>{
-        navigate(`/post/${user.fullname}/${post_id}`)
+        navigate(`/post/${user.fullname}/${post_id}`,{state:{showMyRefPosts:type!=="manage",showFriendsRefPosts:type==="week"}})
     }
 
     return (
@@ -63,13 +63,15 @@ const Uploads = () => {
             {type==="week" && <h2> <ButtonPrevPage/> Your Week Uploads:</h2>}
 
             <MiniPosts posts={posts} 
-                checkboxesDisabled={!user.preferences.screenka || screenkaDisabled} maxChecks={type==="manage"?getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
-                hourDate={type==="day" || type==="manage"}
+                checkboxesDisabled={!user.preferences.screenka || screenkaDisabled || type!=="manage"} maxChecks={type==="manage"?getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
+                hourDate={type==="day" || type==="manage"} pretty_date
                 preview={type==="day" || type==="week"} onPostPreview={handleOnPostPreview}
                 delete_={type==="manage"}  onPostDelete={handleOnPostDelete}
                 hideTickets={!user.preferences.screenka}
                 crossed_eye={type==="manage"}
                 no_crossed_eye_funny_info={type==="week"}
+                no_eye={type==="day"}
+                
             />
 
        </div>);

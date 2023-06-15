@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 const NothingToShow = ({goback=false}) => {
     const navigate = useNavigate();
     return ( <div>
-        <div className='centered opacity' style={{textAlign:'center'}}>
-            <div>Nothing to show.</div>
+        <div className='centered' style={{textAlign:'center'}}>
+            <div className='opacity'>Nothing to show.</div><br/>
             {goback && <A onClick={()=>navigate(-1)}>go back</A>}
         </div>
         </div> );

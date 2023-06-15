@@ -1,5 +1,8 @@
 .setup{
     padding: 0 10px;
+
+    height: 100%;
+    overflow: auto;
 }
 .setup>*{
     margin-bottom: 40px ;

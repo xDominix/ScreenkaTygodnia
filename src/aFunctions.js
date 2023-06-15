@@ -78,8 +78,8 @@ export const isTime=(weekIndex,fromHour,toHour) =>{
     
 export const dateToHourString = (date, pretty=false)=>{ //prettier version of date
     if(pretty && isLessThenMinutes(date,15)) return "NOW";
-    if(pretty && isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN`;
-    if(pretty && isLessThenMinutes(date,60+59)) return "1H";
+    if(pretty && isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN AGO`;
+    if(pretty && isLessThenMinutes(date,60+59)) return "1H AGO";
     return (
         date.getHours().toLocaleString('en-US', { minimumIntegerDigits: 1, useGrouping: false })+ ":"+ 
         date.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }))

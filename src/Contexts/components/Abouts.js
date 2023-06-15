@@ -54,7 +54,7 @@ export const AboutScreenka = ({onClose}) => {
     return (  
         <BottomTab maxHeight onClose={!loading?onClose:()=>{}} 
         title={title} subtitle={subtitle} >
-                <h4 style={{fontWeight:"bold",marginTop:"30px",textAlign:'center'}}>
+                <h5 style={{fontWeight:"bold",marginTop:"30px",textAlign:'center'}}>
                     <span >
                         {!isEditMode && "\""}
                         <A 
@@ -77,8 +77,8 @@ export const AboutScreenka = ({onClose}) => {
                         </A>
                         {!isEditMode && "\""}
                      </span>
-                </h4>
-                {isChanged() &&<div style={{textAlign:"center"}}><A disabled={loading} onClick={changePreferences} bold>Change </A> </div>}
+                </h5>
+                {isChanged() &&<div style={{textAlign:"center"}}><h5><A disabled={loading} onClick={changePreferences} bold>Change </A> </h5></div>}
                 <div className='margin' style={{marginTop:"auto",}} >
                     <p style={!you  ? {opacity:0}:undefined}><b>You. </b> Capture the happiness. Upload posts and preview them at the end of the day.</p>
                     {!friendsDisabled &&<p style={!(friends&&you)  ? {opacity:0}:undefined}><b>Friends. </b> Have fun with your friends. Participate in special events during the week. {getTextAboutMyGroups()}</p>}

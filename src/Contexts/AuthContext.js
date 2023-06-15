@@ -142,8 +142,8 @@ const AuthProvider = ({children, demo}) => {
                 userTemp.current = user;
                 return true; })
     }
-    const trySetMyUsername= async (username)=> trySetUsername(userTemp.current.fullname,username);  //if(res) user..username => username;
-    const trySetMyPersonalizedApps = async (apps)=> trySetPersonalizedApps(userTemp.current.fullname,apps)
+    const trySetMyUsername= async (username)=> trySetUsername(userTemp.current.fullname,username).then(()=>{userTemp.current.username = username;})  //if(res) user..username => username;
+    const trySetMyPersonalizedApps = async (apps)=> trySetPersonalizedApps(userTemp.current.fullname,apps).then(()=>{userTemp.current.personalized_apps = apps;})
     const saveMe =()=>{
         if(!userTemp.current) throw new Error('Cannot save. User is null');
         localStorage.setItem("fullname",userTemp.current.fullname);
@@ -302,15 +302,31 @@ const AuthProvider = ({children, demo}) => {
         return null;
     }
 
-    /*EVENTS*/
-    const myDayEvents=useMemo(()=>{
-        return Event.getAvailableDayEvents(weekNumber,user?.preferences);
-    },[weekNumber, user?.preferences])
-
+    /*EVENTS (myDayEvents i disabledEvents sie wykluczaja)*/
     
+    const myDayEvents=useMemo(()=>{
+        if(!user) return [];
+        let permissions = {
+            me: user.preferences.me, 
+            friends: user.preferences.friends && !friendsDisabled,
+            screenka: user.preferences.screenka && !screenkaDisabled
+        }
+        return Event.getAvailableDayEvents(weekNumber,permissions);
+    },[weekNumber, user?.preferences,friendsDisabled,screenkaDisabled])
+
+    const disabledDayEvents=useMemo(()=>{
+        return Event.getAvailableDayEvents(weekNumber,{friends: friendsDisabled, screenka:screenkaDisabled});
+    },[weekNumber, friendsDisabled,screenkaDisabled])
+
     const myCustomEvents=useMemo(()=>{ //private
-        return Event.getAvailableCustomEvents(weekNumber,user?.preferences);
-    },[weekNumber, user?.preferences])
+        if(!user) return [];
+        let permissions = {
+            me: user.preferences.me, 
+            friends: user.preferences.friends && !friendsDisabled,
+            screenka: user.preferences.screenka && !screenkaDisabled
+        }
+        return Event.getAvailableCustomEvents(weekNumber,permissions);
+    },[weekNumber, user?.preferences,friendsDisabled,screenkaDisabled])
 
     const myRnShotEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.RnShot),[myCustomEvents])
     const myScreenkaEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.Screenka),[myCustomEvents])
@@ -332,7 +348,7 @@ const AuthProvider = ({children, demo}) => {
                                 
                                 
                                 trySetMyScreenkaView, //Screenka
-                                myDayEvents,myRnShotEvent,myManageUploadsEvent,myScreenkaEvent,myUploadEvent,//events
+                                myDayEvents,disabledDayEvents,myRnShotEvent,myManageUploadsEvent,myScreenkaEvent,myUploadEvent,//events
                                 friendsDisabled,screenkaDisabled,//disabled options
 
                                 user,
