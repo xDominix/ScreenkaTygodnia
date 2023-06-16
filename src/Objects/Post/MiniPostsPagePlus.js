@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../Contexts/AuthContext';
 import { DayEvent } from '../Event/DayEvent';
@@ -13,6 +14,10 @@ const MiniPostsPagePlus = () => {
 
     const {user_fullname,host_id,week_name,event} = useParams(); // event_string
     const navigate = useNavigate();
+
+    //token
+    const location = useLocation();
+    const token = location.state?.token;
 
     const event_ = useMemo(()=>Event.fromString(event),[event]);
     const {getMyPastWeekPosts,getFriendPastWeekPosts} = useContext(AuthContext)
@@ -29,9 +34,8 @@ const MiniPostsPagePlus = () => {
 
 
     useEffect(()=>{
+        if(!token) {navigate("/"); return;}
         if(!event_ || !user_fullname || !host_id || !week_name) {navigate("/"); return;}
-
-        if(!Event.canView(event_)) {navigate("/"); return;}
 
         switch(event_){
             case DayEvent.ThrowBack:
@@ -54,7 +58,7 @@ const MiniPostsPagePlus = () => {
     const handleOnNextPageClick = ()=>{
         let tos = Array.from(postCheckboxMap.current.keys()).map(post_id=> `/post/${user_fullname}/${post_id}/${event_.toString()}`);
         
-        return navigate(tos[0],{replace:true,state:{nextPages: tos.slice(1),showMyRefPosts:true,showFriendsRefPosts:true}})
+        return navigate(tos[0],{replace:true,state:{token:true,nextPages: tos.slice(1),showMyRefPosts:true,showFriendsRefPosts:true}})
     }
 
     return (

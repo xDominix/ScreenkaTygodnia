@@ -16,12 +16,17 @@ const DayEvents = [
     DayEvent.Reset,DayEvent.DeadLine,DayEvent.WeekUploads, //sun
     DayEvent.MorningShot,  DayEvent.OneShot,DayEvent.DayUploads,  //everyday     //maja najmniejszy priorytet 
 ];
+
 const CustomEvents = [
     CustomEvent.ManageUploads,
     CustomEvent.RnShot,
     CustomEvent.Screenka,
     CustomEvent.Upload,
 ];
+
+const ShotEvents=[ DayEvent.MorningShot,DayEvent.OneShot,DayEvent.RnShot];
+
+
 export class Event {
 
     static getAvailableDayEvents = (weekNumber=0,for_, force_all=false) =>  {
@@ -35,6 +40,8 @@ export class Event {
 
     static toString = (event)=> event.toString();
     static fromString = (string)=> [...CustomEvents,...DayEvents].find(event=>event.toString()===string);
+
+    static isShotType = (event) => ShotEvents.includes(event);
 
     static canView = (event,props)=>{ //props for CustomEvents
         if(!event) return false;

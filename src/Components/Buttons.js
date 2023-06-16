@@ -51,7 +51,7 @@ export const ButtonPrevPage=({style,disabled,onClick=null,alert=false})=>{
     const handleClick = ()=> {
         if(!alert || window.confirm("Are you sure you want to leave?")){
             if(onClick) onClick();
-            else navigate(-1);
+            else navigate(-1)
         }  
     }
     return (<span className='button-page'

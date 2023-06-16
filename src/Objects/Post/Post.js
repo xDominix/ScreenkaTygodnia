@@ -34,8 +34,10 @@ const Post = ({
 
         const getPostPromise = setView ? getUserPostAndTrySetMyView(user_fullname,id) : getUserPost(user_fullname,id);
         getPostPromise.then(post=>{
-            onLoad(post);
-            setPostState(post);
+            if(post) {
+                setPostState(post);
+                onLoad();
+            }
         })
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 

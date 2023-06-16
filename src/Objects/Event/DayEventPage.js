@@ -44,28 +44,28 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
             })
 
             if(tos.length===0) return null;
-            return {to:tos[0],options:{state:{nextPages: tos.slice(1),showMyRefPosts:true}}}
+            return {to:tos[0],options:{state:{token:true,nextPages: tos.slice(1),showMyRefPosts:true}}}
         }
         const getMorningShotNavigator=async ()=>{
             let post = await getMyYesterdayRandomPost(); if(!post) return null;
-            return {to:`/post/${user.fullname}/${post.id}/${DayEvent.MorningShot.toString()}`,options:{state:{showMyRefPosts:true,showFriendsRefPosts:true}}};//show na poprawe i zaskocznie, w koncu DayUploads ukrywaja friends interactions
+            return {to:`/post/${user.fullname}/${post.id}/${DayEvent.MorningShot.toString()}`,options:{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:true}}};//show na poprawe i zaskocznie, w koncu DayUploads ukrywaja friends interactions
         }
         const getOhPreviewNavigator=async()=>{
             let [friends,host_id]= getMyFriendsWithHostId();
             let random_friend = randomElement(friends);
             let week_name = await getMyHostLastWeekName();
-            return {to:`/posts/${random_friend}/${host_id}/${week_name}/${DayEvent.OhPreview.toString()}`}
+            return {to:`/posts/${random_friend}/${host_id}/${week_name}/${DayEvent.OhPreview.toString()}`,options:{state:{token:true}}}
         }
         const getThrowBackNavigator=async ()=>{
             let [me,host_id]  =getMeAndMyHostId()
             let week_name = await getMyHostLastWeekName();
-            return {to:`/posts/${me.fullname}/${host_id}/${week_name}/${DayEvent.ThrowBack.toString()}`}
+            return {to:`/posts/${me.fullname}/${host_id}/${week_name}/${DayEvent.ThrowBack.toString()}`,options:{state:{token:true}}}
         }
 
         switch(event)
         { 
-            case DayEvent.DayUploads: return {to:"/uploads/day"}
-            case DayEvent.WeekUploads: return {to:"/uploads/week"}
+            case DayEvent.DayUploads: return {to:"/uploads/day",options:{state:{token:true}}}
+            case DayEvent.WeekUploads: return {to:"/uploads/week",options:{state:{token:true}}}
             case DayEvent.OneShot: return getOneShotNavigator();
             case DayEvent.MorningShot: return getMorningShotNavigator();
             case DayEvent.OhPreview: return getOhPreviewNavigator();

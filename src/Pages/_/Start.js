@@ -22,7 +22,7 @@ const Start = () => {
     },[aboutToggled])
 
     useEffect(()=>{
-        if(user==null) {navigate("/login");return;}
+        if(user==null) {navigate("/login",{replace:true});return;}
     },[user])
 
     return ( 

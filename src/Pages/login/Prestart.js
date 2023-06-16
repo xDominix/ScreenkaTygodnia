@@ -11,7 +11,7 @@ const Prestart = () => {
     return ( 
     <div>
         {!isNext && <TempLogin onTempLogin={()=>setIsNext(true)}/>}
-        {isNext && <Setup onSetup={()=>{navigate("/");}}/>}
+        {isNext && <Setup onSetup={()=>{navigate("/",{replace:true});}}/>}
     </div> );
 }
  

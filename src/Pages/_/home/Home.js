@@ -171,7 +171,7 @@ const Home = ({onAboutWeekClick}) => {
     /* BUTTONS START */
 
     const handleDayEventClick = (event)=> {if(event) navigate(`/dayevent/${event.toString()}`)}
-    const handleRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${CustomEvent.RnShot.toString()}`,{state:{showMyRefPosts:true,showFriendsRefPosts:false}});  }
+    const handleRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${CustomEvent.RnShot.toString()}`,{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:false}});  }
     
     const isButtonScreenkaDisabled = useMemo(()=>{
         if(!myScreenkaEvent) return true;

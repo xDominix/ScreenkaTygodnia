@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../Contexts/AuthContext';
 import { ButtonPrevPage } from '../Components/Buttons';
@@ -6,7 +6,7 @@ import { DayEvent } from '../Objects/Event/DayEvent';
 import {MiniPosts} from '../Objects/Post/MiniPosts';
 import { delay } from '../aFunctions';
 import { Event } from '../Objects/Event/Event';
-import { CustomEvent } from '../Objects/Event/CustomEvent';
+import { useLocation } from 'react-router-dom';
 
 const Uploads = () => {
 
@@ -15,22 +15,25 @@ const Uploads = () => {
     const {user,getMyDayUploads,getMaxTickets,getMyWeekUploads,changeMyPostPermissions,screenkaDisabled} = useContext(AuthContext)
     const {type} = useParams();
 
+    //token
+    const location = useLocation();
+    const token = location.state?.token;
+
     const [posts,setPosts]=useState(null);
 
     useEffect(()=>{
+        if(!token && type!== "manage") {navigate("/");return;}
+
         if(type==="manage") {
-            if(!Event.canView(CustomEvent.ManageUploads)) {navigate("/");return;}
             getMyDayUploads().then(setPosts).catch(()=>navigate("/"))
         } else
         if(type==="day") {
-            if(!Event.canView(DayEvent.DayUploads)) {navigate("/");return;}
             getMyDayUploads().then((posts)=>{
                 setPosts(posts);
                 if(posts?.length>0) Event.setView(DayEvent.DayUploads);
             })
         } 
         else if(type==="week") {
-            if(!Event.canView(DayEvent.WeekUploads)) {navigate("/");return;}
             getMyWeekUploads().then((posts)=>{
                 setPosts(posts);
                 if(posts?.length>0) Event.setView(DayEvent.WeekUploads);

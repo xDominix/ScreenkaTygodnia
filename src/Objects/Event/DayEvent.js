@@ -40,7 +40,7 @@ export class DayEvent {
       
       //fri
       static ThrowBack = new DayEvent("Throw-Back",WeekDay.Friday,
-      " - cofaamy... czas wspomnień twojego, ostatniego tygodnia.",EventFor.friends,2,true,20,22)
+      " - czas wspomnień twojego poprzedniego tygodnia.",EventFor.friends,2,true,10,19)
       
       //sun
       static Reset = new DayEvent("Reset",WeekDay.Sunday, 

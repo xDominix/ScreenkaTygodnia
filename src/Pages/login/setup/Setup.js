@@ -71,13 +71,11 @@ const Setup = ({onSetup}) => {
 
     const inputRef = useRef();
     const [isInputFieldRed,setIsInputFieldRed] = useState(false);
-    const [isUsernameSet,setIsUsernameSet] = useState(false);
     const handleOnEnter = ()=>{
         setIsInputLoading(true);
         inputRef.current.blur();
         trySetMyUsername(inputRef.current.value).then(res=>{
             setIsInputFieldRed(!res)
-            if(res) setIsUsernameSet(true);
             setIsInputLoading(false);
         })
     }
@@ -107,7 +105,7 @@ const Setup = ({onSetup}) => {
                 <img src={meSrcUrl} alt="profile"/>
                 <div>
                     <h4>Change Your Username:</h4>
-                    <InputField reff={inputRef} onEnter={handleOnEnter} readOnly={isUsernameSet} isRed={isInputFieldRed} isInputLoading={isInputLoading} />
+                    <InputField reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isInputLoading={isInputLoading} />
                     </div>
                
             </div>

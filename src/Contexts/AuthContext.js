@@ -142,8 +142,8 @@ const AuthProvider = ({children, demo}) => {
                 userTemp.current = user;
                 return true; })
     }
-    const trySetMyUsername= async (username)=> trySetUsername(userTemp.current.fullname,username).then(()=>{userTemp.current.username = username;})  //if(res) user..username => username;
-    const trySetMyPersonalizedApps = async (apps)=> trySetPersonalizedApps(userTemp.current.fullname,apps).then(()=>{userTemp.current.personalized_apps = apps;})
+    const trySetMyUsername= async (username)=> trySetUsername(userTemp.current.fullname,username).then((res)=>{userTemp.current.username = username;return res})  //if(res) user..username => username;
+    const trySetMyPersonalizedApps = async (apps)=> trySetPersonalizedApps(userTemp.current.fullname,apps).then((res)=>{userTemp.current.personalized_apps = apps; return res;})
     const saveMe =()=>{
         if(!userTemp.current) throw new Error('Cannot save. User is null');
         localStorage.setItem("fullname",userTemp.current.fullname);
