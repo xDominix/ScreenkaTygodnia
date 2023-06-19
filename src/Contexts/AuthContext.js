@@ -248,7 +248,7 @@ const AuthProvider = ({children, demo}) => {
         if(getMe()==null) return null;
         let posts = await getMyDayUploads();
         let counts = {};
-        posts?.forEach(function (post) { counts[post.app] = (counts[post.app] || 0) + 1; });
+        posts?.forEach(function (post) {counts[post.app] = (counts[post.app] || 0) + 1; });
         return new Map(Object.entries(counts));
     }
 

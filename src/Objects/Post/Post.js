@@ -48,11 +48,11 @@ const Post = ({
             let app = AppClass.get(post.app), content = post.content;
             switch(app?.format){
                 case Format.LongString: return <h4 style={{padding: "3px"}} >{content}</h4>
-                case Format.String: return <h3 className='centered' >{content}</h3>
-                case Format.Url: return <a className='centered'  href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
+                case Format.String: return <h3 >{content}</h3>
+                case Format.Url: return <a href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
                 case Format.Path: 
                     let src = await getPathPostContentUrl(user_fullname,content);
-                    return <img alt="post content" className='centered' src={src}></img>;
+                    return <img alt="post content" src={src}></img>;
                 default: return content;
             }
         }
@@ -105,7 +105,7 @@ const Post = ({
                 </div>
                 <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
                     <div className='body' style={isHide?{opacity:"0"}:{}}>
-                        <div className='content'>{content!==null?content:<NothingToShow/>}</div>
+                        <div className='content flex-center'>{content!==null?content:<NothingToShow/>}</div>
                         <h4>{postState?.context}</h4>
                     </div>
                     {isHide && <A bold className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>tap</A>}

@@ -13,7 +13,7 @@ const DayEvents = [
     DayEvent.ClearMind, DayEvent.ClearMindForMe, //mon
     DayEvent.OhPreview, //thu
     DayEvent.ThrowBack, //fri
-    DayEvent.Reset,DayEvent.DeadLine,DayEvent.WeekUploads, //sun
+    DayEvent.Reset,DayEvent.DeadLine,DayEvent.DeadLineForMe,DayEvent.WeekUploads, //sun
     DayEvent.MorningShot,  DayEvent.OneShot,DayEvent.DayUploads,  //everyday     //maja najmniejszy priorytet 
 ];
 
@@ -29,10 +29,9 @@ const ShotEvents=[ DayEvent.MorningShot,DayEvent.OneShot,DayEvent.RnShot];
 
 export class Event {
 
-    static getAvailableDayEvents = (weekNumber=0,for_, force_all=false) =>  {
-        let av_events = this.#getAvailableEvents(DayEvents,weekNumber,for_,force_all);
-        let extenders = av_events.filter(day_event => day_event.extends_event !==null ).map(day_event=>day_event.extends_event);
-        return av_events.filter(day_event => !extenders.includes(day_event));
+    static getAvailableDayEvents = (weekNumber=0,for_, force_all=false) => {
+        let arr = this.#getAvailableEvents(DayEvents,weekNumber,for_,force_all)
+        return arr.filter((event,index) => arr.findIndex((e) => e.name === event.name) === index);
     }
     static getAvailableCustomEvents = (weekNumber=0,for_, force_all=false) => this.#getAvailableEvents(CustomEvents,weekNumber,for_,force_all);
     static #getAvailableEvents = (events,weekNumber=0,for_, force_all=false)=> force_all? events : events.filter((event)=>this.#isAvailable(event,weekNumber,for_));

@@ -3,7 +3,7 @@ import { DEFAULT_APP_NAMES } from "./App/AppClass";
 
 export class Host {
     constructor(id,fullname,start_date,popular_apps,//required
-      personalized_apps=[],group_apps=new Map(),groups=new Map(), subscribers=new Map(),max_tickets=0,apps_change_date=null//optional
+      personalized_apps=[],group_apps=[],groups=new Map(), subscribers=new Map(),max_tickets=0,apps_change_date=null//optional
       ) { 
       /***/ this.id = id; //auto
       this.fullname = fullname;
@@ -52,6 +52,6 @@ export class Host {
       subscribers.forEach((value,)=>value.join_date= value.join_date.toDate());
       subscribers.forEach((value,)=>value.leave_date= value.leave_date?.toDate());
 
-      return new Host(doc.id, doc.fullname,doc.start_date.toDate(),doc.popular_apps,doc.personalized_apps,toMap(doc.group_apps),toMap(doc.groups),subscribers,doc.max_tickets,doc.apps_change_date);
+      return new Host(doc.id, doc.fullname,doc.start_date.toDate(),doc.popular_apps,doc.personalized_apps,doc.group_apps,toMap(doc.groups),subscribers,doc.max_tickets,doc.apps_change_date);
   }
 }

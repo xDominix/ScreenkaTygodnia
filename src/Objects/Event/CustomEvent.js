@@ -43,7 +43,7 @@ export class CustomEvent {
             }
     }
 
-    toString=()=> this.name.replace("-","").toLowerCase() //implements event
+    toString=()=> this.name.replace("-","").replace(" ","").toLowerCase() //implements event
 
     getSubtitle= ()=>"";  //implements event
     getNote = ()=>"";   //implements event

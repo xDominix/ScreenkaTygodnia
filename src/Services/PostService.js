@@ -1,4 +1,4 @@
-import { GET_NOW, YY_MMDD_HHMM, dateToWeekDay, dayEqual, delay, getMonday, getPath, weekEqual, } from "../aFunctions";
+import { GET_NOW, YY_MMDD_HHMM, dateToWeekDay, dayEqual, delay, getMonday, getPath, randomElement, weekEqual, } from "../aFunctions";
 import { DEMONOW, PostRepositoryMap } from "./aDemobase";
 import { PostClass } from "../Objects/Post/PostClass";
 import { doc, updateDoc , arrayUnion, increment, setDoc, orderBy, where, limit} from "firebase/firestore";
@@ -34,15 +34,12 @@ const PostService = {
       let fromDate =new Date(GET_NOW().setHours(0,0,0,0))
       let toDate = GET_NOW();
 
-      let random = Math.random(); 
-      let opStr = Math.random() >= 0.5?">=":"<=";
-
       let queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("host_id","==",host_id),where("permissions.me","==",true)]
       if(forFriends!==null) queries.push(where("permissions.friends","==",forFriends));
       if(okApps && okApps.length>0) queries.push(where("app","in",okApps));
-      let docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr,random),orderBy("random"),limit(1));
-      if(!docs|| docs.length!== 1) docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr===">="?"<=":">=",random),orderBy("random"),limit(1));
-      return PostClass.fromDoc(docs?.at(0));
+      let docs = await getDocs(`users/${user_fullname}/posts`,...queries,limit(10));
+      let doc = randomElement(docs);
+      return PostClass.fromDoc(doc);
     },
 
     getUserLatestPost: async (user_fullname,host_id) => {
@@ -61,13 +58,13 @@ const PostService = {
       if(!user_fullname) return [];
       let fromDate =new Date(GET_NOW().setHours(0,0,0,0))
       let toDate = GET_NOW();
-      let docs;
-      if(forScreenka!==null) 
-      {
-         if(host_id) docs= await getDocs(`users/${user_fullname}/posts`,where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("host_id","==",host_id),where("permissions.me","==",true),where("permissions.screenka","==",forScreenka),orderBy("upload_date","desc"),limit(20));
-        else docs= await getDocs(`users/${user_fullname}/posts`,where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("permissions.me","==",true),where("permissions.screenka","==",forScreenka),orderBy("upload_date","desc"),limit(20));
-      }
-      else docs= await getDocs(`users/${user_fullname}/posts`,where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("permissions.me","==",true),orderBy("upload_date","desc"),limit(20));
+
+      let queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("permissions.me","==",true)]
+      if(host_id) queries.push(where("host_id","==",host_id))
+      if(forScreenka!==null) queries.push(where("permissions.screenka","==",forScreenka))
+      queries.push(orderBy("upload_date"),limit(20));
+
+      let docs= await getDocs(`users/${user_fullname}/posts`,...queries);
       return docs? docs.map((doc) => PostClass.fromDoc(doc)) : [];
     },
 
@@ -78,7 +75,7 @@ const PostService = {
       let fromDate =getMonday(), toDate = GET_NOW();
       queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("permissions.me","==",true)];
       if(host_id!==null) queries.push(where("host_id","==",host_id))
-      queries.push(orderBy("upload_date","desc"),limit(30));
+      queries.push(orderBy("upload_date"),limit(30));
       let docs = await getDocs(`users/${user_fullname}/posts`,...queries);
       return docs? docs.map((doc) => PostClass.fromDoc(doc)):[];
     },
@@ -92,7 +89,7 @@ const PostService = {
       queries.push(where("permissions.me","==",true));
       if(no_view) queries.push(where("view","==",null));
       if(okApps && okApps.length>0) queries.push(where("app","in",okApps));
-      queries.push(orderBy("upload_date","desc"),limit(30));
+      queries.push(orderBy("upload_date"),limit(30));
 
       let docs = await getDocs(`users/${user_fullname}/posts`,...queries);
       return docs? docs.map((doc) => PostClass.fromDoc(doc)):[];
@@ -101,19 +98,16 @@ const PostService = {
     getUserYesterdayRandomPost:async(user_fullname,host_id=null)=>{
       if(!user_fullname) return null;
       const fromDate = GET_NOW();
-      fromDate.setDate(fromDate.getDate() - 1);
+      fromDate.setDate(fromDate.getDate()-1 );
       fromDate.setHours(0,0,0,0);
       let toDate = new Date(fromDate.getTime());
       toDate.setHours(23,59,59);
 
-      let random = Math.random(); 
-      let opStr = Math.random() >= 0.5?">=":"<=";
-
       let queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("permissions.me","==",true)]
       if(host_id) queries.push(where("host_id","==",host_id));
-      let docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr,random),orderBy("random"),limit(1));
-      if(!docs|| docs.length!== 1) docs = await getDocs(`users/${user_fullname}/posts`,...queries,where("random",opStr===">="?"<=":">=",random),orderBy("random"),limit(1));
-      return PostClass.fromDoc(docs?.at(0));
+      let docs = await getDocs(`users/${user_fullname}/posts`,...queries,limit(10));
+      let doc = randomElement(docs);
+      return PostClass.fromDoc(doc);
     },
   
     getPathPostContentUrl: async (user_fullname, content) => {
@@ -158,15 +152,15 @@ const PostService = {
           const updateWeek = async () => {
             let host_id = post.host_id, week_name = post.week_name;
             if(!host_id || !week_name) return Promise.resolve();
-            let data = {
-              latest: (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()}),
-            };
-            data[`day_participants.${dateToWeekDay(GET_NOW())}`] = arrayUnion(user_fullname); //zeby nie bylo ze jest ghosted
-            data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
+            let data = {};
+            if(post.permissions.friends || post.permission.screenka) data['latest'] = (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()})
+            data[`day_participants.${dateToWeekDay(GET_NOW())}`] = arrayUnion(user_fullname);
+            if(post.permissions.friends || post.permission.screenka) data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
             return updateDoc(doc(db, "hosts", host_id, "weeks", week_name), data);
         };
           
           if (!post?.content) throw new Error();
+          if(!post.permissions.me) throw new Error();
           var res = null;
           return uploadFile().then(uploadPost).then(updateWeek).then(()=>res);
         },
@@ -209,8 +203,8 @@ const PostServiceDemo = {
     getUserCurrentDayPosts: async (user_fullname,host_id,forScreenka) => {//narazie bez
         await delay(500);
         if (user_fullname == null) return [];
-        return PostRepositoryMap.get(user_fullname)?.filter((post) => dayEqual(post.upload_date, DEMONOW)).filter(post=>post.permissions.me === true);
-    },
+        return PostRepositoryMap.get(user_fullname)?.filter((post) => dayEqual(post.upload_date, DEMONOW)).filter(post=>post.permissions.me === true).sort((a, b) => b.upload_date- a.upload_date);
+      },
  
     getUserCurrentWeekPosts: async (user_fullname,host_id) => { //narazie bez
       if(!user_fullname) return null;

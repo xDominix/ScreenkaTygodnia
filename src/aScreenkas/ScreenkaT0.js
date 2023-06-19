@@ -14,7 +14,7 @@ const ScreenkaT0 = ({onLoad}) => {
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     return ( 
-        <div className='Screenka noscroll'>
+        <div className='Screenka'>
             <div style={{display:'flex',justifyContent:'center'}}>
             <h1 style={{opacity:'0.2'}}>Screenka<br/>Tygodnia</h1>
             <h1>Screenka<br/>Tygodnia</h1>

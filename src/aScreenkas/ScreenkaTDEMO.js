@@ -7,7 +7,7 @@ import WeekAppContainer from '../Components/WeekAppContainer';
 const ScreenkaTDEMO = () => {
     
     return ( 
-    <div className='Screenka noscroll'>
+    <div className='Screenka'>
 
         <div style={{display:'flex',justifyContent:'center'}}>
         <h1 style={{opacity:'0.2',marginRight:"3px"}}>Screenka<br/>Tygodnia</h1>
@@ -28,7 +28,7 @@ const ScreenkaTDEMO = () => {
         <h4>To co dzis przygotowalismy jest genialne! SmiSAMdiasmd isamdsa iasmd isadasnd ldsanf mdsafsadvinafdsg agf lorem</h4>
 
         <Post id="123123" user_fullname="Tola Bajka"/>
-        <footer style={{marginTop:"50px"}}>Screenka Tygodnia ®</footer>
+        <footer style={{marginTop:"50px"}}>Screenka Tygodnia ᵀᴹ</footer>
     </div> );
 }
  

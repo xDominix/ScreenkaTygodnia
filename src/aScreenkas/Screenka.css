@@ -1,8 +1,16 @@
 .Screenka{
     height: 100%;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     text-align: justify;
 }
+
+@media screen and (min-width: 700px){
+    ::-webkit-scrollbar {
+        width: 100%;
+        -webkit-appearance: none;
+    }
+  }
 
 .Screenka>h1, .Screenka>h2, .Screenka>h3, .Screenka>h4,.Screenka>h5, .Screenka>footer
 {

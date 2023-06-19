@@ -213,8 +213,7 @@ const Home = ({onAboutWeekClick}) => {
     
         {currDayEvent && //#2
         <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
-            {currDayEvent !== DayEvent.WeekUploads && <ButtonText disabled={isCurrDayEventDisabled} onClick={()=>handleDayEventClick(currDayEvent)} style={buttonStyle} text={currDayEvent.name.toUpperCase()}/>}
-            {currDayEvent === DayEvent.WeekUploads &&<ButtonWeekUploads disabled={isCurrDayEventDisabled} onClick={()=>handleDayEventClick(currDayEvent)}  style={buttonStyle}/>}
+            <ButtonText disabled={isCurrDayEventDisabled} onClick={()=>handleDayEventClick(currDayEvent)} style={buttonStyle} text={currDayEvent.name.toUpperCase()}/>
         </div>}        
 
         {isRnShotData && (!isScreenka || isButtonScreenkaDisabled) && (!currDayEvent || isCurrDayEventDisabled) && //#3
@@ -252,7 +251,7 @@ export default Home;
 const loadApps=(me,host,week)=>{
     if(!me || !host || !week) return DEFAULT_APP_NAMES.map(name=>AppClass.get(name));
 
-    var apps = [...host.popular_apps,...me.personalized_apps];
+    var apps = [...host.popular_apps,...me.personalized_apps,...me.super_personalized_apps];
     
     if(week?.extra_apps!=null) apps = apps.concat(week?.extra_apps);
     if(week?.blocked_apps!=null) apps = apps.filter( (app) => !week?.blocked_apps.includes(app) );
@@ -265,6 +264,6 @@ const getAppType = (app,host)=>{
     if(!host) return AppType.Popular;
     if(host.personalized_apps.includes(app.name)) return AppType.Personalized;
     if(host.popular_apps.includes(app.name)) return AppType.Popular;
-    if(host.group_apps.includes(app.name)) return AppType.Group;
+    //if(host.group_apps.includes(app.name)) return AppType.Group; // not included anywhere else
     return AppType.SuperPersonalized;
 }

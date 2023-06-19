@@ -25,7 +25,10 @@ const Uploads = () => {
         if(!token && type!== "manage") {navigate("/");return;}
 
         if(type==="manage") {
-            getMyDayUploads().then(setPosts).catch(()=>navigate("/"))
+            getMyDayUploads().then(posts=>{ //desc order, from newest
+                posts.sort((a, b) => a.upload_date - b.upload_date);
+                return posts;
+            }).then(setPosts).catch(()=>navigate("/"))
         } else
         if(type==="day") {
             getMyDayUploads().then((posts)=>{

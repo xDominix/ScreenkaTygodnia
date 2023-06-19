@@ -9,8 +9,8 @@ export const getPath=(file)=>{
 }
 
 export const getAppFullSrc=(app_name,size=64)=>{
-    if(size<=64) return getPath("app-logos-64/"+app_name.toLowerCase()+".png")
-    return getPath("app-logos-128/"+app_name.toLowerCase()+".png")
+    if(size<=64) return getPath("app-logos-64/"+app_name.toLowerCase().replace(" ","_")+".png")
+    return getPath("app-logos-128/"+app_name.toLowerCase().replace(" ","_")+".png")
 }
 
 //ASYNC
@@ -75,7 +75,12 @@ export const isTime=(weekIndex,fromHour,toHour) =>{
     if(!isBetweenHour(fromHour,toHour)) return false;
     return true;
 }
-    
+ 
+export const isAfterTime=(weekIndex,toHour) =>{
+    if(weekIndex!=null && !isDayToday(weekIndex)) return false;
+    return GET_NOW().getHours()>= toHour;
+}
+
 export const dateToHourString = (date, pretty=false)=>{ //prettier version of date
     if(pretty && isLessThenMinutes(date,15)) return "NOW";
     if(pretty && isLessThenMinutes(date,59)) return `${datesMinuteDifference(date)}MIN AGO`;
@@ -116,10 +121,12 @@ export const YY_MMDD_HHMM=(date)=>{
 
 //RANDOM
 export const randomElement = (array)=>{
+    if(!array || array.length===0) return null;
     return array[Math.floor(Math.random() * array.length)];
 }
 
 export const randomElements=(array,size)=>{
+    if(!array || array.length===0) return null;
     const shuffled = array.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, size);
 }

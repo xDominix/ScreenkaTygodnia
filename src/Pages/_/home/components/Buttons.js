@@ -17,13 +17,14 @@ export const ButtonRn = ({style, onClick,text}) => {
     </button> );
 }
 
+/*
 export const ButtonWeekUploads = ({style,disabled, onClick}) => {
     return (  <button disabled={disabled}
      className={"bcolor-dark-gray-solid button-week-uploads shadow"}
       style={style} onClick={onClick}>
         <h2 style={{margin:"5px",fontSize:"30px",lineHeight:"28px"}}>YOUR WEEK<br/>UPLOADS</h2>
     </button> );
-}
+}*/
 
 export const ButtonScreenka = ({style,onClick,disabled}) => {
 

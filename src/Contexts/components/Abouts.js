@@ -48,7 +48,7 @@ export const AboutScreenka = ({onClose}) => {
 
     const getTextAboutMyGroups = ()=>{
         if(!myGroups.current) return "";
-        return `Your groups: ${myGroups.current.join(", ")}`;
+        return <span>Your groups: <span style={{fontStyle: "italic"}}>{myGroups.current.join(", ")}</span></span>;
     }
 
     return (  
@@ -82,12 +82,12 @@ export const AboutScreenka = ({onClose}) => {
                 <div className='margin' style={{marginTop:"auto",}} >
                     <p style={!you  ? {opacity:0}:undefined}><b>You. </b> Capture the happiness. Upload posts and preview them at the end of the day.</p>
                     {!friendsDisabled &&<p style={!(friends&&you)  ? {opacity:0}:undefined}><b>Friends. </b> Have fun with your friends. Participate in special events during the week. {getTextAboutMyGroups()}</p>}
-                    {!screenkaDisabled && <p style={!(screenka&&you)  ? {opacity:0}:undefined} ><b>Screenka Tygodnia. </b>Join the story. Posts you choose can apply for the weekly gazette.</p>}
+                    {!screenkaDisabled && <p style={!(screenka&&you)  ? {opacity:0}:undefined} ><b>Screenka Tygodnia. </b>Join the story. Submit posts to the weekly gazette.</p>}
                 </div>
 
                 <footer className='center' style={{marginTop:0}}>
-                    You can change the tagline by your own.
-                    <A onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}>{!isEditMode?" Edit":" Cancel"}</A>
+                    You can change the tagline by your own.<br/>
+                    <A onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}>{!isEditMode?"Edit":"Cancel"}</A>
                 </footer>
             
         </BottomTab>
@@ -125,7 +125,7 @@ export const AboutApp = ({app,appType,onClose}) => {
 
         let file = app.format===Format.Path?contentRef.current:null;
         
-        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,contextRef.current.value,null)
+        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,app.format,contextRef.current.value,null)
         
         Promise.all([postMyPost(post,file),delay(1500)])
             .then(()=>setTicketsState(Math.max(0,ticketsState-1)))

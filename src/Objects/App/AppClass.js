@@ -2,7 +2,7 @@ export const DEFAULT_APP_NAMES = ["Sentence", "Safari","Photos","Camera","Contac
 
 export const AppType = {Personalized:0,Popular:1,Group:2,SuperPersonalized:3}
 
-export const Format = { None:"None", String:"String",LongString:"LongString" ,Url:"Url", Path:"Path",}
+export const Format = { None:"none", String:"string",LongString:"long_string" ,Url:"url", Path:"path",}
 
 export const LABEL_STEP = 10
 
@@ -28,6 +28,7 @@ export class AppClass {
       case "Netflix":return AppClass.Netflix;
       case "Instagram":return AppClass.Instagram;
       case "Pinterest":return AppClass.Pinterest;
+      case "Louis Vuitton":return AppClass.LouisVuitton;
       case "Settings":return AppClass.Settings;
       default: return AppClass.Default;
     }}
@@ -38,8 +39,8 @@ export class AppClass {
     static Sentence = new AppClass("Sentence", "","write a sentence about what you've heard, what you've learned, what you've done...",Format.LongString,1)
     //Apple App
     static Safari = new AppClass("Safari","page","read some interesting content? saw some pretty layout? Share a website!",Format.Url,10)
-    static Photos = new AppClass("Photos","photo, video","share a photos saved to your gallery. Screenshots, photos or videos.",Format.Path,11) //upload saved photo, saved video, screenshot, screen recording.
-    static Camera = new AppClass("Camera","photo, video","share your photographic sessions. Selfies, panoramas and more!",Format.Path,12) //upload a photo, selfie, portrait, panorama, video taken by you.
+    static Photos = new AppClass("Photos","photo, video","share a photos saved to your gallery. Screenshots, saved videos etc.",Format.Path,11) //upload saved photo, saved video, screenshot, screen recording.
+    static Camera = new AppClass("Camera","photo, video","share your photographic sessions. Selfies, panoramas etc.",Format.Path,12) //upload a photo, selfie, portrait, panorama, video taken by you.
     //irl
     static Maps = new AppClass("Maps","place","recommend new places you recently visited, your favorite spots to hang out.",Format.String,20);
     static Contacts = new AppClass("Contacts","person","suggest a friend you want to add to the community!",Format.Url,21)
@@ -53,6 +54,9 @@ export class AppClass {
     //Settings
     static Settings = new AppClass("Settings","idea","suggest a motive of the week, custom app names, a special event or additional features.",Format.String,36)
 
+    //superpersonalized
+    static LouisVuitton = new AppClass("Louis Vuitton","photo","share collections from the fashion world.",Format.Path,36)
+   
     getGroup = ()=>{
       return (this.label/LABEL_STEP) | 0
     }

@@ -59,7 +59,7 @@ const AboutWeek = ({onClose}) => {
            <div key={day_name} >
                 <div>
                     {events.map((event,index)=> 
-                    <A key={index} nocolor={!isDayToday(WeekDay[day_name])} onClick={()=>handleDayNameClick(WeekDay[day_name],event)}>
+                    <A key={index} active={!event.isAfterTime()} nocolor={!isDayToday(WeekDay[day_name])} onClick={()=>handleDayNameClick(WeekDay[day_name],event)}>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
                     </A>)}
@@ -78,26 +78,31 @@ const AboutWeek = ({onClose}) => {
             </div>
                )}
 
-                <div style={{maxWidth:'100%'}}>
-                   <ScrollDiv >{/*right */}
-                        {everyDayEvents.map((event,index)=> 
-                        <A key={index} onClick={()=>setBottomTab({id:3,object:event})}>
-                                {index!==0 && ', '}
-                                {event.name.toUpperCase()}
-                        </A>)}
-                        {disabledEveryDayEvents.map((event,index)=> 
-                        <A key={index} disabled>
-                                {index!==0 && ", "}
-                                {event.name.toUpperCase()}
-                        </A>)}
-                    </ScrollDiv>
-                    <span className="noselect bcolor-green-solid color-black circle"></span>
-                </div>
+            <div>{/*EMPTY SLOT*/}
+                <div></div> 
+                <span className="noselect circle" style={{opacity:"0"}}></span>
+            </div>
             
-                {myRnShotEvent &&<div>
-                    <div><A nocolor className="color-orange" onClick={()=>setBottomTab({id:3,object:myRnShotEvent})}>{myRnShotEvent.name.toUpperCase()}</A></div> 
-                    <span className="noselect bcolor-orange color-black circle"></span>
-                </div>}
+            <div style={{maxWidth:'100%'}}>
+                <ScrollDiv >
+                    {everyDayEvents.map((event,index)=> 
+                    <A key={index} active={!event.isAfterTime()} onClick={()=>setBottomTab({id:3,object:event})}>
+                            {index!==0 && ', '}
+                            {event.name.toUpperCase()}
+                    </A>)}
+                    {disabledEveryDayEvents.map((event,index)=> 
+                    <A key={index} disabled>
+                            {index!==0 && ", "}
+                            {event.name.toUpperCase()}
+                    </A>)}
+                </ScrollDiv>
+                <span className="noselect bcolor-green-solid color-black circle"></span>
+            </div>
+        
+            {myRnShotEvent &&<div>
+                <div><A nocolor className="color-orange" onClick={()=>setBottomTab({id:3,object:myRnShotEvent})}>{myRnShotEvent.name.toUpperCase()}</A></div> 
+                <span className="noselect bcolor-orange color-black circle"></span>
+            </div>}
         
             </div>
             <div className="bcolor-dark-gray-solid"></div>

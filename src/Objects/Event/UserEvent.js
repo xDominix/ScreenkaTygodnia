@@ -36,7 +36,7 @@ export class UserEvent{
 
       
       isTime = (props={})=> true; //implements event
-      toString=()=> this.name.replace("-","").toLowerCase() //implements event
+      toString=()=> this.name.replace("-","").replace(" ","").toLowerCase() //implements event
       static fromString = (string)=> null; //implements event
       getSubtitle= ()=>null;  //implements event
       getNote = ()=>null;   //implements event
