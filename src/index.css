@@ -67,9 +67,14 @@ footer,footer>span{color: rgba(255, 255, 255, 0.4);opacity: 0.94;}
 {
   background-color: #474747;
 }
-.bcolor-blue /*rn-shot*/
+.bcolor-blue
 {
   background-color: rgb(59,92,152);
+}
+.color-blue-highlight
+{
+  color: rgb(98, 153, 255);
+  text-shadow: 0px 0px 4px rgba(98,153,255,0.7);
 }
 .bcolor-orange{background-color: rgb(255, 119, 56);}
 .color-orange{color: rgb(255, 119, 56);}

@@ -73,7 +73,7 @@ const WeekServiceDemo = {
                 snapshot = await WeekServiceDemo.getHostWeek(host_id,week_name);
                 snapshot=Object.assign({}, snapshot);
                 await delay(3000);
-                snapshot.today_apps_counts = toMap({Spotify:2,Maps:1,Safari:1,Camera:1});
+                snapshot.today_apps_counts = toMap({Spotify:2,Maps:1,Safari:1,Photos:1});
                 snapshot.latest = {user:"Tola Bajka", date:DEMONOW,app:"Spotify"};
                 snapshot.today_participants = [DEMONAME,"Mia Muller","Tola Bajka"];
                 onNext(snapshot);

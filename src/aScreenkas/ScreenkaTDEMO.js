@@ -28,7 +28,7 @@ const ScreenkaTDEMO = () => {
         <h4>To co dzis przygotowalismy jest genialne! SmiSAMdiasmd isamdsa iasmd isadasnd ldsanf mdsafsadvinafdsg agf lorem</h4>
 
         <Post id="123123" user_fullname="Tola Bajka"/>
-        <footer style={{marginTop:"50px"}}>Screenka Tygodnia ᵀᴹ</footer>
+        <footer style={{marginTop:"50px"}}>Screenka Tygodnia ™</footer>
     </div> );
 }
  

@@ -70,7 +70,7 @@ const Uploads = () => {
 
             <MiniPosts posts={posts} 
                 checkboxesDisabled={!user.preferences.screenka || screenkaDisabled || type!=="manage"} maxChecks={type==="manage"?getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
-                hourDate={type==="day" || type==="manage"} pretty_date
+                hourDate={type==="day" || type==="manage"} pretty_date={type==="manage"}
                 preview={type==="day" || type==="week"} onPostPreview={handleOnPostPreview}
                 delete_={type==="manage"}  onPostDelete={handleOnPostDelete}
                 hideTickets={!user.preferences.screenka}

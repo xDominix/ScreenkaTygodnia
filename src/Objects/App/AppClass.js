@@ -1,4 +1,4 @@
-export const DEFAULT_APP_NAMES = ["Sentence", "Safari","Photos","Camera","Contacts","Settings","Spotify","Youtube","Netflix",];
+export const DEFAULT_APP_NAMES = ["Sentence", "Safari","Photos","News","Contacts","Settings","Spotify","Youtube","Netflix",];
 
 export const AppType = {Personalized:0,Popular:1,Group:2,SuperPersonalized:3}
 
@@ -21,8 +21,10 @@ export class AppClass {
       case "Safari":return AppClass.Safari;
       case "Photos":return AppClass.Photos;
       case "Camera":return AppClass.Camera;
+      case "News":return AppClass.News;
       case "Maps":return AppClass.Maps;
       case "Contacts":return AppClass.Contacts;
+      case "Diary":return AppClass.Diary;
       case "Spotify":return AppClass.Spotify;
       case "Youtube":return AppClass.Youtube;
       case "Netflix":return AppClass.Netflix;
@@ -35,16 +37,20 @@ export class AppClass {
 
     static Default = new AppClass("Default","","",Format.None,100)
     //Abstract
-    static Word = new AppClass("Word","","write down a word or a pharse that describes your day.",Format.String,0)
-    static Sentence = new AppClass("Sentence", "","write a sentence about what you've heard, what you've learned, what you've done...",Format.LongString,1)
+    static Word = new AppClass("Word","","write down a word, a pharse or an emoji.",Format.String,0)
+    static Sentence = new AppClass("Sentence", "","write a sentence about anything.",Format.LongString,1)
+
     //Apple App
     static Safari = new AppClass("Safari","page","read some interesting content? saw some pretty layout? Share a website!",Format.Url,10)
-    static Photos = new AppClass("Photos","photo, video","share a photos saved to your gallery. Screenshots, saved videos etc.",Format.Path,11) //upload saved photo, saved video, screenshot, screen recording.
-    static Camera = new AppClass("Camera","photo, video","share your photographic sessions. Selfies, panoramas etc.",Format.Path,12) //upload a photo, selfie, portrait, panorama, video taken by you.
+    static Photos = new AppClass("Photos","photo, video","share a photos in your gallery.",Format.Path,11) //upload saved photo, saved video, screenshot, screen recording.
+    static Camera = new AppClass("Camera","photo, video","share your photographic sessions. Selfies, portraits, panoramas etc.",Format.Path,12) //upload a photo, selfie, portrait, panorama, video taken by you.
+    static News = new AppClass("News", "story","write what's interesting happening in the world right now.",Format.LongString,13)
+
     //irl
     static Maps = new AppClass("Maps","place","recommend new places you recently visited, your favorite spots to hang out.",Format.String,20);
     static Contacts = new AppClass("Contacts","person","suggest a friend you want to add to the community!",Format.Url,21)
-
+    static Diary = new AppClass("Diary","note","describe the day. As it is, right now.",Format.LongString,22);
+    
     //App
     static Spotify = new AppClass("Spotify","song, podcast","share your favourite song or podcast.",Format.Url,31)
     static Youtube = new AppClass("Youtube","video, short","share video that makes you happy!",Format.Url,32)
@@ -52,10 +58,10 @@ export class AppClass {
     static Instagram = new AppClass("Instagram","post, account","paste the url of your favourite account or post on Instagram.",Format.Url,34)
     static Pinterest = new AppClass("Pinterest","post, account","share recipes, ideas for the home, style inspiration and other ideas to experiment with.",Format.Url,35)
     //Settings
-    static Settings = new AppClass("Settings","idea","suggest a motive of the week, custom app names, a special event or additional features.",Format.String,36)
+    static Settings = new AppClass("Settings","idea","suggest a motive of the week, custom app names, a special event or additional features.",Format.LongString,36)
 
     //superpersonalized
-    static LouisVuitton = new AppClass("Louis Vuitton","photo","share collections from the fashion world.",Format.Path,36)
+    static LouisVuitton = new AppClass("Louis Vuitton","collection","share collections from the fashion world.",Format.Path,36)
    
     getGroup = ()=>{
       return (this.label/LABEL_STEP) | 0

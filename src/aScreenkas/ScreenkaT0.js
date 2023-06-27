@@ -30,7 +30,7 @@ const ScreenkaT0 = ({onLoad}) => {
             <br/><br/>
             <h2>Poniedziałek</h2>
             <h4>A wszystko zaczęlo sie od...</h4>
-            <footer style={{marginTop:"50px"}}>Screenka Tygodnia ®</footer>
+            <footer style={{marginTop:"50px"}}>Screenka Tygodnia ™</footer>
         </div> );
 }
  

@@ -12,7 +12,7 @@ export const DEMOFUNNYNAME = "demo_user"
 
 export const PostRepositoryMap = new Map([
     [DEMONAME,[
-    new Post("dsnanaaiaocsn","-1","Glassy Week",new Date(2023,4-1,24,14,0),"Camera",null,Format.Path,"To wszystko sie tu zaczelo!",{me:true,friends:true,screenka:true},null,"Tola Bajka",null,null),
+    new Post("dsnanaaiaocsn","-1","Glassy Week",new Date(2023,4-1,24,14,0),"Photos",null,Format.Path,"To wszystko sie tu zaczelo!",{me:true,friends:true,screenka:true},null,"Tola Bajka",null,null),
     new Post("dsnanaaiasasa","-1","Glassy Week",new Date(2023,4-1,24,15,0),"Safari","https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO",Format.Url,"Ta storna to majstersztyk",{me:true,friends:true,screenka:false},null,null,null,null),
     new Post("dsnasddsxccsn","-1","Glassy Week",new Date(2023,4-1,24,16,16),"Word","Ciekawski",Format.String,"Ciekawe slowo w sumie",{me:true,friends:true,screenka:true},null,null,null,null),
     ]],
@@ -30,9 +30,9 @@ export const UserRepository = [
 
 let week =new Week("Glassy Week",new Date(2023,4-1,24,8,0),"New week, new you. Have fun. We are waiting for some new fresh and dope things! Use your glasses against burning sun! ...","🕶️",null,null,null,true);
 week.today_participants= [DEMONAME,"Mia Muller"];
-week.today_apps_counts =  toMap({Spotify:1,Maps:1,Safari:1,Camera:1});
+week.today_apps_counts =  toMap({Spotify:1,Maps:1,Safari:1,Photos:1});
 week.total_uploads = 4;
-week.apps_counts = toMap({Spotify:1,Maps:1,Safari:1,Camera:1});
+week.apps_counts = toMap({Spotify:1,Maps:1,Safari:1,Photos:1});
 export const WeekRepository =[week];
 
 const subscribers = new Map([
@@ -43,7 +43,7 @@ const subscribers = new Map([
 
 export const HostRepository = [ new Host("-1",DEMONAME,new Date(2023,4-1,10),
 DEFAULT_APP_NAMES,
-["Maps","Instagram","Pinterest","Word"],null,new Map([["SuperGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
+["Maps","Instagram","Word","Camera"],null,new Map([["SuperGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
 
 
 

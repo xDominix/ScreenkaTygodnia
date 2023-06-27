@@ -46,7 +46,7 @@ const AboutWeek = ({onClose}) => {
         <h1>
             <ButtonPrevPage onClick={onClose}/>
              {"#"+(weekNumber?weekNumber:0)} 
-                <span className={"color-green-highlight"}>{week? week.name.toUpperCase(): "WEEK"}</span>{/* (week?.name.length>12 ? " spansmall":" span") */}
+                <span className={"color-blue-highlight"}>{week? week.name.toUpperCase(): "WEEK"}</span>{/* (week?.name.length>12 ? " spansmall":" span") */}
                 {week && <span role="img" aria-label="emoji">{week.emoji}</span>}
         </h1>
         </ScrollDiv>

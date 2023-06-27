@@ -23,6 +23,8 @@
     text-align: justify;
     margin-bottom: 30px;
     min-height: 20px;
+
+    display: inline-block;
 }
 
 .aweek h1>span {margin-left: 10px;font-size: 30px;}

@@ -39,11 +39,11 @@ export class DayEvent {
       
       //fri
       static ThrowBack = new DayEvent("Throw-Back",WeekDay.Friday,
-      " - czas wspomnień twojego poprzedniego tygodnia.",EventFor.friends,2,true,14,19)
+      " - czas wspomnień twojego poprzedniego tygodnia.",EventFor.friends,2,true,12,19)
       
       //sun
       static Reset = new DayEvent("Reset",WeekDay.Sunday, 
-      " - re-set. Okazja na dostrojenie swoich ustawień preferencji.",EventFor.me,1,false,8,14,false);
+      " - re-set. Okazja na dostrojenie swoich ustawień preferencji.",EventFor.me,1,false,12,19,false);
       static DeadLine = new DayEvent("Dead-Line",WeekDay.Sunday,
       " - upload off. Screenka Tygodnia już w drodze. W tym czasie możesz powspominać swój tydzień.",EventFor.screenka,1,false,20,24)
       static DeadLineForMe = new DayEvent("Dead-Line",WeekDay.Sunday,
@@ -55,7 +55,7 @@ export class DayEvent {
       static OneShot = new DayEvent("One-Shot",null,
       " - szybki strzał. Jeden z dzisiejszych postów uczestników.",EventFor.friends,1,true,19,20);//Twoje pierwsze wrażenie?
       static MorningShot = new DayEvent("Morning-Shot",null,
-      " - wake up. Jeden z twoich wczorajszych postów na dzień dobry.",EventFor.me,2,true,8,14);// Zerknij, poczuj i ruszaj... w nowy dzień.
+      " - wake up. Jeden z twoich wczorajszych postów na dzień dobry.",EventFor.me,2,true,8,12);// Zerknij, poczuj i ruszaj... w nowy dzień.
       static DayUploads = new DayEvent("Day Uploads",null,
         " - przeglądnij swój dzień na koniec dnia.",EventFor.me,0,true,20,24,false)
     

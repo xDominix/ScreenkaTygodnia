@@ -4,7 +4,7 @@ import { AuthContext } from '../../../Contexts/AuthContext';
 import { BottomTabContext } from '../../../Contexts/BottomTabContext';
 import { useNavigate } from 'react-router-dom';
 import { MAX_SCREENKA, datesWeekDelta, delay } from '../../../aFunctions';
-import { ButtonScreenka,ButtonPlus,ButtonWeekUploads, ButtonText, ButtonRn } from './components/Buttons';
+import { ButtonScreenka,ButtonPlus, ButtonText, ButtonRn } from './components/Buttons';
 import { AppClass, AppType, DEFAULT_APP_NAMES } from '../../../Objects/App/AppClass';
 import A from '../../../Components/A';
 import { ButtonNextPage } from '../../../Components/Buttons';
@@ -249,12 +249,12 @@ const Home = ({onAboutWeekClick}) => {
 export default Home;
 
 const loadApps=(me,host,week)=>{
-    if(!me || !host || !week) return DEFAULT_APP_NAMES.map(name=>AppClass.get(name));
+    if(!me || !host) return DEFAULT_APP_NAMES.map(name=>AppClass.get(name));
 
     var apps = [...host.popular_apps,...me.personalized_apps,...me.super_personalized_apps];
     
-    if(week?.extra_apps!=null) apps = apps.concat(week?.extra_apps);
-    if(week?.blocked_apps!=null) apps = apps.filter( (app) => !week?.blocked_apps.includes(app) );
+    if(week && week?.extra_apps!=null) apps = apps.concat(week.extra_apps);
+    if(week && week?.blocked_apps!=null) apps = apps.filter( (app) => !week.blocked_apps.includes(app) );
     apps = apps.map(app=>AppClass.get(app));
     apps.sort((a,b)=>a.label-b.label);
     return apps;
