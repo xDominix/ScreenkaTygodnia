@@ -41,9 +41,9 @@ const WeekService = {
 
     getHostLastWeekName : async(host_id)=>{
         if(!host_id) return null;
-        let toDate = GET_NOW();
-        toDate.setDate(toDate.getDate() - 7);
-        let fromDate =getMonday(toDate);
+        let thisMonday = GET_NOW();thisMonday = getMonday(thisMonday); thisMonday.setHours(0,0,0,0)
+        let toDate = new Date(thisMonday.getTime() - 1000* 60)  //zeszla niedziela 23:59
+        let fromDate = new Date(toDate.getTime());  fromDate.setDate(fromDate.getDate() - 7); //zeszly poniedzialek
         let docs;
         docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date",">=",fromDate),where("start_date","<=",toDate),orderBy("start_date","desc"),limit(1));
         if(docs?.length<1)return null;
@@ -51,7 +51,7 @@ const WeekService = {
     },
 
     trySetHostWeekScreenkaView : async (host_id,week_name,user_fullname)=>{
-        let data;
+        let data ={};
         data[`screenka_views.${user_fullname}`] = { view_date:Timestamp.fromDate(GET_NOW()), };
         await updateDoc(doc(db,`hosts/${host_id}/weeks/${week_name}`),data);
         return true;

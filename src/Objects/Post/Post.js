@@ -23,11 +23,16 @@ const Post = ({
 
     const [postState,setPostState] = useState(post);
     const [user,setUser]= useState(null);
-    const [isSuperHide,setIsSuperHide] = useState(false);
-    const [isHide,setIsHide] = useState(true);
-    const [content,setContent] = useState("");
+
+    const [isSuperHide,setIsSuperHide] = useState();
+    const [isHide,setIsHide] = useState();
+    const [content,setContent] = useState();
 
     useEffect(()=>{
+        setIsHide(true);
+        setIsSuperHide(false);
+        setContent("");
+
         if(!hideNickname) getUser(user_fullname).then(setUser);
 
         if(post) return;
@@ -39,7 +44,7 @@ const Post = ({
                 onLoad();
             }
         })
-    },[])// eslint-disable-line react-hooks/exhaustive-deps
+    },[user_fullname,id,post])// eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
         const getContent = async (post)=>{
@@ -49,7 +54,9 @@ const Post = ({
             switch(app?.format){
                 case Format.LongString: return <h4 style={{padding: "3px"}} >{content}</h4>
                 case Format.String: return <h3 >{content}</h3>
-                case Format.Url: return <a href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
+                case Format.Url: 
+                    if( content && content.startsWith("https://"))  return <a href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
+                    return <h4 style={{padding: "3px"}} >{content}</h4> //temp
                 case Format.Path: 
                     let src = await getPathPostContentUrl(user_fullname,content);
                     return <img alt="post content" src={src}></img>;

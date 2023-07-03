@@ -17,8 +17,8 @@ const PostService = {
     },
     getUserPostAndTrySetView: async (user_fullname, id,view_fullname) => {
       if(!user_fullname || !id || !view_fullname) return null;
-      let doc = await getDoc(`users/${user_fullname}/posts`, id);
-      let post = PostClass.fromDoc(doc);
+      let docc = await getDoc(`users/${user_fullname}/posts`, id);
+      let post = PostClass.fromDoc(docc);
       if(!post.permissions.me) return null
       if(post!=null && user_fullname!==view_fullname && post.view===null ) {
         await updateDoc(doc(db, `users/${user_fullname}/posts`, id), {
@@ -43,10 +43,10 @@ const PostService = {
     },
 
     getUserLatestPost: async (user_fullname,host_id) => {
-      if(user_fullname || host_id) return null;
+      if(user_fullname==null || host_id==null) return null;
       let docs = await getDocs(`users/${user_fullname}/posts`,where("host_id","==",host_id),orderBy("upload_date","desc"),limit(1));
       let post = PostClass.fromDoc(docs?.at(0)); 
-      if(!post.permissions.me) return null;
+      if(!post || !post.permissions.me) return null;
       return post
     },
 

@@ -25,7 +25,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     useEffect(()=>{
         if(!token && event_) {navigate('/'); return;}
         if(!user_fullname || !id) {navigate('/'); return;}
-    },[])
+    },[token, event_, user_fullname, id])
 
     const title = useMemo(()=>event_ ? event_.name.toUpperCase():"User Post",[event_])
 
