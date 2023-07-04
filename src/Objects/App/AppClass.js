@@ -44,7 +44,7 @@ export class AppClass {
     static Safari = new AppClass("Safari","page","read some interesting content? saw some pretty layout? Share a website!",Format.Url,10)
     static Photos = new AppClass("Photos","photo, video","share a photos in your gallery.",Format.Path,11) //upload saved photo, saved video, screenshot, screen recording.
     static Camera = new AppClass("Camera","photo, video","share your photographic sessions. Selfies, portraits, panoramas etc.",Format.Path,12) //upload a photo, selfie, portrait, panorama, video taken by you.
-    static News = new AppClass("News", "story","tell us what interesting happened recently. Some crazy news!.",Format.LongString,13)
+    static News = new AppClass("News", "story","tell us what interesting happened recently. Some crazy news!",Format.LongString,13)
 
     //irl
     static Maps = new AppClass("Maps","place","recommend new places you recently visited, your favorite spots to hang out.",Format.String,20);

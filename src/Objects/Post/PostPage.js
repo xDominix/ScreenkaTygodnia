@@ -27,7 +27,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
         if(!user_fullname || !id) {navigate('/'); return;}
     },[token, event_, user_fullname, id])
 
-    const title = useMemo(()=>event_ ? event_.name.toUpperCase():"User Post",[event_])
+    const title = useMemo(()=>event_ ? event_.name.toUpperCase():"User Post:",[event_])
 
     const handleOnNextClick = ()=>{
         navigate(nextPages[0],{replace:true,state:{token:true,nextPages:nextPages.slice(1)}}); //showMyRefPosts:showMyRefPosts, showFriendsRefPosts:showFriendsRefPosts

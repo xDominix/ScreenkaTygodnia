@@ -201,8 +201,9 @@ const Home = ({onAboutWeekClick}) => {
         <div className={defaultClassName} >
             <h1 className='home-title'>
                 <span>WEEK</span> 
+                <ButtonNextPage style={(week==null || weekNumber==null)?{"opacity":0}:{}} onClick={(week==null || weekNumber==null)?(()=>{}):onAboutWeekClick}>
                 #{weekNumber?weekNumber:0}
-                <ButtonNextPage style={(week==null || weekNumber==null)?{"opacity":0}:{}} onClick={(week==null || weekNumber==null)?(()=>{}):onAboutWeekClick}/>
+                </ButtonNextPage>
             </h1>
         </div>
 

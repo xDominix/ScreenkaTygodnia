@@ -46,16 +46,20 @@ const TempLogin = ({onTempLogin}) => {
        };
 
     return ( 
+        <div style={{height:"100%", display:"flex", flexDirection:"column"}}>
     <div className='login flex-center'>
-        <div className='login-user'>
-            <img src={meSrc} alt="profile"/>
-            <div>
-                <h4>Enter Secret Name:</h4>
-                <InputField autofocus reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isLoading={isInputFieldLoading} />
+            <div className='login-user'>
+                <img src={meSrc} alt="profile"/>
+                <div>
+                    <h4>Enter Secret Name:</h4>
+                    <InputField autofocus reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isLoading={isInputFieldLoading} />
+                </div>
             </div>
-        
+            
+        </div> 
+        <footer className='center'>Hint: Click enter while typing to continue</footer>
         </div>
-    </div> );
+   );
 }
  
 export default TempLogin;

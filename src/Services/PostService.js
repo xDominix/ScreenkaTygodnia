@@ -30,8 +30,10 @@ const PostService = {
     },
 
     getUserCurrentDayRandomPost: async (user_fullname,host_id,forFriends=null,okApps=[]) => {//today post
-      if(user_fullname || host_id) return null;
-      let fromDate =new Date(GET_NOW().setHours(0,0,0,0))
+      if(user_fullname==null || host_id==null) return null;
+      let aaaa = GET_NOW()
+      aaaa.setHours(0,0,0,0);
+      let fromDate = aaaa;
       let toDate = GET_NOW();
 
       let queries = [where("upload_date",">=",fromDate),where("upload_date","<=",toDate),where("host_id","==",host_id),where("permissions.me","==",true)]
@@ -151,7 +153,7 @@ const PostService = {
           
           const updateWeek = async () => {
             let host_id = post.host_id, week_name = post.week_name;
-            if(!host_id || !week_name) return Promise.resolve();
+            if(host_id==null || !week_name) return Promise.resolve();
             let data = {};
             if(post.permissions.friends || post.permission.screenka) data['latest'] = (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()})
             data[`day_participants.${dateToWeekDay(GET_NOW())}`] = arrayUnion(user_fullname);

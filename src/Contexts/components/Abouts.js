@@ -78,8 +78,7 @@ export const AboutScreenka = ({onClose}) => {
                         {/*{!isEditMode && "\""}*/}
                      </span>
                 </h4>
-                {isChanged() &&<div style={{textAlign:"center"}}><h5><A disabled={loading} onClick={changePreferences} bold>Change </A> </h5></div>}
-                <div className='margin' style={{marginTop:"auto",}} >
+              <div className='margin' style={{marginTop:"auto",}} >
                     <p style={!you  ? {opacity:0}:undefined}><b>You. </b> Capture the happiness. Upload posts and preview them at the end of the day.</p>
                     {!friendsDisabled &&<p style={!(friends&&you)  ? {opacity:0}:undefined}><b>Friends. </b> Have fun with your friends. Participate in the events during the week. {getTextAboutMyGroups()}</p>}
                     {!screenkaDisabled && <p style={!(screenka&&you)  ? {opacity:0}:undefined} ><b>Screenka Tygodnia. </b>Join the story. Submit posts to the weekly gazette.</p>}
@@ -87,6 +86,7 @@ export const AboutScreenka = ({onClose}) => {
 
                 <footer className='center' style={{marginTop:0}}>
                     You can change the tagline by your own.<br/>
+                    {isChanged() &&<A  disabled={loading} onClick={changePreferences} bold>Change </A>}
                     <A onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}>{!isEditMode?"Edit":"Cancel"}</A>
                 </footer>
             

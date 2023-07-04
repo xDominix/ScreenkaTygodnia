@@ -51,9 +51,9 @@ const Uploads = () => {
     }
 
     const handleOnPostDelete = (post_id)=>{
-        if(posts.find(post=>post.id===post_id))
+        if(posts.find(post=>post.id===post_id)  && window.confirm("Are you sure you want to delete the upload?"))
         {
-            Promise.all([changeMyPostPermissions(post_id,{me:false}),delay(100)])
+            Promise.all([changeMyPostPermissions(post_id,{me:false,friends:false,screenka:false}),delay(100)])
                 .then(()=>setPosts(posts.filter(post=>post.id!==post_id)))
         }
     }

@@ -36,13 +36,12 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
         const getOneShotNavigator=async ()=>{
             let [friends,]= getMyFriendsWithHostId();
             let friends_random = friends.sort(() => 0.5 - Math.random());
-            let tos =[];
-            await friends_random.every(async (friend)=>{
-                let post = await getFriendCurrentDayRandomPost(friend)
-                if(post) tos.push(`/post/${friend}/${post.id}/${DayEvent.OneShot.toString()}`)
-                if(tos.length<3) return true;
-            })
-
+            var tos =[];
+            for (const friend of friends_random) {
+                let post = await getFriendCurrentDayRandomPost(friend);
+                if (post)   tos.push(`/post/${friend}/${post.id}/${DayEvent.OneShot.toString()}`);
+                if (tos.length >= 3) break;
+            }
             if(tos.length===0) return null;
             return {to:tos[0],options:{state:{token:true,nextPages: tos.slice(1),showMyRefPosts:true}}}
         }

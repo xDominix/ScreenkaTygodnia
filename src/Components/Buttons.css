@@ -55,7 +55,11 @@ button.paste
 .button-page{
     cursor: pointer;
     font-size: 40px !important;
+}
+
+.button-page .arrow{
+    font-size: 40px !important;
+    font-family: 'Advent Pro';
     margin-left: 10px;
     margin-right:10px;
-    font-family: 'Advent Pro';
 }

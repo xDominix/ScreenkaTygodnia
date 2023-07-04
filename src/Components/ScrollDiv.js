@@ -1,8 +1,9 @@
 import React from 'react';
+import "./ScrollDiv.css"
 
 const ScrollDiv = ({children, right}) => {
     return ( 
-        <div className='noscroll' style={{...{maxWidth:'100%',display:"flex",whiteSpace:'nowrap',overflow:"auto"},...(right?{direction:'rtl'}:{})}}>
+        <div className='noscroll scrolldiv' style={right?{direction:'rtl'}:{}}>
             {children}
         </div>
      );

@@ -35,7 +35,7 @@ export const ButtonPaste = ({onClick,disabled}) =>{
 }
 
 /*USEFULL WITH H1 */
-export const ButtonNextPage=({style,onClick,focus,disabled})=>{
+export const ButtonNextPage=({style,onClick,focus,disabled,children})=>{
     const navigate = useNavigate();
     const handleClick = ()=> {
         if(onClick) onClick();
@@ -44,9 +44,9 @@ export const ButtonNextPage=({style,onClick,focus,disabled})=>{
     return (<span className={'button-page'+((!disabled &&focus) ? " color-green-highlight":"")}
         onClick={!disabled?(handleClick):undefined}
         style={{...style, float:"right",...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
-    >{">"}</span>)
+    >{children}<span className="arrow">{">"}</span></span>)
 }
-export const ButtonPrevPage=({style,disabled,onClick=null,alert=false})=>{
+export const ButtonPrevPage=({style,disabled,onClick=null,alert=false,children})=>{
     const navigate = useNavigate();
     const handleClick = ()=> {
         if(!alert || window.confirm("Are you sure you want to leave?")){
@@ -57,5 +57,5 @@ export const ButtonPrevPage=({style,disabled,onClick=null,alert=false})=>{
     return (<span className='button-page'
     onClick={!disabled?(handleClick):undefined}
     style={{...style,...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
-    >{"<"}</span>)
+    ><span className="arrow">{"<"}</span>{children}</span>)
 }
