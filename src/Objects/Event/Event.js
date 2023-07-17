@@ -24,7 +24,7 @@ const CustomEvents = [
     CustomEvent.Upload,
 ];
 
-const ShotEvents=[ DayEvent.MorningShot,DayEvent.OneShot,CustomEvent.RnShot];
+const ShotEvents=[ DayEvent.MorningShot,DayEvent.OneShot,DayEvent.RnShot];
 
 
 export class Event {
@@ -40,7 +40,7 @@ export class Event {
     static toString = (event)=> event.toString();
     static fromString = (string)=> [...CustomEvents,...DayEvents].find(event=>event.toString()===string);
 
-    static isShotType = (event) => ShotEvents.find(e=>e.name === event?.name);
+    static isShotType = (event) => ShotEvents.includes(event);
 
     static canView = (event,props)=>{ //props for CustomEvents
         if(!event) return false;

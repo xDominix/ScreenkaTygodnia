@@ -48,12 +48,20 @@ const TempLogin = ({onTempLogin}) => {
     return ( 
         <div style={{height:"100%", display:"flex", flexDirection:"column"}}>
     <div className='login flex-center'>
+<<<<<<< HEAD
             <div className='login-user'>
                 <img src={meSrc} alt="profile"/>
                 <div>
                     <h4>Enter Secret Name:</h4>
                     <InputField autofocus reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isLoading={isInputFieldLoading} />
                 </div>
+=======
+        <div className='login-user'>
+            <img src={meSrc} alt="profile"/>
+            <div>
+                <h4>Enter Secret Username:</h4>
+                <InputField autofocus reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isLoading={isInputFieldLoading} />
+>>>>>>> parent of 4277a4a (fix: little changes like rn-shot bugs, no photo on diary and news app etc.)
             </div>
             
         </div> 

@@ -64,7 +64,7 @@ const Home = ({onAboutWeekClick}) => {
 
     useEffect(()=>{
         const loadRnShot = async (me_fullname,week_latest)=>{
-            if(me_fullname==null ||  week_latest==null)return;
+            if(week_latest!==null)return;
             let uploader = week_latest?.user;
             if(uploader==null) return;
             if(uploader===me_fullname) return;
@@ -217,7 +217,7 @@ const Home = ({onAboutWeekClick}) => {
             <ButtonText disabled={isCurrDayEventDisabled} onClick={()=>handleDayEventClick(currDayEvent)} style={buttonStyle} text={currDayEvent.name.toUpperCase()}/>
         </div>}        
 
-        {isRnShotData && //#3
+        {isRnShotData && (!isScreenka || isButtonScreenkaDisabled) && (!currDayEvent || isCurrDayEventDisabled) && //#3
         <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
             <ButtonRn onClick={handleRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
         </div>}
