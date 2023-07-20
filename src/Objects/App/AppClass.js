@@ -37,19 +37,23 @@ export class AppClass {
 
     static Default = new AppClass("Default","","",Format.None,100)
     //Abstract
-    static Word = new AppClass("Word","","write down the word, pharse or emoji that is in your mind.",Format.String,0)
+    static Word = new AppClass("Word","","write down a word, a pharse or an emoji.",Format.String,0)
     static Sentence = new AppClass("Sentence", "","write a sentence about anything.",Format.LongString,1)
 
     //Apple App
     static Safari = new AppClass("Safari","page","read some interesting content? saw some pretty layout? Share a website!",Format.Url,10)
     static Photos = new AppClass("Photos","photo, video","share a photos in your gallery.",Format.Path,11) //upload saved photo, saved video, screenshot, screen recording.
     static Camera = new AppClass("Camera","photo, video","share your photographic sessions. Selfies, portraits, panoramas etc.",Format.Path,12) //upload a photo, selfie, portrait, panorama, video taken by you.
+<<<<<<< HEAD
     static News = new AppClass("News", "story","tell us what interesting happened recently. Some crazy news!",Format.LongString,13)
+=======
+    static News = new AppClass("News", "story","write what's interesting happening in the world right now.",Format.LongString,13)
+>>>>>>> parent of 4277a4a (fix: little changes like rn-shot bugs, no photo on diary and news app etc.)
 
     //irl
     static Maps = new AppClass("Maps","place","recommend new places you recently visited, your favorite spots to hang out.",Format.String,20);
     static Contacts = new AppClass("Contacts","person","suggest a friend you want to add to the community!",Format.Url,21)
-    static Diary = new AppClass("Diary","note","describe your day. Your thoughts about how it is now.",Format.LongString,22);
+    static Diary = new AppClass("Diary","note","describe the day. As it is, right now.",Format.LongString,22);
     
     //App
     static Spotify = new AppClass("Spotify","song, podcast","share your favourite song or podcast.",Format.Url,31)
