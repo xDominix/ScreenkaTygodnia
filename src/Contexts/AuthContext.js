@@ -6,12 +6,12 @@ import { useUserService } from "../Services/UserService";
 import { useWeekService } from "../Services/WeekService";
 import { usePostService } from "../Services/PostService";
 import { Event } from "../Objects/Event/Event";
-import { CustomEvent } from "../Objects/Event/CustomEvent";
-import { DayEvent } from "../Objects/Event/DayEvent";
 
-export const AuthContext = React.createContext();
+const HANDLING_EVENTS = {RnShot:"RnShot",Screenka:"Screenka",Upload:"Upload",ManageUploads:"ManageUploads"}
 
 const NONE = false;
+
+export const AuthContext = React.createContext();
 
 const AuthProvider = ({children, demo}) => {
 
@@ -58,19 +58,11 @@ const AuthProvider = ({children, demo}) => {
     const weekUploads=useRef(null);
 
     useEffect(()=>{
-        const _getUser= async ()=>{ 
-            const isResetDay = ()=>{
-                if(Event.canView(DayEvent.Reset))
-                {
-                   //Reset zawieta fromWeekNumber niezerowy, ale... nie musi byc sprawdzany week_number bo 0 i tak zmienisz, a 1 sie zacznie. (changeMyPrefs setuje view za kazdym razem)
-                    return true
-                }
-                return false;
-            }
+        const _getUser= async ()=>{
             let fullname = localStorage.getItem("fullname");
             let user = await getUser(fullname);
             if(user) userFunnynameRef.current = user.funnyname;
-            if(user && isResetDay()) {return changeUserPreferences(user.fullname,{me:false}).then(()=>null)}
+            //if(user && isResetDay()) {return changeUserPreferences(user.fullname,{me:false}).then(()=>null)}
             if(!user || !user.preferences.me) return null;
             return user;
         }
@@ -153,7 +145,6 @@ const AuthProvider = ({children, demo}) => {
     }
    
     const changeMyPreferences=async(preferences)=> {
-        Event.setView(DayEvent.Reset);
         if(friendsDisabled) preferences.friends = true; //!
         if(screenkaDisabled) preferences.screenka = true; //!
         return changeUserPreferences(user.fullname,preferences).then(()=>{
@@ -328,10 +319,10 @@ const AuthProvider = ({children, demo}) => {
         return Event.getAvailableCustomEvents(weekNumber,permissions);
     },[weekNumber, user?.preferences,friendsDisabled,screenkaDisabled])
 
-    const myRnShotEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.RnShot),[myCustomEvents])
-    const myScreenkaEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.Screenka),[myCustomEvents])
-    const myUploadEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.Upload),[myCustomEvents])
-    const myManageUploadsEvent = useMemo(()=>myCustomEvents.find(ev=>ev===CustomEvent.ManageUploads),[myCustomEvents])
+    const myRnShotEvent = useMemo(()=>myCustomEvents.find(ev=>ev===HANDLING_EVENTS.RnShot),[myCustomEvents])
+    const myScreenkaEvent = useMemo(()=>myCustomEvents.find(ev=>ev===HANDLING_EVENTS.Screenka),[myCustomEvents])
+    const myUploadEvent = useMemo(()=>myCustomEvents.find(ev=>ev===HANDLING_EVENTS.Upload),[myCustomEvents])
+    const myManageUploadsEvent = useMemo(()=>myCustomEvents.find(ev=>ev===HANDLING_EVENTS.ManageUploads),[myCustomEvents])
 
     const value = {  
                                 AM_I_HOST,GET_HOST_ID,

@@ -8,12 +8,12 @@ import { ButtonScreenka,ButtonPlus, ButtonText, ButtonRn } from './components/Bu
 import { AppClass, AppType, DEFAULT_APP_NAMES } from '../../../Objects/App/AppClass';
 import A from '../../../Components/A';
 import { ButtonNextPage } from '../../../Components/Buttons';
-import { DayEvent } from '../../../Objects/Event/DayEvent';
 import AppContainer from './components/AppContainer';
 import UserContainer from './components/UserContainer';
-import { CustomEvent } from '../../../Objects/Event/CustomEvent';
 import { Event } from '../../../Objects/Event/Event'
 import { UserClass } from '../../../Objects/User/UserClass';
+
+const HANDLING_EVENTS = {RnShot:"RnShot",Screenka:"Screenka",Upload:"Upload",}
 
 const height = 70;
 const userHeight=32;
@@ -68,7 +68,7 @@ const Home = ({onAboutWeekClick}) => {
             let uploader = week_latest?.user;
             if(uploader==null) return;
             if(uploader===me_fullname) return;
-            if(!Event.canView(CustomEvent.RnShot,{date:week_latest?.date})) return;
+            if(!Event.canView(HANDLING_EVENTS.RnShot,{date:week_latest?.date})) return;
             if(!getMyFriends().includes(uploader)) return;
             getFriendLatestPost(uploader).then((post)=>{
                 if(post) setIsRnShotData({user_fullname:uploader,post_id:post.id})})
@@ -78,7 +78,7 @@ const Home = ({onAboutWeekClick}) => {
     },[week?.latest,myRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
 
     const rnAppName = useMemo(()=>{
-        if(myRnShotEvent && CustomEvent.RnShot.isTime({date:week?.latest?.date})) return week?.latest?.app
+        if(myRnShotEvent && HANDLING_EVENTS.RnShot.isTime({date:week?.latest?.date})) return week?.latest?.app
         return null;
     },[week?.latest,myRnShotEvent]) 
     
@@ -136,9 +136,9 @@ const Home = ({onAboutWeekClick}) => {
     useEffect(()=>{
         const loadScreenka = async (week)=>
         {
-                if( CustomEvent.Screenka.isTime({week:week})) 
+                if( HANDLING_EVENTS.Screenka.isTime({week:week})) 
                 {
-                    if(Event.canView(CustomEvent.Screenka,{week:week})) await delay(2000);
+                    if(Event.canView(HANDLING_EVENTS.Screenka,{week:week})) await delay(2000);
                     setIsScreenka(true)
                 }
             }
@@ -171,11 +171,11 @@ const Home = ({onAboutWeekClick}) => {
     /* BUTTONS START */
 
     const handleDayEventClick = (event)=> {if(event) navigate(`/dayevent/${event.toString()}`)}
-    const handleRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${CustomEvent.RnShot.toString()}`,{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:false}});  }
+    const handleRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${HANDLING_EVENTS.RnShot.toString()}`,{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:false}});  }
     
     const isButtonScreenkaDisabled = useMemo(()=>{
         if(!myScreenkaEvent) return true;
-        return !Event.canView(CustomEvent.Screenka,{week:true});
+        return !Event.canView(HANDLING_EVENTS.Screenka,{week:true});
     },[host?.id, myScreenkaEvent]);
 
     const handleButtonScreenkaClick = ()=>{
@@ -223,7 +223,7 @@ const Home = ({onAboutWeekClick}) => {
         </div>}
 
         <div className={defaultClassName} >
-            <ButtonPlus disabled={!myUploadEvent || !CustomEvent.Upload.isTime()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
+            <ButtonPlus disabled={!myUploadEvent || !HANDLING_EVENTS.Upload.isTime()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
         </div>
         
         <AppContainer 

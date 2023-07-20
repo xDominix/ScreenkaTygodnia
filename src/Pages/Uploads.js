@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../Contexts/AuthContext';
 import { ButtonPrevPage } from '../Components/Buttons';
-import { DayEvent } from '../Objects/Event/DayEvent';
 import {MiniPosts} from '../Objects/Post/MiniPosts';
 import { delay } from '../aFunctions';
 import { Event } from '../Objects/Event/Event';
 import { useLocation } from 'react-router-dom';
+
+const HANDLING_EVENTS = {DayUploads:"DayUploads",WeekUploads:"WeekUploads",ManageUploads:"ManageUploads",}
 
 const Uploads = () => {
 
@@ -33,13 +34,13 @@ const Uploads = () => {
         if(type==="day") {
             getMyDayUploads().then((posts)=>{
                 setPosts(posts);
-                if(posts?.length>0) Event.setView(DayEvent.DayUploads);
+                if(posts?.length>0) Event.setView(HANDLING_EVENTS.DayUploads);
             })
         } 
         else if(type==="week") {
             getMyWeekUploads().then((posts)=>{
                 setPosts(posts);
-                if(posts?.length>0) Event.setView(DayEvent.WeekUploads);
+                if(posts?.length>0) Event.setView(HANDLING_EVENTS.WeekUploads);
             })
             .catch(()=>navigate("/"))
         }
