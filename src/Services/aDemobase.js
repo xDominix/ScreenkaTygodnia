@@ -3,7 +3,7 @@ import { Host } from "../Objects/Host"
 import { UserClass } from "../Objects/User/UserClass"
 import { Week } from "../Objects/Week"
 import { toMap } from "../aFunctions";
-import { DEFAULT_APP_NAMES, Format } from "../Objects/App/AppClass";
+import { Format } from "../Objects/App/AppClass";
 
 export const DEMONOW = new Date(2023,4-1,24,20,17);
 export const DEMONAME = "Demo User" 
@@ -42,7 +42,7 @@ const subscribers = new Map([
 ])
 
 export const HostRepository = [ new Host("-1",DEMONAME,new Date(2023,4-1,10),
-DEFAULT_APP_NAMES,
+["Notes", "Safari","Photos","Spotify","Youtube","Contacts"],
 ["Maps","Instagram","Word","Camera"],null,new Map([["SuperGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
 
 

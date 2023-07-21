@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { MiniPost } from './Post';
-import "./Post.css"
+import { MiniPost } from './MiniPost';
+import "./_Post.css"
 import { useState } from 'react';
 import Loading from '../../Pages/Loading';
 import NothingToShow from '../../Pages/NothingToShow';

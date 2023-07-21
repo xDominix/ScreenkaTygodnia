@@ -4,16 +4,16 @@ import { AuthContext } from '../Contexts/AuthContext';
 import { ButtonPrevPage } from '../Components/Buttons';
 import {MiniPosts} from '../Objects/Post/MiniPosts';
 import { delay } from '../aFunctions';
-import { Event } from '../Objects/Event/Event';
+import { Event } from '../Objects/Event/_Event';
 import { useLocation } from 'react-router-dom';
 
-const HANDLING_EVENTS = {DayUploads:"DayUploads",WeekUploads:"WeekUploads",ManageUploads:"ManageUploads",}
+const HANDLING_EVENTS = {DayUploads:"dayuploads",WeekUploads:"weekuploads",ManageUploads:"manageuploads",}
 
 const Uploads = () => {
 
     const navigate = useNavigate();
 
-    const {user,getMyDayUploads,getMaxTickets,getMyWeekUploads,changeMyPostPermissions,screenkaDisabled} = useContext(AuthContext)
+    const {user,getMyDayUploads,getMaxTickets,getMyWeekUploads,changeMyPostPermissions,screenkaDisabled,getMyInteractiveEvent} = useContext(AuthContext)
     const {type} = useParams();
 
     //token
@@ -23,28 +23,20 @@ const Uploads = () => {
     const [posts,setPosts]=useState(null);
 
     useEffect(()=>{
-        if(!token && type!== "manage") {navigate("/");return;}
-
-        if(type==="manage") {
-            getMyDayUploads().then(posts=>{ //desc order, from newest
-                posts.sort((a, b) => a.upload_date - b.upload_date);
-                return posts;
-            }).then(setPosts).catch(()=>navigate("/"))
-        } else
-        if(type==="day") {
-            getMyDayUploads().then((posts)=>{
-                setPosts(posts);
-                if(posts?.length>0) Event.setView(HANDLING_EVENTS.DayUploads);
-            })
-        } 
-        else if(type==="week") {
-            getMyWeekUploads().then((posts)=>{
-                setPosts(posts);
-                if(posts?.length>0) Event.setView(HANDLING_EVENTS.WeekUploads);
-            })
-            .catch(()=>navigate("/"))
+        const getUploads = (event)=>{
+            switch(event.toString()){
+                case HANDLING_EVENTS.ManageUploads: return getMyDayUploads().then(posts=>{ posts.sort((a, b) => a.upload_date - b.upload_date); return posts; }); //desc order, from newest
+                case HANDLING_EVENTS.DayUploads: return getMyDayUploads();
+                case HANDLING_EVENTS.WeekUploads: return getMyWeekUploads();
+                default: return Promise.reject();
+            }
         }
-        else {navigate("/");return;}
+
+        let event = getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.DayUploads : (type==="day"?HANDLING_EVENTS.DayUploads:HANDLING_EVENTS.ManageUploads));
+        if(!Event.canInteract(event) || (!token && type!== "manage")) {navigate("/");return;}
+
+        getUploads(event).then(posts=>{setPosts(posts); if(posts?.length>0) Event.setInteraction(event);}).catch(()=>navigate("/"))
+
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnPostCheckboxDelay = (e)=>{

@@ -8,9 +8,8 @@ import { DAY_EVENT_POSTS } from '../aFunctions';
 import { useRef } from 'react';
 import { useMemo } from 'react';
 import { Event } from '../Objects/Event/_Event';
-import { AuthContext } from '../Contexts/AuthContext';
 
-const HANDLING_EVENTS = {ThrowBack:"ThrowBack",OhPreview:"OhPreview"}
+const HANDLING_EVENTS = {ThrowBack:"throwback",OhPreview:"ohpreview"}
 
 const MiniPostsPagePlus = () => {
 
@@ -38,9 +37,9 @@ const MiniPostsPagePlus = () => {
 
     useEffect(()=>{
         if(!token) {navigate("/"); return;}
-        if(!event_ || !user_fullname || !host_id || !week_name) {navigate("/"); return;}
+        if(!Event.canInteract(event_) || !user_fullname || !host_id || !week_name) {navigate("/"); return;}
 
-        switch(event_){
+        switch(event_.toString()){
             case HANDLING_EVENTS.ThrowBack:
                 getMyPastWeekPosts(week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;

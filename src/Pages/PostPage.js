@@ -23,6 +23,10 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     const event_ = useMemo(()=>getMyInteractiveEvent(event),[event])
 
     useEffect(()=>{
+        if(event_?.isShotType() && !Event.canInteract(event_)){navigate('/'); return;}
+    },[])
+
+    useEffect(()=>{
         if(!token && event_) {navigate('/'); return;}
         if(!user_fullname || !id) {navigate('/'); return;}
     },[token, event_, user_fullname, id])

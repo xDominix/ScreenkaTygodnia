@@ -1,6 +1,4 @@
-import { MAX_SCREENKA, WeekDay, isDayToday, isLessThenMinutes } from "../../aFunctions";
-import { DayEvent } from "./DayEvent";
-import { Event, EventFor } from "./_Event";
+import { Event } from "./_Event";
 
 export class CustomEvent extends Event {
     constructor(name,description,for_,fromWeekNumber,experience,isTimeFunction,max_views,views_till){

@@ -1,8 +1,8 @@
 import { Apps, BUILDIN_APPS } from "./aLocalbase";
 
-export const useAppService = (demo)=> demo===undefined ? null: AppService;
+export const useAppService = () => AppService;
 
 const AppService = {
-    getApps :()=>Apps,
-    getBuildinApps : ()=> BUILDIN_APPS.map(app=>Apps[app]) 
+    getApps :()=>Object.values(Apps),
+    getBuildinApps : ()=> BUILDIN_APPS
 };

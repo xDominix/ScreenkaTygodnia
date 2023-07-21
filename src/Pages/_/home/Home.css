@@ -43,10 +43,6 @@
     filter: blur(2px) brightness(60%);
 }
 
-.home-scale-app{
-    scale: 1.1;
-}
-
 @keyframes show{
     0% {height:0px;overflow:hidden;}
     100%{overflow: hidden;}

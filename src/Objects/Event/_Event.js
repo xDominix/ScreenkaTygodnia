@@ -7,7 +7,8 @@ export const EventViewsTill ={Week:0,Day:1,FifteenMinutes:2}
 export const EventExperience = { None:0, Informative:1 ,  Interactive:2 , Full:3}
 
 export class Event {
-
+    #experience;
+    
     constructor(name, description="", for_=null, fromWeekNumber=0,experience=EventExperience.None, max_views=null, views_till=null) 
     {
         this.name = name;
@@ -22,12 +23,12 @@ export class Event {
     checkPermissions = ({me,friends,screenka}) => (this.for === EventFor.me && me === true) ||  (this.for === EventFor.friends && friends === true)  ||  (this.for === EventFor.screenka && screenka === true);
     isTime = ()=> false;
     toString=()=> this.name.replace("-","").replace(" ","").toLowerCase()
-    getSubtitle= ()=>null;
-    getNote = ()=>null;
+    getSubtitle= ()=>"";
+    getNote = ()=>"";
 
     isAvailable = (weekNumber,for_) => !for_? false : (weekNumber>=this.fromWeekNumber && this.checkPermissions(for_));
-    isInformative = ()=> [EventExperience.Informative,EventExperience.Full].contains(this.#experience);
-    isInteractive = ()=> [EventExperience.Interactive,EventExperience.Full].contains(this.#experience);
+    isInformative = ()=> [EventExperience.Informative,EventExperience.Full].includes(this.#experience);
+    isInteractive = ()=> [EventExperience.Interactive,EventExperience.Full].includes(this.#experience);
     isShotType = () => this.name.toLowerCase().includes("shot");
 
     //dlaczego static? ta sama nazwa eventu bedzie traktowana tak samo 

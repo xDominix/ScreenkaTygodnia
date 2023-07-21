@@ -2,9 +2,10 @@ import { isAfterTime, isTime, toWeekDay } from "../../aFunctions";
 import { Event, EventViewsTill } from "./_Event";
 
 export class DayEvent extends Event {
-    constructor( name,weekDay,fromHour=0,toHour=24, description,for_=null,experience,fromWeekNumber=0) 
+    constructor( name,weekDay,fromHour=0,toHour=24, description,for_=null,fromWeekNumber=0,experience) 
     { 
       super(name,description,for_,fromWeekNumber,experience,1,weekDay===null? EventViewsTill.Day:EventViewsTill.Week)
+      this.weekDay = weekDay;
       this.fromHour=fromHour
       this.toHour=toHour
     }

@@ -1,5 +1,4 @@
 import { toMap } from "../aFunctions";
-import { DEFAULT_APP_NAMES } from "./App/AppClass";
 
 export class Host {
     constructor(id,fullname,start_date,popular_apps,//required
@@ -20,8 +19,6 @@ export class Host {
       this.max_tickets = max_tickets;
       this.apps_change_date = apps_change_date//zeby moc zauktualizowac preferencje, bo defaultowo ida na off. (gdy appka idzie z popular na personalized)
     }
-
-    static DefaultHost = new Host("-0","Steve Jobs",new Date(),DEFAULT_APP_NAMES.slice(0,6))
 
     getFriends =(fullname)=>{//return array
       let res = [];

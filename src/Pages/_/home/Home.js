@@ -5,15 +5,16 @@ import { BottomTabContext } from '../../../Contexts/BottomTabContext';
 import { useNavigate } from 'react-router-dom';
 import { MAX_SCREENKA, datesWeekDelta, delay } from '../../../aFunctions';
 import { ButtonScreenka,ButtonPlus, ButtonText, ButtonRn } from './components/Buttons';
-import { AppClass, AppType, DEFAULT_APP_NAMES } from '../../../Objects/App/AppClass';
+import { AppClass, AppType } from '../../../Objects/App/AppClass';
 import A from '../../../Components/A';
 import { ButtonNextPage } from '../../../Components/Buttons';
 import AppContainer from './components/AppContainer';
 import UserContainer from './components/UserContainer';
-import { Event } from '../../../Objects/Event/Event'
+import { Event } from '../../../Objects/Event/_Event'
 import { UserClass } from '../../../Objects/User/UserClass';
 
-const HANDLING_EVENTS = {RnShot:"RnShot",Screenka:"Screenka",Upload:"Upload",}
+
+const HANDLING_EVENTS = {RnShot:"rnshot",ScreenkaTygodnia:"screenkatygodnia",Upload:"upload",ManageUploads:"manageuploads"}
 
 const height = 70;
 const userHeight=32;
@@ -24,11 +25,21 @@ const HOME_APPS_SIZE = 6;
 
 const Home = ({onAboutWeekClick}) => {
 
-    const {user,host,week,weekNumber,getMyFriends,getFriendLatestPost,getMyAppsCounts,myDayEvents,myRnShotEvent,myScreenkaEvent,myUploadEvent,myManageUploadsEvent} = useContext(AuthContext)
+    const {user,host,week,weekNumber,getMyFriends,getFriendLatestPost,getMyAppsCounts,myDayEvents,getMyInteractiveEvent,getBuildInApps,getApp} = useContext(AuthContext)
     const {setBottomTab,isBottomTab,getObject,} = useContext(BottomTabContext);
 
     const navigate = useNavigate();
 
+    const loadApps=(me,host,week)=>{
+        if(!me || !host) return getBuildInApps();
+    
+        var apps = [...host.popular_apps,...me.personalized_apps,...me.super_personalized_apps];
+        
+        if(week && week?.extra_apps!=null) apps = apps.concat(week.extra_apps);
+        if(week && week?.blocked_apps!=null) apps = apps.filter( (app) => !week.blocked_apps.includes(app) );
+        apps = apps.map(app=>getApp(app));
+        apps.sort((a,b)=>a.label-b.label);
+        return apps;}
     const uploadApps = useRef(loadApps(user,host,week));
     const [homeApps,setHomeApps] = useState(uploadApps.current);//max_len = HOME_APPS_SIZE
     
@@ -43,11 +54,17 @@ const Home = ({onAboutWeekClick}) => {
         .filter((event)=> event.hasPage && event.isTime())?.at(0)
     ,[myDayEvents]) 
 
-    const isCurrDayEventDisabled = useMemo(()=>!Event.canView(currDayEvent),[currDayEvent])
+    const isCurrDayEventDisabled = useMemo(()=>!Event.canInteract(currDayEvent),[currDayEvent])
 
-    const [isRnShotData,setIsRnShotData] = useState();
+    const [rnShotData,setRnShotData] = useState();
 
     const [isScreenka,setIsScreenka] = useState(false);
+
+    //event
+    const myRnShotEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.RnShot),[getMyInteractiveEvent])
+    const myScreenkaEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.ScreenkaTygodnia),[getMyInteractiveEvent])
+    const myUploadEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.Upload),[getMyInteractiveEvent])
+    const myManageUploadsEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.ManageUploads),[getMyInteractiveEvent])
 
     useEffect(()=>{
         const loadParticipants = async (user,friends,week_participants)=>{
@@ -68,17 +85,17 @@ const Home = ({onAboutWeekClick}) => {
             let uploader = week_latest?.user;
             if(uploader==null) return;
             if(uploader===me_fullname) return;
-            if(!Event.canView(HANDLING_EVENTS.RnShot,{date:week_latest?.date})) return;
+            if(!Event.canInteract(myRnShotEvent,{date:week_latest?.date})) return;
             if(!getMyFriends().includes(uploader)) return;
             getFriendLatestPost(uploader).then((post)=>{
-                if(post) setIsRnShotData({user_fullname:uploader,post_id:post.id})})
+                if(post) setRnShotData({user_fullname:uploader,post_id:post.id})})
             }
 
         if(week?.latest && myRnShotEvent) loadRnShot(user.fullname,week.latest);
     },[week?.latest,myRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
 
     const rnAppName = useMemo(()=>{
-        if(myRnShotEvent && HANDLING_EVENTS.RnShot.isTime({date:week?.latest?.date})) return week?.latest?.app
+        if(myRnShotEvent && myRnShotEvent.isTime({date:week?.latest?.date})) return week?.latest?.app
         return null;
     },[week?.latest,myRnShotEvent]) 
     
@@ -136,9 +153,9 @@ const Home = ({onAboutWeekClick}) => {
     useEffect(()=>{
         const loadScreenka = async (week)=>
         {
-                if( HANDLING_EVENTS.Screenka.isTime({week:week})) 
+                if( myScreenkaEvent.isTime({week:week})) 
                 {
-                    if(Event.canView(HANDLING_EVENTS.Screenka,{week:week})) await delay(2000);
+                    if(Event.canInteract(myScreenkaEvent,{week:week})) await delay(2000);
                     setIsScreenka(true)
                 }
             }
@@ -152,7 +169,19 @@ const Home = ({onAboutWeekClick}) => {
 
     const handleAppClick=(app)=>{
         if(!isUploadMode) setBottomTab({id:0,object:app,total_uploads: appsCountsMap.get(app.name)?appsCountsMap.get(app.name):0})
-        else setBottomTab({id:1,object:app,app_type: getAppType(app,host)})
+    }
+
+    const handleAppNotificationClick=(app)=>{ 
+        const getAppType = (app,host)=>{
+            if(!host) return AppType.Popular;
+            if(host.personalized_apps.includes(app.name)) return AppType.Personalized;
+            if(host.popular_apps.includes(app.name)) return AppType.Popular;
+            if(host.group_apps.includes(app.name)) return AppType.Group;
+            //superPopular support soon
+            return AppType.SuperPersonalized;
+        }
+
+        if(isUploadMode) setBottomTab({id:1,object:app,app_type:getAppType(app,host)})
     }
 
     const handleUserClick=(user_fullname)=>{
@@ -171,11 +200,11 @@ const Home = ({onAboutWeekClick}) => {
     /* BUTTONS START */
 
     const handleDayEventClick = (event)=> {if(event) navigate(`/dayevent/${event.toString()}`)}
-    const handleRnShotClick=()=>{   navigate(`/post/${isRnShotData.user_fullname}/${isRnShotData.post_id}/${HANDLING_EVENTS.RnShot.toString()}`,{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:false}});  }
+    const handleRnShotClick=()=>{   navigate(`/post/${rnShotData.user_fullname}/${rnShotData.post_id}/${myRnShotEvent}`,{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:false}});  }
     
     const isButtonScreenkaDisabled = useMemo(()=>{
         if(!myScreenkaEvent) return true;
-        return !Event.canView(HANDLING_EVENTS.Screenka,{week:true});
+        return !Event.canInteract(myScreenkaEvent,{week:true});
     },[host?.id, myScreenkaEvent]);
 
     const handleButtonScreenkaClick = ()=>{
@@ -190,8 +219,8 @@ const Home = ({onAboutWeekClick}) => {
     }
 
     const special_  = useMemo(()=>{
-        if(getObject()?.constructor.name === AppClass.name) return getObject().name
-        if(getObject()?.constructor.name === UserClass.name) return getObject().fullname
+        if(getObject()?.constructor === AppClass) return getObject().name
+        if(getObject()?.constructor === UserClass) return getObject().fullname
         if(getObject()) return "other";
         return null;
     },[getObject()])
@@ -217,19 +246,19 @@ const Home = ({onAboutWeekClick}) => {
             <ButtonText disabled={isCurrDayEventDisabled} onClick={()=>handleDayEventClick(currDayEvent)} style={buttonStyle} text={currDayEvent.name.toUpperCase()}/>
         </div>}        
 
-        {isRnShotData && (!isScreenka || isButtonScreenkaDisabled) && (!currDayEvent || isCurrDayEventDisabled) && //#3
+        {rnShotData && (!isScreenka || isButtonScreenkaDisabled) && (!currDayEvent || isCurrDayEventDisabled) && //#3
         <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
             <ButtonRn onClick={handleRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
         </div>}
 
         <div className={defaultClassName} >
-            <ButtonPlus disabled={!myUploadEvent || !HANDLING_EVENTS.Upload.isTime()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
+            <ButtonPlus disabled={!myUploadEvent || !myUploadEvent.isTime()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
         </div>
         
         <AppContainer 
             apps={apps} notificationCountsMap={appsCountsMap} disabled={!user.preferences.me} 
-            appHeight={height} onAppClick={handleAppClick} appClassName='home-blur-dark-pre' 
-            specialAppName={special_} specialClassName='home-scale-app' notSpecialClassName='home-blur-dark'
+            appHeight={height} onAppClick={handleAppClick} onAppNotificationClick={handleAppNotificationClick} appClassName='home-blur-dark-pre' 
+            specialAppName={special_} notSpecialClassName='home-blur-dark'
             orangeAppName={rnAppName} isUploadMode={isUploadMode} 
         />
     
@@ -248,23 +277,3 @@ const Home = ({onAboutWeekClick}) => {
 )}
 
 export default Home;
-
-const loadApps=(me,host,week)=>{
-    if(!me || !host) return DEFAULT_APP_NAMES.map(name=>AppClass.get(name));
-
-    var apps = [...host.popular_apps,...me.personalized_apps,...me.super_personalized_apps];
-    
-    if(week && week?.extra_apps!=null) apps = apps.concat(week.extra_apps);
-    if(week && week?.blocked_apps!=null) apps = apps.filter( (app) => !week.blocked_apps.includes(app) );
-    apps = apps.map(app=>AppClass.get(app));
-    apps.sort((a,b)=>a.label-b.label);
-    return apps;
-}
-
-const getAppType = (app,host)=>{
-    if(!host) return AppType.Popular;
-    if(host.personalized_apps.includes(app.name)) return AppType.Personalized;
-    if(host.popular_apps.includes(app.name)) return AppType.Popular;
-    //if(host.group_apps.includes(app.name)) return AppType.Group; // not included anywhere else
-    return AppType.SuperPersonalized;
-}

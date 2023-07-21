@@ -12,7 +12,7 @@ import Loading from '../../Loading';
 
 const Setup = ({onSetup}) => {
 
-    const {getTempMe,saveMe,trySetMyUsername,trySetMyPersonalizedApps,getHost,getUserSrcUrl} = useContext(AuthContext);
+    const {getTempMe,saveMe,trySetMyUsername,trySetMyPersonalizedApps,getHost,getUserSrcUrl,getApp} = useContext(AuthContext);
 
     const [meSrcUrl,setMeSrcUrl] = useState(getPath('default_profile_picture.png'))
     const [personalizedApps,setPersonalizedApps] = useState(null);
@@ -113,7 +113,7 @@ const Setup = ({onSetup}) => {
                 <h4>Select apps you interested in:</h4>
                 <div className='setup-apps-list'>
                     {personalizedApps.map((appname,index)=>{
-                        let app = AppClass.get(appname);
+                        let app = getApp(appname);
                         return <div key={index}>
                            <Checkbox 
                              disabled={isInputLoading}

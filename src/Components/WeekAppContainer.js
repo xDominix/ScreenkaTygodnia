@@ -7,7 +7,7 @@ import { AppClass } from '../Objects/App/AppClass';
 const APPS_SIZE = 4;
 
 const WeekAppContainer = ({host_id, week_name}) => {
-    const {getHostWeekForScreenka}= useContext(AuthContext);
+    const {getHostWeekForScreenka,getApp}= useContext(AuthContext);
 
     const [week,setWeek] = useState(null);
     useEffect(()=>{
@@ -19,7 +19,7 @@ const WeekAppContainer = ({host_id, week_name}) => {
         let arr= Array.from(week.apps_counts)
             .sort((a, b) => b[1] - a[1])
             .slice(0, APPS_SIZE)
-            .map(([app_name, ]) => AppClass.get(app_name));
+            .map(([app_name, ]) => getApp(app_name));
         while(APPS_SIZE > arr.length) arr.push(AppClass.Default);
         return arr;
     },[week?.apps_counts])

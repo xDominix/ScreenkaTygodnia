@@ -4,7 +4,7 @@ import NothingToShow from './NothingToShow';
 import { AuthContext } from '../Contexts/AuthContext';
 import {  randomElement } from '../aFunctions';
 
-const HANDLING_EVENTS = {DayUploads:"DayUploads",WeekUploads:"WeekUploads",OneShot:"OneShot",MorningShot:"MorningShot",OhPreview:"OhPreview",ThrowBack:"ThrowBack"}
+const HANDLING_EVENTS = {DayUploads:"dayuploads",WeekUploads:"weekuploads",OneShot:"oneshot",MorningShot:"morningshot",OhPreview:"ohpreview",ThrowBack:"throwback"}
 
 const DayEventPage = () => { // dla day_eventow ktore maja page (isInteractive())
 
@@ -17,7 +17,7 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (isInteractive()
 
     useEffect(()=>{
         let day_event = getMyInteractiveEvent(event);
-        if(!day_event || !day_event.isInteractive()) {navigate("/"); return;}
+        if(!Event.canInteract(day_event)) {navigate("/"); return;}
 
         const timeout = setTimeout(async ()=>{
             let nav = await getNavigator(day_event);
@@ -61,7 +61,7 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (isInteractive()
             return {to:`/posts/${me.fullname}/${host_id}/${week_name}/${HANDLING_EVENTS.ThrowBack}`,options:{state:{token:true}}}
         }
 
-        switch(event)
+        switch(event.toString())
         { 
             case HANDLING_EVENTS.DayUploads: return {to:"/uploads/day",options:{state:{token:true}}}
             case HANDLING_EVENTS.WeekUploads: return {to:"/uploads/week",options:{state:{token:true}}}
