@@ -17,20 +17,20 @@ const Post = ({
     hideNickname=false,
     setView}) =>  {
 
-    const {getUserPostAndTrySetMyView,hideIfAppsState,getUserPost,getUser,getPathPostContentUrl,getApp} = useContext(AuthContext);
+    const {PostService,UserService,AppService} = useContext(AuthContext);
 
     const [postState,setPostState] = useState(post);
-    const [user,setUser]= useState(null);
+    const [userUsername,setUserUsername] = useState(null)
     const [isSuperHide,setIsSuperHide] = useState(false);
     const [isHide,setIsHide] = useState(true);
     const [content,setContent] = useState("");
 
     useEffect(()=>{
-        if(!hideNickname) getUser(user_fullname).then(setUser);
+        if(!hideNickname) UserService.getUserUsername(user_fullname).then(setUserUsername);
 
         if(post) return;
 
-        const getPostPromise = setView ? getUserPostAndTrySetMyView(user_fullname,id) : getUserPost(user_fullname,id);
+        const getPostPromise = setView ? PostService.getPostAndTrySetMyView(user_fullname,id) : PostService.getPost(user_fullname,id);
         getPostPromise.then(post=>{
             if(post) {
                 setPostState(post);
@@ -43,13 +43,13 @@ const Post = ({
         const getContent = async (post)=>{
             if(!post) return null;
 
-            let app = getApp(post.app), content = post.content;
+            let app = AppService.getApp(post.app), content = post.content;
             switch(app?.format){
                 case Format.LongString: return <h4 style={{padding: "3px"}} >{content}</h4>
                 case Format.String: return <h3 >{content}</h3>
                 case Format.Url: return <a href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
                 case Format.Path: 
-                    let src = await getPathPostContentUrl(user_fullname,content);
+                    let src = await PostService.getPathPostContentUrl(user_fullname,content);
                     return <img alt="post content" src={src}></img>;
                 default: return content;
             }
@@ -64,7 +64,7 @@ const Post = ({
         if(isSuperHide) return;
 
         const timeout = setTimeout(()=>{
-            if(hideIfAppsState?.includes(postState.app)) {setIsSuperHide(true);}
+            if(PostService.hideIfAppsState?.includes(postState.app)) {setIsSuperHide(true);}
         },500)
         return ()=> clearTimeout(timeout)
     },[postState?.app]) //eslint-disable-line react-hooks/exhaustive-deps
@@ -91,14 +91,14 @@ const Post = ({
     <div className='pre-pre-post'>
         {!hideNickname &&<div className="nickname">
             <User user_fullname={user_fullname}/>
-            <h4 className='color-gray'>{user?user.username:"_______"}</h4>
+            <h4 className='color-gray'>{userUsername?userUsername:"_______"}</h4>
         </div>}
     <div className='pre-post'>
 
             <div className='bcolor-dark-gray post'>
                 <h3 className='date'>{getDate()}</h3>
                 <div className='head'>
-                    <App application={getApp(postState?.app)} notificationText={getNotificationText()}/>
+                    <App application={AppService.getApp(postState?.app)} notificationText={getNotificationText()}/>
                     {isSuperHide && <A bold onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>tap</A>}
                 </div>
                 <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>

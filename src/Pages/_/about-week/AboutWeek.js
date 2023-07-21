@@ -9,13 +9,13 @@ import ScrollDiv from "../../../Components/ScrollDiv";
 
 const AboutWeek = ({onClose}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
-    const {week,weekNumber,myDayEvents,disabledDayEvents,myCustomEvents} = useContext(AuthContext);
+    const {week,HostService,EventService} = useContext(AuthContext);
 
     //only events informative events
-    const weekDayEvents= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,events:myDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isInformative()),disabled_events:disabledDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isInformative())}}),[myDayEvents?.length,disabledDayEvents?.length])
-    const everyDayEvents= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isInformative())  ,[myDayEvents?.length])
-    const disabledEveryDayEvents= useMemo(()=>disabledDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isInformative()) ,[disabledDayEvents?.length])
-    const customEvents = useMemo(()=>myCustomEvents.filter(event=>event.isInformative()),[myCustomEvents])
+    const weekDayEvents= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,events:EventService.myDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isInformative()),disabled_events:EventService.disabledDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isInformative())}}),[EventService.myDayEvents?.length,EventService.disabledDayEvents?.length])
+    const everyDayEvents= useMemo(()=>EventService.myDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isInformative())  ,[EventService.myDayEvents?.length])
+    const disabledEveryDayEvents= useMemo(()=>EventService.disabledDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isInformative()) ,[EventService.disabledDayEvents?.length])
+    const customEvents = useMemo(()=>EventService.myCustomEvents.filter(event=>event.isInformative()),[EventService.myCustomEvents])
     const [isDayLetter,setIsDayLetter] = useState(true)
 
     const handleDayNameClick =(day,event)=>{
@@ -45,7 +45,7 @@ const AboutWeek = ({onClose}) => {
         <div className={"aweek "+( isBottomTab()?'noclick aweek-blur-dark':"")}>
         <ScrollDiv>
         <h1>
-            <ButtonPrevPage onClick={onClose}>{"#"+(weekNumber?weekNumber:0)}</ButtonPrevPage>
+            <ButtonPrevPage onClick={onClose}>{"#"+(HostService.weekNumber?HostService.weekNumber:0)}</ButtonPrevPage>
             <span className={"color-blue-highlight"}>{week? week.name.toUpperCase(): "WEEK"}</span>{/* (week?.name.length>12 ? " spansmall":" span") */}
             {week && <span role="img" aria-label="emoji">{week.emoji}</span>}
         </h1>

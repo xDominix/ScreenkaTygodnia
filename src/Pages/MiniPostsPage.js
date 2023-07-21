@@ -11,7 +11,7 @@ const MiniPostsPage = () => { //current week posts page
     const {user_fullname,host_id,event} = useParams(); // event_string
     const navigate = useNavigate();
 
-    const {AM_I_HOST,getUserCurrentDayPostsHOST,getUserCurrentWeekPostsHOST} = useContext(AuthContext)
+    const {AM_I_HOST,PostService} = useContext(AuthContext)
     const [posts,setPosts] = useState(null);
 
     useEffect(()=>{
@@ -19,10 +19,10 @@ const MiniPostsPage = () => { //current week posts page
         
         switch(event.toString()){
             case HANDLING_EVENTS.DayUploads:
-                getUserCurrentDayPostsHOST(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
+                PostService.getUserCurrentDayPostsHOST(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             case HANDLING_EVENTS.WeekUploads:
-                getUserCurrentWeekPostsHOST(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
+                PostService.getUserCurrentWeekPostsHOST(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             default:
                 navigate("/")

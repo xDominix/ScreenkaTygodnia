@@ -14,23 +14,24 @@ const WeekService = {
         return onSnapshot(doc(db,"hosts",host_id,"weeks",week_name),(doc)=>{console.log("Week updated");let doc_ = doc.data();doc_.id=doc.id;onNext(Week.fromDoc(doc_))});
     },
 
-    getHostWeek : async (host_id,week_name=null)=>{ //return week or null 
-       if(host_id==null) return null;
-        if(week_name!=null)
+    getWeek : async (host_id,week_name,current=false)=>{ //return week or null 
+        if(host_id==null || (week_name==null && !current)) return null;
+        
+        if(current)
         {
-            let doc =  await getDoc(`hosts/${host_id}/weeks`,week_name);
-            return Week.fromDoc(doc);
+            let fromDate =getMonday();
+            let toDate = GET_NOW();
+            let docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date",">=",fromDate),where("start_date","<=",toDate),orderBy("start_date","desc"),limit(1));
+            if(docs.length===0) return null;
+            return Week.fromDoc(docs.at(0))
         }
 
-        let fromDate =getMonday();
-        let toDate = GET_NOW();
-        let docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date",">=",fromDate),where("start_date","<=",toDate),orderBy("start_date","desc"),limit(1));
-        if(docs.length===0) return null;
-        return Week.fromDoc(docs.at(0))
+        let doc =  await getDoc(`hosts/${host_id}/weeks`,week_name);
+        return Week.fromDoc(doc);
     },
 
     /*
-    getHostWeekNames : async(host_id,from_date=null)=>{
+    getWeekNames : async(host_id,from_date=null)=>{
         if(!host_id) return [];
         let docs;
         if(from_date) docs = await getDocs(`hosts/${host_id}/weeks`,where("start_date","<=",GET_NOW()),where("start_date",">=",from_date),orderBy("start_date","desc"),limit(20));
@@ -66,11 +67,11 @@ const WeekServiceDemo = {
         async function subscribe() {
             
             while (isSubscribed) {
-                let snapshot = await WeekServiceDemo.getHostWeek(host_id,week_name);
+                let snapshot = await WeekServiceDemo.getWeek(host_id,week_name);
                 snapshot=Object.assign({}, snapshot);
                 onNext(snapshot);
 
-                snapshot = await WeekServiceDemo.getHostWeek(host_id,week_name);
+                snapshot = await WeekServiceDemo.getWeek(host_id,week_name);
                 snapshot=Object.assign({}, snapshot);
                 await delay(3000);
                 snapshot.today_apps_counts = toMap({Spotify:2,Maps:1,Safari:1,Photos:1});
@@ -89,13 +90,13 @@ const WeekServiceDemo = {
         };
     },
 
-    getHostWeek : async (host_id,week_name=null)=>{ //return week or null or undefined
+    getWeek : async (host_id,week_name,current=false)=>{ //return week or null or undefined
         await delay(500)
         return WeekRepository[0];
     },
 
     /*
-    getHostWeekNames : async (host_id,from_date=null)=>{
+    getWeekNames : async (host_id,from_date=null)=>{
         await delay(1500)
         return [WeekRepository[0].name];
     },*/

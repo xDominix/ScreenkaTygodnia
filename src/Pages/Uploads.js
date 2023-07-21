@@ -13,7 +13,7 @@ const Uploads = () => {
 
     const navigate = useNavigate();
 
-    const {user,getMyDayUploads,getMaxTickets,getMyWeekUploads,changeMyPostPermissions,screenkaDisabled,getMyInteractiveEvent} = useContext(AuthContext)
+    const {user,PostService,screenkaDisabled,EventService} = useContext(AuthContext)
     const {type} = useParams();
 
     //token
@@ -25,14 +25,14 @@ const Uploads = () => {
     useEffect(()=>{
         const getUploads = (event)=>{
             switch(event.toString()){
-                case HANDLING_EVENTS.ManageUploads: return getMyDayUploads().then(posts=>{ posts.sort((a, b) => a.upload_date - b.upload_date); return posts; }); //desc order, from newest
-                case HANDLING_EVENTS.DayUploads: return getMyDayUploads();
-                case HANDLING_EVENTS.WeekUploads: return getMyWeekUploads();
+                case HANDLING_EVENTS.ManageUploads: return PostService.getMyDayUploads().then(posts=>{ posts.sort((a, b) => a.upload_date - b.upload_date); return posts; }); //desc order, from newest
+                case HANDLING_EVENTS.DayUploads: return PostService.getMyDayUploads();
+                case HANDLING_EVENTS.WeekUploads: return PostService.getMyWeekUploads();
                 default: return Promise.reject();
             }
         }
 
-        let event = getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.DayUploads : (type==="day"?HANDLING_EVENTS.DayUploads:HANDLING_EVENTS.ManageUploads));
+        let event = EventService.getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.DayUploads : (type==="day"?HANDLING_EVENTS.DayUploads:HANDLING_EVENTS.ManageUploads));
         if(!Event.canInteract(event) || (!token && type!== "manage")) {navigate("/");return;}
 
         getUploads(event).then(posts=>{setPosts(posts); if(posts?.length>0) Event.setInteraction(event);}).catch(()=>navigate("/"))
@@ -40,13 +40,13 @@ const Uploads = () => {
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnPostCheckboxDelay = (e)=>{
-        changeMyPostPermissions(e.target.id,{screenka:e.target.checked});
+        PostService.changeMyPostPermissions(e.target.id,{screenka:e.target.checked});
     }
 
     const handleOnPostDelete = (post_id)=>{
         if(posts.find(post=>post.id===post_id)  && window.confirm("Are you sure you want to delete the upload?"))
         {
-            Promise.all([changeMyPostPermissions(post_id,{me:false,friends:false,screenka:false}),delay(100)])
+            Promise.all([PostService.changeMyPostPermissions(post_id,{me:false,friends:false,screenka:false}),delay(100)])
                 .then(()=>setPosts(posts.filter(post=>post.id!==post_id)))
         }
     }
@@ -62,7 +62,7 @@ const Uploads = () => {
             {type==="week" && <h2> <ButtonPrevPage/> Your Week Uploads:</h2>}
 
             <MiniPosts posts={posts} 
-                checkboxesDisabled={!user.preferences.screenka || screenkaDisabled || type!=="manage"} maxChecks={type==="manage"?getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
+                checkboxesDisabled={!user.preferences.screenka || screenkaDisabled || type!=="manage"} maxChecks={type==="manage"?PostService.getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
                 hourDate={type==="day" || type==="manage"} pretty_date={type==="manage"}
                 preview={type==="day" || type==="week"} onPostPreview={handleOnPostPreview}
                 delete_={type==="manage"}  onPostDelete={handleOnPostDelete}

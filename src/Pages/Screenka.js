@@ -14,21 +14,19 @@ const Screenka = () => {
    
     const navigate = useNavigate();
 
-    const {getMe,trySetMyScreenkaView,setHideIfAppsState,getHost,getMyInteractiveEvent} = useContext(AuthContext);
+    const {user,WeekService,PostService,HostService,EventService} = useContext(AuthContext);
 
     const onLoad= async (week_name)=>{
-      let event = getMyInteractiveEvent(HANDLING_EVENT);
+      let event = EventService.getMyInteractiveEvent(HANDLING_EVENT);
       if(!Event.canInteract(event,{week:week_name}))  {navigate("/");return;}
       
-      let me = getMe();
-      if(me===null) navigate("/");
-      if(!me.hosts?.includes(host_id))  {navigate("/");return;}
+      if(!user || !user.hosts?.includes(host_id))  {navigate("/");return;}
       
-      getHost(host_id).then(host=>{  setHideIfAppsState(me,host); });
+      HostService.getHostPersonalizedApps(host_id).then(apps=>{  PostService.setHideIfAppsState(user,apps); });
 
       return setTimeout(()=>{
         let is_new = Event.setInteraction(event)
-        if(is_new) trySetMyScreenkaView(host_id,week_name).then(res=>console.log(res?"Screenka View has been set":"Screenka View hasnt been set"))
+        if(is_new) WeekService.trySetMyScreenkaView(host_id,week_name).then(res=>console.log(res?"Screenka View has been set":"Screenka View hasnt been set"))
       },3000);
     }
 

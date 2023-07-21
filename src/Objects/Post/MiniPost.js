@@ -16,7 +16,7 @@ export const MiniPost = ({
 })=>
 {
 
-const {getApp} = useContext(AuthContext);
+const {AppService} = useContext(AuthContext);
 const getInitChecked = ()=>defaultChecked!==null ? defaultChecked : post.permissions.screenka
 const [event,setEvent]= useState();
 const isChecked = event? event.target.checked: getInitChecked()
@@ -47,7 +47,7 @@ useEffect(()=>{
 return <div className="mini-post-pre">
     <Checkbox name={post.id} disabled={checkboxDisabled || (!isChecked && uncheckedCheckboxDisabled )} checked={isChecked} onChange={handleOnCheckboxChange}/>
     <div className='mini-post'>
-        <App application={getApp(post.app)} height={50}/>
+        <App application={AppService.getApp(post.app)} height={50}/>
         <div className='text'>
             <div><b>{post.app}</b></div>
             <div className='noscroll'>{post.context}</div>

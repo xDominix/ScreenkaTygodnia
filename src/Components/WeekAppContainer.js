@@ -1,31 +1,29 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import AppContainer from '../Pages/_/home/components/AppContainer';
 import { AuthContext } from '../Contexts/AuthContext';
-import NothingToShow from '../Pages/NothingToShow';
 import { AppClass } from '../Objects/App/AppClass';
 
 const APPS_SIZE = 4;
 
 const WeekAppContainer = ({host_id, week_name}) => {
-    const {getHostWeekForScreenka,getApp}= useContext(AuthContext);
+    const{WeekService,AppService} = useContext(AuthContext);
 
-    const [week,setWeek] = useState(null);
+    const [appsCounts,setAppsCounts] = useState(new Map())
+
     useEffect(()=>{
-        if(host_id && week_name) getHostWeekForScreenka(host_id,week_name).then(setWeek);
-    },[host_id,week_name]);
+       if(week_name && host_id) WeekService.getWeekAppsCounts(host_id,week_name).then(counts=>setAppsCounts(counts))
+    },[week_name,host_id])
 
     const apps = useMemo(()=>{
-        if(!week) return  new Array(APPS_SIZE).fill(AppClass.Default);
-        let arr= Array.from(week.apps_counts)
+        let arr= Array.from(appsCounts)
             .sort((a, b) => b[1] - a[1])
             .slice(0, APPS_SIZE)
-            .map(([app_name, ]) => getApp(app_name));
+            .map(([app_name, ]) => AppService.getApp(app_name));
         while(APPS_SIZE > arr.length) arr.push(AppClass.Default);
         return arr;
-    },[week?.apps_counts])
+    },[appsCounts])
 
-    if(!week) return <NothingToShow/>
-    return (  <AppContainer apps={apps} notificationCountsMap={week?.apps_counts} /> );
+    return (  <AppContainer apps={apps} notificationCountsMap={appsCounts} /> );
 }
  
 export default WeekAppContainer;

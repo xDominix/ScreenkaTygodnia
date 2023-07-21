@@ -25,19 +25,19 @@ const HOME_APPS_SIZE = 6;
 
 const Home = ({onAboutWeekClick}) => {
 
-    const {user,host,week,weekNumber,getMyFriends,getFriendLatestPost,getMyAppsCounts,myDayEvents,getMyInteractiveEvent,getBuildInApps,getApp} = useContext(AuthContext)
+    const {user,host,week,HostService,PostService,EventService,AppService} = useContext(AuthContext)
     const {setBottomTab,isBottomTab,getObject,} = useContext(BottomTabContext);
 
     const navigate = useNavigate();
 
     const loadApps=(me,host,week)=>{
-        if(!me || !host) return getBuildInApps();
+        if(!me || !host) return AppService.getBuildInApps();
     
         var apps = [...host.popular_apps,...me.personalized_apps,...me.super_personalized_apps];
         
         if(week && week?.extra_apps!=null) apps = apps.concat(week.extra_apps);
         if(week && week?.blocked_apps!=null) apps = apps.filter( (app) => !week.blocked_apps.includes(app) );
-        apps = apps.map(app=>getApp(app));
+        apps = apps.map(app=>AppService.getApp(app));
         apps.sort((a,b)=>a.label-b.label);
         return apps;}
     const uploadApps = useRef(loadApps(user,host,week));
@@ -50,9 +50,9 @@ const Home = ({onAboutWeekClick}) => {
     const [isUploadMode,setIsUploadMode] = useState(false);
 
     //buttons    
-    const currDayEvent = useMemo(()=> myDayEvents
+    const currDayEvent = useMemo(()=> EventService.myDayEvents
         .filter((event)=> event.hasPage && event.isTime())?.at(0)
-    ,[myDayEvents]) 
+    ,[EventService.myDayEvents]) 
 
     const isCurrDayEventDisabled = useMemo(()=>!Event.canInteract(currDayEvent),[currDayEvent])
 
@@ -61,10 +61,10 @@ const Home = ({onAboutWeekClick}) => {
     const [isScreenka,setIsScreenka] = useState(false);
 
     //event
-    const myRnShotEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.RnShot),[getMyInteractiveEvent])
-    const myScreenkaEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.ScreenkaTygodnia),[getMyInteractiveEvent])
-    const myUploadEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.Upload),[getMyInteractiveEvent])
-    const myManageUploadsEvent = useMemo(()=>getMyInteractiveEvent(HANDLING_EVENTS.ManageUploads),[getMyInteractiveEvent])
+    const myRnShotEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.RnShot),[EventService.getMyInteractiveEvent])
+    const myScreenkaEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.ScreenkaTygodnia),[EventService.getMyInteractiveEvent])
+    const myUploadEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.Upload),[EventService.getMyInteractiveEvent])
+    const myManageUploadsEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.ManageUploads),[EventService.getMyInteractiveEvent])
 
     useEffect(()=>{
         const loadParticipants = async (user,friends,week_participants)=>{
@@ -76,7 +76,7 @@ const Home = ({onAboutWeekClick}) => {
             setParticipantsCount(week_participants.length)
         }
 
-        loadParticipants(user,getMyFriends(),week?.today_participants)
+        loadParticipants(user,HostService.getMyFriends(),week?.today_participants)
     },[week?.today_participants]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
@@ -86,8 +86,8 @@ const Home = ({onAboutWeekClick}) => {
             if(uploader==null) return;
             if(uploader===me_fullname) return;
             if(!Event.canInteract(myRnShotEvent,{date:week_latest?.date})) return;
-            if(!getMyFriends().includes(uploader)) return;
-            getFriendLatestPost(uploader).then((post)=>{
+            if(!HostService.getMyFriends().includes(uploader)) return;
+            PostService.getFriendLatestPost(uploader).then((post)=>{
                 if(post) setRnShotData({user_fullname:uploader,post_id:post.id})})
             }
 
@@ -143,7 +143,7 @@ const Home = ({onAboutWeekClick}) => {
     //CASE 2
     const tryGetMyAppsCounts = async (force=false)=>{
         if(!week && user && ((!isBottomTab() && isUploadMode )|| force) ) {
-            let map = await getMyAppsCounts();
+            let map = await PostService.getMyAppsCounts();
             setAppsCountsMap(map);
             if(map.size!==0) {setParticipantsCount(1);setFriendsParticipants([user.fullname])}
     } }
@@ -230,8 +230,8 @@ const Home = ({onAboutWeekClick}) => {
         <div className={defaultClassName} >
             <h1 className='home-title'>
                 <span>WEEK</span> 
-                <ButtonNextPage style={(week==null || weekNumber==null)?{"opacity":0}:{}} onClick={(week==null || weekNumber==null)?(()=>{}):onAboutWeekClick}>
-                #{weekNumber?weekNumber:0}
+                <ButtonNextPage style={(week==null || HostService.weekNumber==null)?{"opacity":0}:{}} onClick={(week==null || HostService.weekNumber==null)?(()=>{}):onAboutWeekClick}>
+                #{HostService.weekNumber?HostService.weekNumber:0}
                 </ButtonNextPage>
             </h1>
         </div>

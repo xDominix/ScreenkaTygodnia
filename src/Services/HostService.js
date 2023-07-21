@@ -12,7 +12,7 @@ const HostService = {
       return Host.fromDoc(doc);
     },
 
-    getHostWeekNumber: (host_start_date) => { //dziala na bazie czasu demo. wiec nigdzie indziej byc nie moze
+    getCurrentWeekNumber: (host_start_date) => { //dziala na bazie czasu demo. wiec nigdzie indziej byc nie moze
       if (host_start_date == null) return 0;
       return datesWeekDelta(host_start_date, GET_NOW());
     },
@@ -25,7 +25,7 @@ const HostServiceDemo = {
       return HostRepository.find((host) => host.id === id);
     },
   
-    getHostWeekNumber: (host_start_date) => {
+    getCurrentWeekNumber: (host_start_date) => {
       if (host_start_date == null) return 0;
       return datesWeekDelta(host_start_date, DEMONOW);
     },

@@ -15,14 +15,13 @@ const MiniPostsPagePlus = () => {
 
     const {user_fullname,host_id,week_name,event} = useParams(); // event_string
     const navigate = useNavigate();
-    const {getMyInteractiveEvent} = useContext(AuthContext);
+    const {EventService,PostService} = useContext(AuthContext);
 
     //token
     const location = useLocation();
     const token = location.state?.token;
 
-    const event_ = useMemo(()=>getMyInteractiveEvent(event),[event])
-    const {getMyPastWeekPosts,getFriendPastWeekPosts} = useContext(AuthContext)
+    const event_ = useMemo(()=>EventService.getMyInteractiveEvent(event),[event])
     const [posts,setPosts] = useState(null);
 
     const postCheckboxMap = useRef(new Map());
@@ -41,10 +40,10 @@ const MiniPostsPagePlus = () => {
 
         switch(event_.toString()){
             case HANDLING_EVENTS.ThrowBack:
-                getMyPastWeekPosts(week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
+                PostService.getMyPastWeekPosts(week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             case HANDLING_EVENTS.OhPreview:
-                getFriendPastWeekPosts(user_fullname,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
+                PostService.getFriendPastWeekPosts(user_fullname,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             default:  
                 navigate("/"); 

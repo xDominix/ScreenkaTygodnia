@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const AboutScreenka = ({onClose}) => {
 
-    const {friendsDisabled,screenkaDisabled,changeMyPreferences,user,getMyGroups} = useContext(AuthContext);
+    const {friendsDisabled,screenkaDisabled,UserService,user,HostService} = useContext(AuthContext);
     const userRef = useRef(user);
     
     const [you, setYou] = useState(); 
@@ -23,7 +23,7 @@ export const AboutScreenka = ({onClose}) => {
     const [isEditMode,setIsEditMode] = useState(false)
     const [loading,setLoading] = useState(false);
 
-    const myGroups = useRef(getMyGroups());
+    const myGroups = useRef(HostService.getMyGroups());
 
     const title="Screenka";
     const subtitle="app";
@@ -43,7 +43,7 @@ export const AboutScreenka = ({onClose}) => {
 
     const changePreferences = ()=>{
         setLoading(true);
-        Promise.all([changeMyPreferences({me:you,friends:(friends&&you),screenka:(screenka&&you)}),delay(1000)]).then(()=>onClose())
+        Promise.all([UserService.changeMyPreferences({me:you,friends:(friends&&you),screenka:(screenka&&you)}),delay(1000)]).then(()=>onClose())
     }
 
     const getTextAboutMyGroups = ()=>{
@@ -105,15 +105,15 @@ export const AboutAppMini = ({app,onClose,totalUploads}) => {
 
 export const AboutApp = ({app,appType,onClose}) => {
 
-    const {getTickets,postMyPost,user,screenkaDisabled}=useContext(AuthContext)
+    const {PostService,user,screenkaDisabled}=useContext(AuthContext)
     
     const me = user;
     const [contentStateForString,setContentStateForString] = useState();
     const contentRef = useRef();
     const contextRef = useRef();
     const [uploading,setUploading] = useState(false);
-    const [ticketsState,setTicketsState] = useState(getTickets());
-    const tickets = useRef(getTickets());
+    const [ticketsState,setTicketsState] = useState(PostService.getTickets());
+    const tickets = useRef(PostService.getTickets());
     const [isContentRed,setIsContentRed] = useState(false);
 
     useUnload(e => { e.preventDefault();   e.returnValue = ''; });
@@ -127,7 +127,7 @@ export const AboutApp = ({app,appType,onClose}) => {
         
         let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,app.format,contextRef.current.value,null)
         
-        Promise.all([postMyPost(post,file),delay(1500)])
+        Promise.all([PostService.postMyPost(post,file),delay(1500)])
             .then(()=>setTicketsState(Math.max(0,ticketsState-1)))
             .then(()=>delay(1000))
             .then(onClose)
@@ -194,14 +194,14 @@ export const AboutEvent = ({event,onClose}) => {
 }
  
 export const AboutUserMini = ({user_fullname,since_week,onClose}) => {//role=null,
-    const {getFriendSrcUrl,getFriend,AM_I_HOST,GET_HOST_ID} = useContext(AuthContext);
+    const {UserService,AM_I_HOST,GET_HOST_ID} = useContext(AuthContext);
     const navigate = useNavigate();
     const [srcUrl,setSrcUrl] = useState(getPath('default_profile_picture.png'));
     const [user,setUser] = useState(null);
 
     useEffect(()=>{
-        getFriendSrcUrl(user_fullname).then(res=>res?setSrcUrl(res):null);
-        getFriend(user_fullname).then(setUser);
+        UserService.getFriendSrcUrl(user_fullname).then(res=>res?setSrcUrl(res):null);
+        UserService.getFriend(user_fullname).then(setUser);
     },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const onDayUploadsClick = ()=>{

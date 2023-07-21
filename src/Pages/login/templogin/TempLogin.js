@@ -9,7 +9,7 @@ import { MultipleError } from '../../../Services/aFirebase';
 
 const TempLogin = ({onTempLogin}) => {
 
-    const {getMyFunnyname,getMe,tryLogMeInTemporarly,getUserSrcUrl} = useContext(AuthContext);
+    const {user,UserService} = useContext(AuthContext);
 
     const [meSrc,setMeSrc] = useState(getPath("default_profile_picture.png"))
     const inputRef = useRef();
@@ -20,11 +20,10 @@ const TempLogin = ({onTempLogin}) => {
     useEffect(()=>{
 
         const timeout = setTimeout(()=>{
-            let funnyname = getMyFunnyname();
+            let funnyname = UserService.getMyFunnyname();
             if(funnyname) inputRef.current.value=funnyname; 
 
-            let me = getMe()
-            if(me) getUserSrcUrl(me.fullname).then(setMeSrc);
+            if(user) UserService.getUserSrcUrl(user.fullname).then(setMeSrc);
         },500);
     
         return ()=> clearTimeout(timeout);
@@ -34,7 +33,7 @@ const TempLogin = ({onTempLogin}) => {
     const handleOnEnter = async () => {
         setIsInputFieldLoading(true)
         
-        tryLogMeInTemporarly(inputRef.current.value)
+        UserService.tryLogMeInTemporarly(inputRef.current.value)
             .then(res=>{
                 setIsInputFieldRed(!res);
                 if(res) onTempLogin();  })

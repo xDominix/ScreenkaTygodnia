@@ -19,8 +19,8 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
     const navigate = useNavigate();
     const {user_fullname,id,event} = useParams();
-    const {getMyInteractiveEvent} = useContext(AuthContext);
-    const event_ = useMemo(()=>getMyInteractiveEvent(event),[event])
+    const {EventService} = useContext(AuthContext);
+    const event_ = useMemo(()=>EventService.getMyInteractiveEvent(event),[event])
 
     useEffect(()=>{
         if(event_?.isShotType() && !Event.canInteract(event_)){navigate('/'); return;}

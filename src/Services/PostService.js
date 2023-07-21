@@ -9,13 +9,13 @@ export const usePostService = (demo)=> demo ? PostServiceDemo : PostService;
 
 const PostService = {
 
-    getUserPost: async (user_fullname, id) => {
+    getPost: async (user_fullname, id) => {
       let doc = await getDoc(`users/${user_fullname}/posts`, id);
       let post =  PostClass.fromDoc(doc);
       if(!post.permissions.me) return null
       return post;
     },
-    getUserPostAndTrySetView: async (user_fullname, id,view_fullname) => {
+    getPostAndTrySetView: async (user_fullname, id,view_fullname) => {
       if(!user_fullname || !id || !view_fullname) return null;
       let doc = await getDoc(`users/${user_fullname}/posts`, id);
       let post = PostClass.fromDoc(doc);
@@ -54,7 +54,7 @@ const PostService = {
       return post
     },
 
-    getUserPostTicketsUsed:async(user_fullname,host_id)=>{
+    getPostTicketsUsed:async(user_fullname,host_id)=>{
       return PostService.getUserCurrentDayPosts(user_fullname,host_id,true).then(posts=>posts.length)
     },
 
@@ -172,11 +172,11 @@ const PostService = {
     };
 
 const PostServiceDemo = {
-    getUserPost: async (user_fullname, id) => {
+    getPost: async (user_fullname, id) => {
         await delay(1000);
         return PostRepositoryMap.get(user_fullname).find((post) => post.id === id);
     },
-    getUserPostAndTrySetView: async (user_fullname, id,view) => {
+    getPostAndTrySetView: async (user_fullname, id,view) => {
       await delay(1000);
       let post = PostRepositoryMap.get(user_fullname).find((post) => post.id === id);
       if(post!=null && user_fullname!==view && post.view===null) {
@@ -201,7 +201,7 @@ const PostServiceDemo = {
         return posts?.[0];
     },
     
-    getUserPostTicketsUsed:async(user_fullname,host_id)=>{
+    getPostTicketsUsed:async(user_fullname,host_id)=>{
       return (await PostServiceDemo.getUserCurrentDayPosts(user_fullname,null)).filter(post=>post.permissions.screenka===true).length;
     },
 
