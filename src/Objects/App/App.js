@@ -3,9 +3,9 @@ import React from 'react';
 import { getAppFullSrc } from "../../aFunctions";
 import { AppClass } from "./AppClass";
 
-export const App = ({application=AppClass.Default,notificationText=null,disabled=false,notificationOrange=false,onClick,height=70}) => {
+export const App = ({application=AppClass.Default,notificationText=null,disabled=false,notificationOrange=false,onClick,onNotificationClick,height=70}) => {
 
-    if(application==null || typeof application !== "object" || application.constructor.name !== AppClass.name)  application = AppClass.Default;
+    if(application==null || typeof application !== "object" || application.constructor !== AppClass)  application = AppClass.Default;
 
     if(onClick === undefined || disabled)
         return ( <div className={"shadow fromdown "+(disabled&&"opacity")} style={{"position":"relative",height:height+"px",borderRadius:(Math.ceil(13*height/60))+"px"}}>
@@ -17,7 +17,7 @@ export const App = ({application=AppClass.Default,notificationText=null,disabled
         <button onClick={onClick}>
             <img src={getAppFullSrc(application.name,height)} alt={application.name} style={{height:height+"px", borderRadius:(Math.ceil(13*height/60))+"px"}}/>
         </button>
-        {notificationText!=null && <NotificationDot onClick={onClick} orange={notificationOrange}  value={notificationText}/>}
+        {notificationText!=null && <NotificationDot onClick={onNotificationClick} orange={notificationOrange}  value={notificationText}/>}
     </div> );
 }
 

@@ -17,8 +17,8 @@ const PostService = {
     },
     getUserPostAndTrySetView: async (user_fullname, id,view_fullname) => {
       if(!user_fullname || !id || !view_fullname) return null;
-      let docc = await getDoc(`users/${user_fullname}/posts`, id);
-      let post = PostClass.fromDoc(docc);
+      let doc = await getDoc(`users/${user_fullname}/posts`, id);
+      let post = PostClass.fromDoc(doc);
       if(!post.permissions.me) return null
       if(post!=null && user_fullname!==view_fullname && post.view===null ) {
         await updateDoc(doc(db, `users/${user_fullname}/posts`, id), {
@@ -44,11 +44,13 @@ const PostService = {
       return PostClass.fromDoc(doc);
     },
 
-    getUserLatestPost: async (user_fullname,host_id) => {
-      if(user_fullname==null || host_id==null) return null;
+    getUserLatestPost: async (user_fullname,host_id,forFriends,okApps=[]) => {
+      if(user_fullname || host_id) return null;
       let docs = await getDocs(`users/${user_fullname}/posts`,where("host_id","==",host_id),orderBy("upload_date","desc"),limit(1));
       let post = PostClass.fromDoc(docs?.at(0)); 
-      if(!post || !post.permissions.me) return null;
+      if(!post.permissions.me) return null;
+      if(forFriends && !post.permissions.friends) return null;
+      if(!okApps.includes(post.app)) return null;
       return post
     },
 
@@ -82,13 +84,14 @@ const PostService = {
       return docs? docs.map((doc) => PostClass.fromDoc(doc)):[];
     },
 
-    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,okApps=[], no_view=false)=> {
+    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,forFriends=true,okApps=[], no_view=false)=> {
       if (user_fullname == null || week_name==null) return null;
   
       let queries;
       if(week_name) queries = [where("week_name","==",week_name)];
       if(host_id!==null) queries.push(where("host_id","==",host_id))
       queries.push(where("permissions.me","==",true));
+      if(forFriends) queries.push(where("permissions.friends","==",true));
       if(no_view) queries.push(where("view","==",null));
       if(okApps && okApps.length>0) queries.push(where("app","in",okApps));
       queries.push(orderBy("upload_date"),limit(30));
@@ -192,7 +195,7 @@ const PostServiceDemo = {
       return posts?.at(0);
     },
 
-    getUserLatestPost: async (user_fullname,host_id) => {
+    getUserLatestPost: async (user_fullname,host_id,okApps=[]) => {
         let posts = await PostServiceDemo.getUserCurrentDayPosts(user_fullname);
         posts?.sort((a, b) => a.upload_date - b.upload_date);
         return posts?.[0];
@@ -213,7 +216,7 @@ const PostServiceDemo = {
       return PostRepositoryMap.get(user_fullname)?.filter((post) => weekEqual(post.upload_date, DEMONOW)).filter(post=>post.permissions.me === true && post.host_id === host_id);
     },
     
-    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,okApps=[])=> {
+    getUserPastWeekPosts: async (user_fullname, week_name,host_id=null,forFriends,okApps=[],no_view)=> {
         await delay(1000);
         if (user_fullname == null || host_id == null || week_name==null) return null;
         return PostRepositoryMap.get(user_fullname)?.filter((post) => post.host_id === host_id && post.week_name === week_name);

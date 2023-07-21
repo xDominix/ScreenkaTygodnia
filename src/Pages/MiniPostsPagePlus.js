@@ -1,25 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AuthContext } from '../../Contexts/AuthContext';
-import { DayEvent } from '../Event/DayEvent';
-import { ButtonPrevPage, ButtonNextPage } from '../../Components/Buttons';
-import {MiniPosts} from "./MiniPosts"
-import { DAY_EVENT_POSTS } from '../../aFunctions';
+import { AuthContext } from '../Contexts/AuthContext';
+import { ButtonPrevPage, ButtonNextPage } from '../Components/Buttons';
+import {MiniPosts} from "../Objects/Post/MiniPosts"
+import { DAY_EVENT_POSTS } from '../aFunctions';
 import { useRef } from 'react';
 import { useMemo } from 'react';
-import { Event } from '../Event/Event';
+import { Event } from '../Objects/Event/_Event';
+
+const HANDLING_EVENTS = {ThrowBack:"throwback",OhPreview:"ohpreview"}
 
 const MiniPostsPagePlus = () => {
 
     const {user_fullname,host_id,week_name,event} = useParams(); // event_string
     const navigate = useNavigate();
+    const {getMyInteractiveEvent} = useContext(AuthContext);
 
     //token
     const location = useLocation();
     const token = location.state?.token;
 
-    const event_ = useMemo(()=>Event.fromString(event),[event]);
+    const event_ = useMemo(()=>getMyInteractiveEvent(event),[event])
     const {getMyPastWeekPosts,getFriendPastWeekPosts} = useContext(AuthContext)
     const [posts,setPosts] = useState(null);
 
@@ -35,13 +37,13 @@ const MiniPostsPagePlus = () => {
 
     useEffect(()=>{
         if(!token) {navigate("/"); return;}
-        if(!event_ || !user_fullname || !host_id || !week_name) {navigate("/"); return;}
+        if(!Event.canInteract(event_) || !user_fullname || !host_id || !week_name) {navigate("/"); return;}
 
-        switch(event_){
-            case DayEvent.ThrowBack:
+        switch(event_.toString()){
+            case HANDLING_EVENTS.ThrowBack:
                 getMyPastWeekPosts(week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
-            case DayEvent.OhPreview:
+            case HANDLING_EVENTS.OhPreview:
                 getFriendPastWeekPosts(user_fullname,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             default:  
@@ -52,11 +54,11 @@ const MiniPostsPagePlus = () => {
     },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
-        if(event_ && posts && posts.length>0) Event.setView(event_);
+        if(event_ && posts && posts.length>0) Event.setInteraction(event_);
     },[posts]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnNextPageClick = ()=>{
-        let tos = Array.from(postCheckboxMap.current.keys()).map(post_id=> `/post/${user_fullname}/${post_id}/${event_.toString()}`);
+        let tos = Array.from(postCheckboxMap.current.keys()).map(post_id=> `/post/${user_fullname}/${post_id}/${event_}`);
         
         return navigate(tos[0],{replace:true,state:{token:true,nextPages: tos.slice(1),showMyRefPosts:true,showFriendsRefPosts:true}})
     }

@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import {  useLocation, useNavigate, useParams } from 'react-router-dom';
-import Post from './Post';
-import { DayEvent } from '../Event/DayEvent';
-import { ButtonNextPage, ButtonPrevPage } from '../../Components/Buttons';
-import { Event } from '../Event/Event';
-import { CustomEvent } from '../Event/CustomEvent';
+import Post from '../Objects/Post/Post';
+import { ButtonNextPage, ButtonPrevPage } from '../Components/Buttons';
+import { Event } from '../Objects/Event/_Event';
+import { AuthContext } from '../Contexts/AuthContext';
 
 const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
@@ -15,12 +14,17 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
     //token
     //bez event to nie trzeba token, nie masz i tak zadnych akcji (do sharowania potrzebne)
-    //z tokenem mozesz setView, komentowanie i inne akcje
+    //z tokenem mozesz trySetView, komentowanie i inne akcje
     const token = location.state?.token; 
 
     const navigate = useNavigate();
     const {user_fullname,id,event} = useParams();
-    const event_ = useMemo(()=>Event.fromString(event),[event]);
+    const {getMyInteractiveEvent} = useContext(AuthContext);
+    const event_ = useMemo(()=>getMyInteractiveEvent(event),[event])
+
+    useEffect(()=>{
+        if(event_?.isShotType() && !Event.canInteract(event_)){navigate('/'); return;}
+    },[])
 
     useEffect(()=>{
         if(!token && event_) {navigate('/'); return;}
@@ -34,7 +38,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     }
 
     const handleSetView = ()=>{
-        if(event_ && Event.isShotType(event_)) Event.setView(event_);
+        if(event_?.isShotType()) Event.setInteraction(event_);
     }
 
     return ( <div>
@@ -45,7 +49,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
             {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
         </h2>
 
-        <Post id={id} user_fullname={user_fullname} setView={event_ === DayEvent.OneShot || event_ === CustomEvent.RnShot} onLoad={handleSetView} />
+        <Post id={id} user_fullname={user_fullname} trySetView={event_!==null} onLoad={handleSetView} />
     </div> );
 }
  

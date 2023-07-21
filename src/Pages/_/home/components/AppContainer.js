@@ -4,7 +4,7 @@ import "./Container.css"
 
 const AppContainer = ({
     apps,notificationCountsMap= new Map(), disabled,
-    appHeight=70, onAppClick=null,  appClassName="",
+    appHeight=70, onAppClick=null,onAppNotificationClick=null,  appClassName="",
     specialAppName=null,specialClassName="", notSpecialClassName="",
     orangeAppName=null, isUploadMode=false, 
     }) => {
@@ -27,6 +27,7 @@ const AppContainer = ({
         <div key={index} className={appClassName+" "+getAppClassName(app.name)} >
             <App
             onClick={onAppClick?()=>onAppClick(app):undefined}
+            onNotificationClick={onAppNotificationClick ?()=>onAppNotificationClick(app):undefined}
             notificationText = {getnotificationText(app.name)}
             notificationOrange={orangeAppName === app.name}
             application={app} 

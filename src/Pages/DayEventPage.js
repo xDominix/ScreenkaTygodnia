@@ -1,23 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import NothingToShow from '../../Pages/NothingToShow';
-import { AuthContext } from '../../Contexts/AuthContext';
-import {  randomElement } from '../../aFunctions';
-import { DayEvent } from './DayEvent';
-import { Event } from './Event';
+import NothingToShow from './NothingToShow';
+import { AuthContext } from '../Contexts/AuthContext';
+import {  randomElement } from '../aFunctions';
 
-const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
+const HANDLING_EVENTS = {DayUploads:"dayuploads",WeekUploads:"weekuploads",OneShot:"oneshot",MorningShot:"morningshot",OhPreview:"ohpreview",ThrowBack:"throwback"}
+
+const DayEventPage = () => { // dla day_eventow ktore maja page (isInteractive())
 
     const {event} = useParams();
     const navigate = useNavigate();
 
-    const {user,getMyFriendsWithHostId,getMeAndMyHostId,getFriendCurrentDayRandomPost,getMyHostLastWeekName,getMyYesterdayRandomPost} = useContext(AuthContext);
+    const {user,getMyFriendsWithHostId,getMeAndMyHostId,getFriendCurrentDayRandomPost,getMyHostLastWeekName,getMyYesterdayRandomPost,getMyInteractiveEvent} = useContext(AuthContext);
 
     const [isNothingToShow,setIsNothingToShow]=useState(false);
 
     useEffect(()=>{
-        let day_event = Event.fromString(event);
-        if(!Event.canView(day_event)) {navigate("/"); return;}
+        let day_event = getMyInteractiveEvent(event);
+        if(!Event.canInteract(day_event)) {navigate("/"); return;}
 
         const timeout = setTimeout(async ()=>{
             let nav = await getNavigator(day_event);
@@ -39,7 +39,7 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
             var tos =[];
             for (const friend of friends_random) {
                 let post = await getFriendCurrentDayRandomPost(friend);
-                if (post)   tos.push(`/post/${friend}/${post.id}/${DayEvent.OneShot.toString()}`);
+                if (post)   tos.push(`/post/${friend}/${post.id}/${HANDLING_EVENTS.OneShot}`);
                 if (tos.length >= 3) break;
             }
             if(tos.length===0) return null;
@@ -47,28 +47,28 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (hasPage)
         }
         const getMorningShotNavigator=async ()=>{
             let post = await getMyYesterdayRandomPost(); if(!post) return null;
-            return {to:`/post/${user.fullname}/${post.id}/${DayEvent.MorningShot.toString()}`,options:{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:true}}};//show na poprawe i zaskocznie, w koncu DayUploads ukrywaja friends interactions
+            return {to:`/post/${user.fullname}/${post.id}/${HANDLING_EVENTS.MorningShot}`,options:{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:true}}};//show na poprawe i zaskocznie, w koncu DayUploads ukrywaja friends interactions
         }
         const getOhPreviewNavigator=async()=>{
             let [friends,host_id]= getMyFriendsWithHostId();
             let random_friend = randomElement(friends);
             let week_name = await getMyHostLastWeekName();
-            return {to:`/posts/${random_friend}/${host_id}/${week_name}/${DayEvent.OhPreview.toString()}`,options:{state:{token:true}}}
+            return {to:`/posts/${random_friend}/${host_id}/${week_name}/${HANDLING_EVENTS.OhPreview}`,options:{state:{token:true}}}
         }
         const getThrowBackNavigator=async ()=>{
             let [me,host_id]  =getMeAndMyHostId()
             let week_name = await getMyHostLastWeekName();
-            return {to:`/posts/${me.fullname}/${host_id}/${week_name}/${DayEvent.ThrowBack.toString()}`,options:{state:{token:true}}}
+            return {to:`/posts/${me.fullname}/${host_id}/${week_name}/${HANDLING_EVENTS.ThrowBack}`,options:{state:{token:true}}}
         }
 
-        switch(event)
+        switch(event.toString())
         { 
-            case DayEvent.DayUploads: return {to:"/uploads/day",options:{state:{token:true}}}
-            case DayEvent.WeekUploads: return {to:"/uploads/week",options:{state:{token:true}}}
-            case DayEvent.OneShot: return getOneShotNavigator();
-            case DayEvent.MorningShot: return getMorningShotNavigator();
-            case DayEvent.OhPreview: return getOhPreviewNavigator();
-            case DayEvent.ThrowBack: return getThrowBackNavigator();
+            case HANDLING_EVENTS.DayUploads: return {to:"/uploads/day",options:{state:{token:true}}}
+            case HANDLING_EVENTS.WeekUploads: return {to:"/uploads/week",options:{state:{token:true}}}
+            case HANDLING_EVENTS.OneShot: return getOneShotNavigator();
+            case HANDLING_EVENTS.MorningShot: return getMorningShotNavigator();
+            case HANDLING_EVENTS.OhPreview: return getOhPreviewNavigator();
+            case HANDLING_EVENTS.ThrowBack: return getThrowBackNavigator();
             default: return null;
         }
     }

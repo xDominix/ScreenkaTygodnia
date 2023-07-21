@@ -1,29 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AuthContext } from '../../Contexts/AuthContext';
-import {MiniPosts} from './MiniPosts';
-import { DayEvent } from '../Event/DayEvent';
-import { ButtonPrevPage } from '../../Components/Buttons';
-import { Event } from '../Event/Event';
+import { AuthContext } from '../Contexts/AuthContext';
+import {MiniPosts} from '../Objects/Post/MiniPosts';
+import { ButtonPrevPage } from '../Components/Buttons';
+
+const HANDLING_EVENTS = {DayUploads:"dayuploads",WeekUploads:"weekuploads"} //HOST ONLY
 
 const MiniPostsPage = () => { //current week posts page
 
     const {user_fullname,host_id,event} = useParams(); // event_string
-    const event_ = Event.fromString(event);
     const navigate = useNavigate();
 
-    const {getFriendCurrentDayPosts,getFriendCurrentWeekPosts,AM_I_HOST} = useContext(AuthContext)
+    const {AM_I_HOST,getUserCurrentDayPostsHOST,getUserCurrentWeekPostsHOST} = useContext(AuthContext)
     const [posts,setPosts] = useState(null);
 
     useEffect(()=>{
         if( !AM_I_HOST && !user_fullname )  {navigate("/"); return;}
         
-        switch(event_){
-            case DayEvent.DayUploads:
-                getFriendCurrentDayPosts(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
+        switch(event.toString()){
+            case HANDLING_EVENTS.DayUploads:
+                getUserCurrentDayPostsHOST(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
-            case DayEvent.WeekUploads:
-                getFriendCurrentWeekPosts(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
+            case HANDLING_EVENTS.WeekUploads:
+                getUserCurrentWeekPostsHOST(user_fullname,host_id).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
             default:
                 navigate("/")
@@ -38,8 +37,8 @@ const MiniPostsPage = () => { //current week posts page
 
     return (
         <div>
-            {event_===DayEvent.DayUploads && <h2> <ButtonPrevPage/>User Day Uploads:</h2>}
-            {event_===DayEvent.WeekUploads && <h2> <ButtonPrevPage/>User Week Uploads:</h2>}
+            {event.toString()===HANDLING_EVENTS.DayUploads && <h2> <ButtonPrevPage/>User Day Uploads:</h2>}
+            {event.toString()===HANDLING_EVENTS.WeekUploads && <h2> <ButtonPrevPage/>User Week Uploads:</h2>}
             
             <MiniPosts posts={posts} title={user_fullname}
                 checkboxesDisabled={true}

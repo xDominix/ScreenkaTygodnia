@@ -5,12 +5,12 @@ import Prestart from './Pages/login/Prestart';
 import Start from './Pages/_/Start';
 import "./App.css"
 import Screenka from './Pages/Screenka';
-import PostPage from './Objects/Post/PostPage';
+import PostPage from './Pages/PostPage';
 import Uploads from './Pages/Uploads';
 import { AuthContextWithDemo } from './Contexts/AuthContextWithDemo';
-import MiniPostsPage from './Objects/Post/MiniPostsPage';
-import  DayEventPage from './Objects/Event/DayEventPage';
-import MiniPostsPagePlus from './Objects/Post/MiniPostsPagePlus';
+import MiniPostsPage from './Pages/MiniPostsPage';
+import  DayEventPage from './Pages/DayEventPage';
+import MiniPostsPagePlus from './Pages/MiniPostsPagePlus';
 
 /*
 TOKEN EXPLAIN

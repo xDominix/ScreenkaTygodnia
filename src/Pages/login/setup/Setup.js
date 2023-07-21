@@ -9,28 +9,27 @@ import { useRef } from 'react';
 import InputField from '../../../Components/InputField';
 import { getPath } from '../../../aFunctions';
 import Loading from '../../Loading';
-import NothingToShow from '../../NothingToShow';
 
 const Setup = ({onSetup}) => {
 
-    const {getTempMe,saveMe,trySetMyUsername,trySetMyPersonalizedApps,getHost,getUserSrcUrl} = useContext(AuthContext);
+    const {getTempMe,saveMe,trySetMyUsername,trySetMyPersonalizedApps,getHost,getUserSrcUrl,getApp} = useContext(AuthContext);
 
     const [meSrcUrl,setMeSrcUrl] = useState(getPath('default_profile_picture.png'))
     const [personalizedApps,setPersonalizedApps] = useState(null);
     const [checkboxes, setCheckboxes] = useState(null);
     const [isLoading,setIsLoading] = useState(true);
     const [isInputLoading,setIsInputLoading] = useState(false);
-    const [isNothingToShow,setIsNothingToShow] = useState(false);
-       
+   
+    
     useEffect(()=>{
         getUserSrcUrl(getTempMe().fullname).then(setMeSrcUrl);
-        
+
         getPersonalizedApps(getTempMe()).then(apps=>{
             setPersonalizedApps(apps)
             let checkboxes = getCheckboxes(getTempMe(),apps)
             setCheckboxes(checkboxes)
             setIsLoading(false);
-        }).catch(()=>setIsNothingToShow(true));
+        });
 
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 
@@ -97,7 +96,6 @@ const Setup = ({onSetup}) => {
         setIsInputLoading(false);
     }
 
-    if(isNothingToShow) return <NothingToShow/>
     if(isLoading) return <Loading/>
     return ( 
         <div className='setup noscroll'>
@@ -106,7 +104,7 @@ const Setup = ({onSetup}) => {
             <div className='setup-user'>
                 <img src={meSrcUrl} alt="profile"/>
                 <div>
-                    <h4>Change Username:</h4>
+                    <h4>Change Your Username:</h4>
                     <InputField reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isInputLoading={isInputLoading} />
                     </div>
                
@@ -115,7 +113,7 @@ const Setup = ({onSetup}) => {
                 <h4>Select apps you interested in:</h4>
                 <div className='setup-apps-list'>
                     {personalizedApps.map((appname,index)=>{
-                        let app = AppClass.get(appname);
+                        let app = getApp(appname);
                         return <div key={index}>
                            <Checkbox 
                              disabled={isInputLoading}

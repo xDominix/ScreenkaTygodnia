@@ -9,12 +9,13 @@ import ScrollDiv from "../../../Components/ScrollDiv";
 
 const AboutWeek = ({onClose}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
-    const {week,weekNumber,myDayEvents,disabledDayEvents,myRnShotEvent} = useContext(AuthContext);
+    const {week,weekNumber,myDayEvents,disabledDayEvents,myCustomEvents} = useContext(AuthContext);
 
-    //only events with isAboutInfo true.
-    const weekDayEvents= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,events:myDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isAboutInfo),disabled_events:disabledDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isAboutInfo)}}),[myDayEvents?.length,disabledDayEvents?.length])
-    const everyDayEvents= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isAboutInfo)  ,[myDayEvents?.length])
-    const disabledEveryDayEvents= useMemo(()=>disabledDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isAboutInfo) ,[disabledDayEvents?.length])
+    //only events informative events
+    const weekDayEvents= useMemo(()=> Object.entries(WeekDay).map(([weekDayName,weekDayIndex])=>{return {day_name:weekDayName,events:myDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isInformative()),disabled_events:disabledDayEvents.filter(event=>event.weekDay === weekDayIndex).filter(event=> event.isInformative())}}),[myDayEvents?.length,disabledDayEvents?.length])
+    const everyDayEvents= useMemo(()=>myDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isInformative())  ,[myDayEvents?.length])
+    const disabledEveryDayEvents= useMemo(()=>disabledDayEvents.filter(day=>day.weekDay===null).filter(event=> event.isInformative()) ,[disabledDayEvents?.length])
+    const customEvents = useMemo(()=>myCustomEvents.filter(event=>event.isInformative()),[myCustomEvents])
     const [isDayLetter,setIsDayLetter] = useState(true)
 
     const handleDayNameClick =(day,event)=>{
@@ -82,7 +83,7 @@ const AboutWeek = ({onClose}) => {
                 <span className="noselect circle" style={{opacity:"0"}}></span>
             </div>
             
-            <div style={{maxWidth:'100%'}}>
+            {(everyDayEvents.length>0 || disabledEveryDayEvents.length>0) && <div style={{maxWidth:'100%'}}>
                 <ScrollDiv >
                     {everyDayEvents.map((event,index)=> 
                     <A key={index} active={!event.isAfterTime()} onClick={()=>setBottomTab({id:3,object:event})}>
@@ -96,10 +97,16 @@ const AboutWeek = ({onClose}) => {
                     </A>)}
                 </ScrollDiv>
                 <span className="noselect bcolor-green-solid color-black circle"></span>
-            </div>
+            </div>}
         
-            {myRnShotEvent &&<div>
-                <div><A nocolor className="color-orange" onClick={()=>setBottomTab({id:3,object:myRnShotEvent})}>{myRnShotEvent.name.toUpperCase()}</A></div> 
+            {customEvents.length>0 &&<div>
+                <ScrollDiv >
+                    {customEvents.map((event,index)=> 
+                    <A key={index} nocolor className="color-orange" onClick={()=>setBottomTab({id:3,object:event})}>
+                        {index!==0 && ', '}
+                        {event.name.toUpperCase()}
+                    </A>)}
+                </ScrollDiv>
                 <span className="noselect bcolor-orange color-black circle"></span>
             </div>}
         
@@ -112,14 +119,3 @@ const AboutWeek = ({onClose}) => {
 }
  
 export default AboutWeek;
-/*.filter(everyday_event => {
-        //jesli sie naklada weekday z everyday to priorytet wiekszy ma weekday, wiec dlatego wyzucamy to z informacji aboutWeeka
-        let todayName = dateToWeekDay(GET_NOW());
-        for (const weekday_event of weekDayEvents.find(obj=>obj.day_name === todayName).events)
-        {
-            if(weekday_event.fromHour>= everyday_event.fromHour && weekday_event.fromHour< everyday_event.toHour ) return false; //przecina sie toHour
-            if(weekday_event.toHour> everyday_event.fromHour && weekday_event.toHour <= everyday_event.toHour ) return false; //przecina sie fromHour
-            if(weekday_event.fromHour< everyday_event.fromHour && weekday_event.toHour > everyday_event.toHour ) return false; //jest w srodku
-        }
-        return true;
-    } */

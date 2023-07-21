@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Format } from '../../Objects/App/AppClass';
+import { AppType, Format } from '../../Objects/App/AppClass';
 import BottomTab from './BottomTab';
 import { ButtonUpload } from '../../Components/Buttons';
 import InputField from '../../Components/InputField';
@@ -160,10 +160,11 @@ export const AboutApp = ({app,appType,onClose}) => {
             maxHeight>
             
             <h4>{" - " +app.description}</h4>
-            {/*{user.preferences.friends && appType===AppType.Personalized && <h4>{" - personalized app - only interested friends can see your upload."}</h4>}
-            {user.preferences.friends && appType===AppType.Popular && <h4>{" - popular app - all of your friends can see your upload."}</h4>}
-            {user.preferences.friends && appType===AppType.Group && <h4>{" - group app - only group members can see your upload."}</h4>}
-            {user.preferences.friends && appType===AppType.SuperPersonalized && <h4>{" - super-personalized app - only special members can see your upload."}</h4>}*/}
+            {user.preferences.friends && appType===AppType.Personalized && <h4>{" - personalized app - its uploads can be seen by interested friends only."}</h4>}
+            {user.preferences.friends && appType===AppType.Popular && <h4>{" - popular app - its uploads can be seen by all of your friends."}</h4>}
+            {user.preferences.friends && appType===AppType.Group && <h4>{" - group app - its uploads can be seen by group members only."}</h4>}
+            {user.preferences.friends && appType===AppType.SuperPersonalized && <h4>{" - super-personalized app - its uploads can be seen by insiders only."}</h4>}
+            {user.preferences.friends && appType===AppType.SuperPopular && <h4>{" - super-popular app - its uploads can be seen by all of the host members."}</h4>}
 
             <div style={{marginTop: "auto"}} className='margin'>
                 {(app.format===Format.String) && <h2 style={{textAlign:"center"}}>{contentStateForString}</h2>}  
