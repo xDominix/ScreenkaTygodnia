@@ -3,13 +3,14 @@ import "./_Post.css"
 import App from '../App/App';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { dateToHourString, dateToWeekDay, getPath } from '../../aFunctions';
+import { dateToHourString, dateToWeekDay, getPath, isLessThenMinutes } from '../../aFunctions';
 import Checkbox from '../../Components/Checkbox';
 import { AuthContext } from '../../Contexts/AuthContext';
 import A from '../../Components/A';
+import ScrollDiv from '../../Components/ScrollDiv';
 
 export const MiniPost = ({
-    post,crossed_eye=false, no_eye=false,
+    post,crossed_eye_only=false, no_eyes=false,
     hourDate=false,pretty_date=false,
     checkboxDisabled,uncheckedCheckboxDisabled,defaultChecked=null,onCheckboxChange=()=>{},onCheckboxChangeDelay=()=>{},
     edit=false,onEdit=()=>{},delete_=false,onDelete=()=>{},preview=false,onPreview=()=>{},
@@ -49,14 +50,16 @@ return <div className="mini-post-pre">
     <div className='mini-post'>
         <App application={AppService.getApp(post.app)} height={50}/>
         <div className='text'>
-            <div><b>{post.app}</b></div>
-            <div className='noscroll'>{post.context}</div>
+            <span><b>{post.app}</b></span>
+            {post.context && <ScrollDiv><span >{post.context} asdasnd asduas ajsidj si</span></ScrollDiv>}
         </div>
         <div className='infos abs'>
             {preview && <div><A onClick={()=>onPreview(post.id)}>Link</A></div>}
             {delete_ && <div><A red onClick={()=>onDelete(post.id)}>Delete</A></div>}
-            {!no_eye && (post.view!=null) === !crossed_eye &&<img alt='view' style={{height:"16px",filter:"invert(0.6)"}} src={getPath(!crossed_eye?"view16.png":"no_view16.png")}/>}
-            <div>{hourDate===true? dateToHourString(post.upload_date,pretty_date): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}</div>
+            {!no_eyes && (post.view==null || !crossed_eye_only) &&<img alt='view' style={{height:"16px",filter:"invert(0.6)"}} src={getPath(post.view!=null ?"view16.png":"no_view16.png")}/>}
+            <div className={pretty_date && hourDate && isLessThenMinutes(post.upload_date) ? "color-orange": undefined}>
+                {hourDate===true? dateToHourString(post.upload_date,pretty_date): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}
+            </div>
         </div>
     </div>
 </div>

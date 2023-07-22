@@ -96,7 +96,9 @@ const Post = ({
     <div className='pre-post'>
 
             <div className='bcolor-dark-gray post'>
-                <h3 className='date'>{getDate()}</h3>
+                <h3 className='date'>
+                {postState?.week_name?(postState.week_name.toUpperCase()+" | ") : ""}{getDate()}
+                </h3>
                 <div className='head'>
                     <App application={AppService.getApp(postState?.app)} notificationText={getNotificationText()}/>
                     {isSuperHide && <A bold onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>tap</A>}

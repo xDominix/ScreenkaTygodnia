@@ -3,7 +3,6 @@ import { Host } from "../Objects/Host"
 import { UserClass } from "../Objects/User/UserClass"
 import { Week } from "../Objects/Week"
 import { toMap } from "../aFunctions";
-import { Format } from "../Objects/App/AppClass";
 
 export const DEMONOW = new Date(2023,4-1,24,20,17);
 export const DEMONAME = "Demo User" 
@@ -12,15 +11,15 @@ export const DEMOFUNNYNAME = "demo_user"
 
 export const PostRepositoryMap = new Map([
     [DEMONAME,[
-    new Post("dsnanaaiaocsn","-1","Glassy Week",new Date(2023,4-1,24,14,0),"Photos",null,Format.Path,"To wszystko sie tu zaczelo!",{me:true,friends:true,screenka:true},null,"Tola Bajka",1),
-    new Post("dsnanaaiasasa","-1","Glassy Week",new Date(2023,4-1,24,15,0),"Safari","https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO",Format.Url,"Ta storna to majstersztyk",{me:true,friends:true,screenka:false},null,null,null,null),
-    new Post("dsnasddsxccsn","-1","Glassy Week",new Date(2023,4-1,24,16,16),"Word","Ciekawski",Format.String,"Ciekawe slowo w sumie",{me:true,friends:true,screenka:true},null,null,null,null),
+    new Post("dsnanaaiaocsn","-1","Glassy Week",new Date(2023,4-1,24,14,0),"Photos",null,"To wszystko sie tu zaczelo!",{me:true,friends:true,screenka:true},null,"Tola Bajka",1),
+    new Post("dsnanaaiasasa","-1","Glassy Week",new Date(2023,4-1,24,15,0),"Safari","https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO","Ta storna to majstersztyk",{me:true,friends:true,screenka:false},null,null,null,null),
+    new Post("dsnasddsxccsn","-1","Glassy Week",new Date(2023,4-1,24,16,16),"Word","Ciekawski","Ciekawe slowo w sumie",{me:true,friends:true,screenka:true},null,null,null,null),
     ]],
     ["Tola Bajka" ,[
-    new Post("123123","-1","Glassy Week",new Date(2023,4-1,24,20,10),"Maps","Paryz Francja",Format.String,"Piekne miejsce! Polecam! Cieplutko!",{me:true,friends:true,screenka:true},null,DEMONAME,2),
+    new Post("123123","-1","Glassy Week",new Date(2023,4-1,24,20,10),"Maps","Paryz Francja","Piekne miejsce! Polecam! Cieplutko!",{me:true,friends:true,screenka:true},null,DEMONAME,2),
     ]], 
     ["Mia Muller",[
-    new Post("123","-1","Glassy Week",new Date(2023,4-1,24,14,30),"Spotify","https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO",Format.Url,"Hejka!",{me:true,friends:true,screenka:true},null,null,null),
+    new Post("123","-1","Glassy Week",new Date(2023,4-1,24,14,30),"Spotify","https://open.spotify.com/track/2dHHgzDwk4BJdRwy9uXhTO","Hejka!",{me:true,friends:true,screenka:true},null,null,null),
     ]]])
 export const UserRepository = [
     new UserClass(DEMONAME,DEMOFUNNYNAME,DEMOUSERNAME,["-1"],{me:true,friends:true,screenka:true},["Word"]),//["Maps"]

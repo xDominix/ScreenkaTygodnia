@@ -56,7 +56,7 @@ const TempLogin = ({onTempLogin}) => {
             </div>
             
         </div> 
-        <footer className='center'>Hint: Click enter while typing to continue</footer>
+        <footer className='center'>Tip: Click enter while typing to continue</footer>
         </div>
    );
 }

@@ -12,6 +12,10 @@
     animation: showNotificationDot 0.5s ease-in-out;
     -webkit-animation: showNotificationDot 0.5s ease-in-out;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
 }
 
 @keyframes showNotificationDot {
@@ -26,7 +30,6 @@
 }
 
 .noti-dot>div{
-    padding-top: 6px;
     color: white;
     font-size: 18px;
     text-align: center;

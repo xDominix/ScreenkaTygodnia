@@ -67,9 +67,9 @@ const Uploads = () => {
                 preview={type==="day" || type==="week"} onPostPreview={handleOnPostPreview}
                 delete_={type==="manage"}  onPostDelete={handleOnPostDelete}
                 hideTickets={!user.preferences.screenka}
-                crossed_eye={type==="manage"}
+                crossed_eye_only={type==="manage"}
                 no_crossed_eye_funny_info={type==="week"}
-                no_eye={type==="day"}
+                no_eyes={type==="day"}
                 
             />
 

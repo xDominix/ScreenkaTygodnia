@@ -230,7 +230,7 @@ const Home = ({onAboutWeekClick}) => {
         <div className={defaultClassName} >
             <h1 className='home-title'>
                 <span>WEEK</span> 
-                <ButtonNextPage style={(week==null || HostService.weekNumber==null)?{"opacity":0}:{}} onClick={(week==null || HostService.weekNumber==null)?(()=>{}):onAboutWeekClick}>
+                <ButtonNextPage hide_arrow={(week==null || HostService.weekNumber==null)} onClick={(week==null || HostService.weekNumber==null)?(()=>{}):onAboutWeekClick}>
                 #{HostService.weekNumber?HostService.weekNumber:0}
                 </ButtonNextPage>
             </h1>

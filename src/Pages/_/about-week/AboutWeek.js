@@ -6,6 +6,7 @@ import A from "../../../Components/A";
 import { ButtonPrevPage } from "../../../Components/Buttons";
 import { AuthContext } from "../../../Contexts/AuthContext";
 import ScrollDiv from "../../../Components/ScrollDiv";
+import Dot from "./components/Dot";
 
 const AboutWeek = ({onClose}) => {
     const {setBottomTab,isBottomTab} = useContext(BottomTabContext);
@@ -70,17 +71,13 @@ const AboutWeek = ({onClose}) => {
                     </A>)}
                 </div>
 
-                <span 
-                    className={"noselect circle "+(isDayToday(WeekDay[day_name])?"bcolor-green-solid color-black clickable":"bcolor-dark-gray-solid")} 
-                    onClick={()=> ((week &&isDayToday(WeekDay[day_name]))? setIsDayLetter(!isDayLetter):{})}>
-                        {spanDate( day_name)}
-                </span>
+                <Dot disabled={!isDayToday(WeekDay[day_name])} onClick={(week && isDayToday(WeekDay[day_name])) ? (()=>setIsDayLetter(!isDayLetter)): undefined}>{spanDate(day_name)}</Dot>
             </div>
                )}
 
             <div>{/*EMPTY SLOT*/}
                 <div></div> 
-                <span className="noselect circle" style={{opacity:"0"}}></span>
+                <Dot style={{opacity:"0"}} disabled/>
             </div>
             
             {(everyDayEvents.length>0 || disabledEveryDayEvents.length>0) && <div style={{maxWidth:'100%'}}>
@@ -96,7 +93,7 @@ const AboutWeek = ({onClose}) => {
                             {event.name.toUpperCase()}
                     </A>)}
                 </ScrollDiv>
-                <span className="noselect bcolor-green-solid color-black circle"></span>
+                <Dot/>
             </div>}
         
             {customEvents.length>0 &&<div>
@@ -107,7 +104,7 @@ const AboutWeek = ({onClose}) => {
                         {event.name.toUpperCase()}
                     </A>)}
                 </ScrollDiv>
-                <span className="noselect bcolor-orange color-black circle"></span>
+                <Dot orange/>
             </div>}
         
             </div>
@@ -119,3 +116,4 @@ const AboutWeek = ({onClose}) => {
 }
  
 export default AboutWeek;
+

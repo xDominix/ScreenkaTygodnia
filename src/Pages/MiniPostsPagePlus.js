@@ -66,7 +66,7 @@ const MiniPostsPagePlus = () => {
         <div>
             <h2> <ButtonPrevPage/>{event_.name?.toUpperCase()}<ButtonNextPage focus disabled={checks===0} onClick={handleOnNextPageClick} /></h2>
             
-            <MiniPosts posts={posts} title = {`${week_name}`} no_eye
+            <MiniPosts posts={posts} title = {`${week_name}`} no_eyes
             maxChecks={DAY_EVENT_POSTS} 
             customCheckboxes={true}
             onPostCheckboxChange={handleOnPostCheckboxChange}

@@ -1,11 +1,10 @@
-.scrolldiv
+/*.scrolldiv
 {
     max-width: 100%;
     display: flex;
     white-space: nowrap;
     overflow: auto;
 
-    /*uwage global*/
     background-image: linear-gradient(to right, #262626, #262626),
     linear-gradient(to right, #262626, #262626),
     linear-gradient(to right, rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0)),
@@ -16,4 +15,32 @@
     background-size: 0px 100%, 30px 100%, 0px 100%, 15px 100%;
     background-attachment: local, local, scroll, scroll;
   
+}
+*/
+
+.scrolldiv-pre {
+    position: relative;
+}
+.scrolldiv-pre::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top:0;
+  width: 15px;
+  height: 100%;
+  background: linear-gradient(to right,rgba(255, 255, 255, 0.001), #262626); /* global color */
+}
+.scrolldiv {
+    overflow: auto;
+    overflow-y: scroll;
+
+    max-width: 100%;
+    display: flex;
+    white-space: nowrap;
+
+}
+
+.scrolldiv::after{
+    content: 'n';
+    opacity: 0;
 }

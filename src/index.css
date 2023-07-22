@@ -9,13 +9,13 @@ tlo - ciemne (0-127) (0.5-1)
 {
   font-family: "Inter", sans-serif;
   font-size: 20px;
-  line-height: 20px;
+  line-height: normal;
 }
 
 b{font-size: inherit;}
 span[role ="img"]{ color:white ;}
 
-p, p *{font-size: 17px;line-height: 19px;margin-top: 5px;font-weight: bold;}
+p, p *{font-size: 17px;/*line-height: 19px;*/margin-top: 5px;font-weight: bold;}
 body { margin: 0; background-color: #2F2F2F; }
 
 html,body,div#root {  height: 100%;}
@@ -91,36 +91,36 @@ input:focus, textarea:focus, .focus{
 
 .clickable{cursor: pointer;}
 
-.box-shadow .shadow {box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.466);}
+.box-shadow, .shadow {box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.466);}
 
 .opacity {opacity: 0.4;}
 
 /*h_*/
 h1{
   font-size: 40px;
-  line-height: 37px;
+  /*line-height: 37px;*/
   margin:15px 0px;
 }
 
 h2{
   font-size: 35px;
-  line-height: 33px;
+  /*line-height: 33px;*/
 }
 
 h3{
   font-size: 25px;
-  line-height: 22px;
+  /*line-height: 22px;*/
   margin: 10px 0px;
 }
 
 h4{
   font-size: 20px;
-  line-height: 20px;
+ /*line-height: 20px;*/
   margin: 10px 0px;
 }
 h5{
   font-size: 17px;
-  line-height: 17px;
+  /*line-height: 17px;*/
   margin: 0;
 }
 h5 span{font-size: 17px;}
@@ -143,9 +143,10 @@ footer.center {text-align: center;}
 
 .initial-letter::first-letter {
   /*color:rgb(40, 255, 215,0.7);*/
-  -webkit-initial-letter: 1.8;
-  initial-letter: 1.8;
-  margin: 3px;
+  font-size: 45px;
+  float: left;
+  line-height: 1;
+  margin-right: 3px;
   font-weight: bold;
 }
 

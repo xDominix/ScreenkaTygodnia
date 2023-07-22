@@ -125,7 +125,7 @@ export const AboutApp = ({app,appType,onClose}) => {
 
         let file = app.format===Format.Path?contentRef.current:null;
         
-        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,app.format,contextRef.current.value,null)
+        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,contextRef.current.value,null)
         
         Promise.all([PostService.postMyPost(post,file),delay(1500)])
             .then(()=>setTicketsState(Math.max(0,ticketsState-1)))
