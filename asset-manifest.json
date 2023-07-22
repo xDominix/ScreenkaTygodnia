@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/ScreenkaTygodnia/static/css/main.92c27dea.css",
-    "main.js": "/ScreenkaTygodnia/static/js/main.946c4e7f.js",
+    "main.css": "/ScreenkaTygodnia/static/css/main.e4d408c0.css",
+    "main.js": "/ScreenkaTygodnia/static/js/main.6cfbca44.js",
     "index.html": "/ScreenkaTygodnia/index.html",
-    "main.92c27dea.css.map": "/ScreenkaTygodnia/static/css/main.92c27dea.css.map",
-    "main.946c4e7f.js.map": "/ScreenkaTygodnia/static/js/main.946c4e7f.js.map"
+    "main.e4d408c0.css.map": "/ScreenkaTygodnia/static/css/main.e4d408c0.css.map",
+    "main.6cfbca44.js.map": "/ScreenkaTygodnia/static/js/main.6cfbca44.js.map"
   },
   "entrypoints": [
-    "static/css/main.92c27dea.css",
-    "static/js/main.946c4e7f.js"
+    "static/css/main.e4d408c0.css",
+    "static/js/main.6cfbca44.js"
   ]
 }
