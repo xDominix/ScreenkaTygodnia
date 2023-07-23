@@ -41,7 +41,7 @@ const subscribers = new Map([
 ])
 
 export const HostRepository = [ new Host("-1",DEMONAME,new Date(2023,4-1,10),
-["Notes", "Safari","Photos","Spotify","Youtube","Contacts"],
+["Notes", "Safari","Photos","Youtube","Spotify","Contacts"],
 ["Maps","Instagram","Word","Camera"],null,new Map([["SuperGroup",[DEMONAME,"Tola Bajka"]]]),subscribers,3)] 
 
 

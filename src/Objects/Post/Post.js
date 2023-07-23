@@ -47,7 +47,9 @@ const Post = ({
             switch(app?.format){
                 case Format.LongString: return <h4 style={{padding: "3px"}} >{content}</h4>
                 case Format.String: return <h3 >{content}</h3>
-                case Format.Url: return <a href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
+                case Format.Url: 
+                    if(content?.startsWith("https://")) return <a href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
+                    return <h3 >{content}</h3> 
                 case Format.Path: 
                     let src = await PostService.getPathPostContentUrl(user_fullname,content);
                     return <img alt="post content" src={src}></img>;

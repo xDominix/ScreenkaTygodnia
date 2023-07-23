@@ -9,7 +9,7 @@ const NotificationDot = ({value,orange,onClick=null}) => {
 
     return (  
         <span onClick={onClick?onClick:()=>{}} className={"noti-dot noselect"+(orange?" bcolor-orange":" bcolor-red"+(onClick?" clickable":""))}>
-            {isCharacter(value) &&<div  style={value==="*"?{fontSize:"27px",paddingTop:"7px"}:{fontSize:"27px",paddingTop:"1px"}} >{value}</div>}
+            {isCharacter(value) &&<div  style={value==="*"?{fontSize:"27px",paddingTop:"7px"}:{fontSize:"27px",marginTop:"-2px"}} >{value}</div>}
             {!isCharacter(value) &&<div >{value}</div>}
         </span>);
 }
