@@ -108,7 +108,7 @@ const Post = ({
                 <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
                     <div className='body' style={isHide?{opacity:"0"}:{}}>
                         <div className='content flex-center'>{content!==null?content:<NothingToShow/>}</div>
-                        <h4>{postState?.context}</h4>
+                        <h4>{postState?.context}{(postState?.week_tag && postState.week_name)?` #${postState.week_name.replace(' ','')}`:""}</h4>
                     </div>
                     {isHide && <A bold className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>tap</A>}
                 </div>

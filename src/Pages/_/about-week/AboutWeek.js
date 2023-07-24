@@ -19,11 +19,6 @@ const AboutWeek = ({onClose}) => {
     const customEvents = useMemo(()=>EventService.myCustomEvents.filter(event=>event.isInformative()),[EventService.myCustomEvents])
     const [isDayLetter,setIsDayLetter] = useState(true)
 
-    const handleDayNameClick =(day,event)=>{
-        if(!isDayToday(day)) return;
-        setBottomTab({id:3,object:event});
-    }
-
     const spanDate = (weekDayName)=>{
         if(isDayLetter || !week)  return weekDayName.charAt(0);
         let date = getMonday(week.start_date);
@@ -60,7 +55,7 @@ const AboutWeek = ({onClose}) => {
            <div key={day_name} >
                 <div>
                     {events.map((event,index)=> 
-                    <A key={index} active={!event.isAfterTime()} nocolor={!isDayToday(WeekDay[day_name])} onClick={()=>handleDayNameClick(WeekDay[day_name],event)}>
+                    <A key={index} active={!event.isAfterTime()} nocolor={!isDayToday(WeekDay[day_name])} onClick={isDayToday(WeekDay[day_name]) ? ()=> setBottomTab({id:3,object:event}) : undefined}>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
                     </A>)}

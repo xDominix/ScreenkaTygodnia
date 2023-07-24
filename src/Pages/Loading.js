@@ -5,7 +5,7 @@ const Loading = ({logo=false}) => {
 
     if(logo)
         return (<div style={{display:"flex",flexDirection:"column"}}>
-            {<div className='centered'> <img className='fromdown' alt="logo" src={getPath("logo.png")} style={{width:"200px"}}/></div>}
+            {<div className='centered'> <img className='fromdown' alt="logo" src={getPath("st-logo.png")} style={{width:"200px"}}/></div>}
             <footer className='center'>v{pack.version}</footer>
         </div>)
 

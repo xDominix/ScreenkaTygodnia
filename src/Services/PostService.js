@@ -88,7 +88,12 @@ const PostService = {
       if (user_fullname == null || week_name==null) return null;
   
       let queries;
-      if(week_name) queries = [where("week_name","==",week_name)];
+      if(week_name) queries = [where("week_name","==",week_name)]; 
+      //
+      //wertowanie po "week_name" 
+      //ale my sie nie przejmujemy postami z nullem (mimo ze sa podczas tego tygodnia, tylko ze za wczesnie), bedzie ich malo,
+      //zakladamy ze week jest zawsze, a eventy oparte o tygodniu tylko wertuja po post.week_name no to niech sie lapia do weeka nie.
+      // 
       if(host_id!==null) queries.push(where("host_id","==",host_id))
       queries.push(where("permissions.me","==",true));
       if(forFriends) queries.push(where("permissions.friends","==",true));

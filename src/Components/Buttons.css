@@ -11,7 +11,7 @@
     transform: rotate(45deg);
     font-size: 30px;
     margin-left: 2px;
-    margin-top: -4px;
+    margin-top: -5px;
 }
 
 /*NEXT BUTTON*/
@@ -41,13 +41,14 @@ button.button-upload[disabled].bcolor-gray{
 /*paste buTTON*/
 button.paste
 {
-    padding: 5px 8px;
+    padding: 7px 10px;
     border-radius: 10px;
     width: max-content;
     height: max-content;
     align-self: center;
     font-weight: bold;
 
+    -webkit-box-shadow: inset 0 0 2px black;
     box-shadow: inset 0 0 2px black;
 }
 

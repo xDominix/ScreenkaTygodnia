@@ -1,5 +1,5 @@
 export class PostClass {
-    constructor(      id,      host_id,      week_name,      upload_date,      app,      content,      context,      permissions,      comment=null,      view=null,   top_number=null,     is_highlighted=null
+    constructor(      id,      host_id,      week_name, upload_date,   app,     content,      context,permissions={me:false,friends:false,screenka:false},week_tag=false,    comment=null,      view=null,   top_number=null,     is_highlighted=null
     ) {
       /***/ this.id = id; //data przekonwertowana na string np. 2023_0322_1301
       this.host_id = host_id;// if host==null then post uniwersalny
@@ -8,11 +8,12 @@ export class PostClass {
       this.app = app;
       this.content = content; 
       this.context = context; //dlaczego uploader zdecydowal sie to spostowac, jaki przekaz za soba niesie? co czujesz? dodaj nieco tla do uploadowanej relacji!
-      this.permissions=permissions?permissions:{me:true,friends:false,screenka:false} //post.permissions.me bedzie reprezentowal usuniecie narazie.  //aka permissions, przy userze sa preferences
+      this.permissions=permissions //post.permissions.me bedzie reprezentowal usuniecie narazie.  //aka permissions, przy userze sa preferences
       
       /*?*/ this.comment = comment; // ref to comment app post
       /*?*/ this.view = view; //kto
 
+      this.week_tag = week_tag;
       /*?*/ //this.apps_merge = apps_merge;//refs array to posts
       /*?*/ //this.tags = tags;//refs array to tags app posts
       
@@ -24,20 +25,21 @@ export class PostClass {
       /*MAYBE */ //?tag - ???? np tapeta itp. a pozniej sortowanko
     }
     static fromDoc=(doc)=>{
-      return doc?new PostClass(doc.id,doc.host_id,doc.week_name,doc.upload_date.toDate(),doc.app,doc.content,doc.context,doc.permissions,doc.comment,doc.view,doc.top_number,doc.is_highlighted):null;
+      return doc?new PostClass(doc.id,doc.host_id,doc.week_name,doc.upload_date.toDate(),doc.app,doc.content,doc.context,doc.permissions,doc.week_tag,doc.comment,doc.view,doc.top_number,doc.is_highlighted):null;
   }
 
     toDoc = ()=>{
-        return {
-          host_id:this.host_id,
-          week_name:this.week_name,
-          upload_date:this.upload_date,
-          app:this.app,
-          content:this.content,
-          context:this.context,
-          permissions:this.permissions,
-          view:null,
-          }
+      return {
+        host_id:this.host_id,
+        week_name:this.week_name,
+        upload_date:this.upload_date,
+        app:this.app,
+        content:this.content,
+        context:this.context,
+        permissions:this.permissions,
+        week_tag:this.week_tag,
+        view:null,
+        }
     }
 
   }

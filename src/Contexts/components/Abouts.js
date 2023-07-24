@@ -10,6 +10,7 @@ import { delay, getPath, shortenFullname } from '../../aFunctions';
 
 import A from '../../Components/A';
 import { useNavigate } from 'react-router-dom';
+import Checkbox from '../../Components/Checkbox';
 
 export const AboutScreenka = ({onClose}) => {
 
@@ -105,12 +106,13 @@ export const AboutAppMini = ({app,onClose,totalUploads}) => {
 
 export const AboutApp = ({app,appType,onClose}) => {
 
-    const {PostService,user,screenkaDisabled}=useContext(AuthContext)
+    const {PostService,user,week,screenkaDisabled}=useContext(AuthContext)
     
     const me = user;
     const [contentStateForString,setContentStateForString] = useState();
     const contentRef = useRef();
     const contextRef = useRef();
+    const [isWeekTagged,setIsWeekTagged]=useState(false);//setting
     const [uploading,setUploading] = useState(false);
     const [ticketsState,setTicketsState] = useState(PostService.getTickets());
     const tickets = useRef(PostService.getTickets());
@@ -125,7 +127,7 @@ export const AboutApp = ({app,appType,onClose}) => {
 
         let file = app.format===Format.Path?contentRef.current:null;
         
-        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,contextRef.current.value,null)
+        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,contextRef.current.value,{me:true,friends:true,screenka:true},isWeekTagged)
         
         Promise.all([PostService.postMyPost(post,file),delay(1500)])
             .then(()=>setTicketsState(Math.max(0,ticketsState-1)))
@@ -174,11 +176,14 @@ export const AboutApp = ({app,appType,onClose}) => {
                 {(app.format===Format.Path) && <InputField isRed={isContentRed} isLoading={uploading} onChange={handleFileChange} file/>}
                 
                 <InputField isLoading={uploading} reff={contextRef} placeholder="context...  " longer></InputField>
+                
+                <Checkbox hide={!week} defaultChecked={false} checked={isWeekTagged} onChange={()=>setIsWeekTagged(!isWeekTagged)} mini>add {week?<b>{week.name}</b>:"week"} tag</Checkbox>
 
-                <div style={{display:'flex', flexDirection:"column"}} >
-                        <ButtonUpload disabled={uploading} onClick={handleUpload} tickets={ticketsState} noTicketAnimation={ !me.preferences.screenka || screenkaDisabled} />{/*tickets.current<=0 || */}
-                        {(!screenkaDisabled && me.preferences.screenka && tickets.current<=0) && <footer className='light' style={{fontWeight:"bold",marginBottom:"0px"}}>* - upload without ticket.</footer>}
+                <div style={{display:'flex',flexDirection:'column'}}>
+                    <ButtonUpload hashtaged={isWeekTagged} disabled={uploading} onClick={handleUpload} tickets={ticketsState} noTicketAnimation={ !me.preferences.screenka || screenkaDisabled} />{/*tickets.current<=0 || */}
                 </div>
+                
+                {(!screenkaDisabled && me.preferences.screenka && tickets.current<=0) && <footer className='light center' style={{marginBottom:"0px"}}>* - upload without ticket.</footer>}
             </div>
            
         </BottomTab>

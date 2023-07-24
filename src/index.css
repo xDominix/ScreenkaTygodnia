@@ -91,7 +91,10 @@ input:focus, textarea:focus, .focus{
 
 .clickable{cursor: pointer;}
 
-.box-shadow, .shadow {box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.466);}
+.box-shadow, .shadow {
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.466);
+  -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.466);
+}
 
 .opacity {opacity: 0.4;}
 
@@ -125,6 +128,8 @@ h5{
   margin: 0;
 }
 h5 span{font-size: 17px;}
+
+i{font-size: inherit;}
 
 footer::before {
   content: '';

@@ -18,11 +18,12 @@ export const ButtonNext = ({onClick,disabled}) =>{
     </button>)
 }
 
-export const ButtonUpload = ({onClick,disabled,tickets,noTicketAnimation=false}) =>{
+export const ButtonUpload = ({onClick,disabled,tickets,noTicketAnimation=false,hashtaged}) =>{
+    let init_text = hashtaged ? "UPLO#D":"UPLOAD";
     return (
     <button disabled={disabled} className={"button-upload"+(!disabled?" focus":(noTicketAnimation ? " focus opacity ":" bcolor-gray"))} onClick={onClick}>
-        {noTicketAnimation &&  ("UPLOAD" )}
-        {!noTicketAnimation && !disabled && (tickets>0 ?  "UPLOAD" : "UPLOAD*")}
+        {noTicketAnimation &&  (init_text)}
+        {!noTicketAnimation && !disabled && (init_text + (tickets>0 ?  "" :"*"))}
         {!noTicketAnimation && disabled &&  <h5><span role="img" aria-label="ticket" >🎟️</span>x{tickets}</h5>/*style={{fontSize:"17px"}} */} 
     </button>)
 }

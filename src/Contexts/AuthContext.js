@@ -249,11 +249,15 @@ const AuthProvider = ({children, demo}) => {
         })
     }
 
-    const postMyPost = async (post, file, onlyMe= false)=>{
-        post.host_id = host? host.id : null;
-        post.week_name = week? week.name : null;
+    const postMyPost = async (post, file)=>{
+        if(host) post.host_id = host.id;
+        if(week) post.week_name = week.name;
         post.upload_date = GET_NOW();
-        post.permissions = {me:user.preferences.me,friends:(!onlyMe && !friendsDisabled && user.preferences.friends),screenka:(!onlyMe && !screenkaDisabled && user.preferences.screenka && ticketsRef.current>0)}
+        post.permissions = {
+            me: post.permissions.me && user.preferences.me,
+            friends: post.permissions.friends && (!onlyMe && !friendsDisabled && user.preferences.friends),
+            screenka: post.permissions.screenka && (!onlyMe && !screenkaDisabled && user.preferences.screenka && ticketsRef.current>0)
+        }
 
         return postPost(user.fullname,post,file)
             .then((post_id)=>{

@@ -28,7 +28,9 @@
 
 /*SCREENKA*/
 @keyframes shine{
-    30% {box-shadow: inset 0px 0px 10px 10px rgba(255, 255, 255, 0.2);filter:brightness(200%)}
+    30% {
+        box-shadow: inset 0px 0px 10px 10px rgba(255, 255, 255, 0.2);filter:brightness(150%)
+    }
     100% {}
 }
 
