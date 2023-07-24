@@ -26,6 +26,7 @@
 .bottom-tab .head
 {
     display: flex;
+   
 }
 .bottom-tab .head>img{
     width: 96px;
@@ -36,6 +37,7 @@
 .bottom-tab .head>div
 {
     display: flex;
+    align-items: center;
 }
 .bottom-tab .head h3,.bottom-tab .head h4{margin-bottom: 5px;}
 
@@ -59,5 +61,5 @@
 }
 
 .bottom-tab .margin>*{
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }

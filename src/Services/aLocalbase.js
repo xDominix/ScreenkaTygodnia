@@ -7,16 +7,17 @@ import { MAX_SCREENKA, WeekDay, isDayToday, isLessThenMinutes } from "../aFuncti
 export const Apps = {
     Default: new AppClass("Default", "", "", Format.None, 100),
     //Build-in
-    Notes: new AppClass("Notes", "note", "write something what is on your mind.", Format.LongString, 1),
+    Notes: new AppClass("Notes", "note", "write down what is on your mind.", Format.LongString, 1),
     Safari: new AppClass("Safari", "page", "read some interesting content? saw some pretty layout? Share a website!", Format.Url, 2),
     Photos: new AppClass("Photos", "photo, video", "share a photo in your gallery.", Format.Path, 3), //upload saved photo, saved video, screenshot, screen recording.
     Contacts: new AppClass("Contacts", "person", "suggest a friend you want to add to the community!", Format.Url, 9),
+    Ideas: new AppClass("Ideas","idea","suggest a new week motive, new app to add, a special event or an additional app features."), //logo to tips z iphone, wiec mozna w przyszlosci podmienic
     //Extras
     Maps: new AppClass("Maps", "place", "recommend new places you recently visited, your favorite spots to hang out.", Format.String, 11),
     Camera: new AppClass("Camera", "photo, video", "share your photographic sessions. Selfies, portraits, panoramas etc.", Format.Path, 12),//upload a photo, selfie, portrait, panorama, video taken by you.
     News: new AppClass("News", "story", "tell others what happened in the world recently, something new - around you.", Format.LongString, 13),
     //Specially Designed
-    Word: new AppClass("Word","","write down the word, pharse or emoji that is in your mind.",Format.String,20),
+    Word: new AppClass("Word","","write a word, a pharse or an emoji that is on your mind.",Format.String,20),
     //TM
     Diary: new AppClass("Diary", "note", "describe your day. Your thoughts about how it is now.", Format.LongString, 21),
     Spotify: new AppClass("Spotify", "song, podcast", "share your favorite song or podcast.", Format.Url, 22),
@@ -27,7 +28,7 @@ export const Apps = {
     LouisVuitton: new AppClass("Louis Vuitton", "collection", "share collections from the fashion world.", Format.Path, 27),
 };
 
-export const BUILDIN_APPS = [Apps.Notes,Apps.Safari,Apps.Photos,Apps.News,Apps.Camera,Apps.Contacts]; //w tym dwa placeholdery btw, (to nie event.name btw, tylko to local in object key)
+export const BUILDIN_APPS = [Apps.Notes,Apps.Safari,Apps.Photos,Apps.Contacts,Apps.Ideas]; //w tym jeden placeholder btw, (to nie event.name btw, tylko to local in object key)
 
 export const Events = {
     //mon

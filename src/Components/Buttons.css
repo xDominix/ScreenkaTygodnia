@@ -10,8 +10,8 @@
 .button-close>div{
     transform: rotate(45deg);
     font-size: 30px;
-    margin-left: 3px;
-    margin-top: -3px;
+    margin-left: 2px;
+    margin-top: -4px;
 }
 
 /*NEXT BUTTON*/
@@ -26,7 +26,7 @@
 /*UPLOAD buTTON*/
 button.button-upload
 {
-    padding: 7px 10px;
+    padding: 4px 0px;
     border-radius: 10px;
     align-self: center;
     margin: 10px;
@@ -41,7 +41,7 @@ button.button-upload[disabled].bcolor-gray{
 /*paste buTTON*/
 button.paste
 {
-    padding: 9px 10px;
+    padding: 5px 8px;
     border-radius: 10px;
     width: max-content;
     height: max-content;

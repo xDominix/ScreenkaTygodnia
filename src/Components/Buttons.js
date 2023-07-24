@@ -35,18 +35,18 @@ export const ButtonPaste = ({onClick,disabled}) =>{
 }
 
 /*USEFULL WITH H1 */
-export const ButtonNextPage=({onClick,focus,disabled,hide_arrow,children})=>{
+export const ButtonNextPage=({onClick,focus,disabled,children})=>{ //strzalka znika gdy jest children i jest disabled, w pozostalych przypadkach sie opacituje
     const navigate = useNavigate();
     const handleClick = ()=> {
         if(onClick) onClick();
         else navigate(1);
     }
-    return (<span className={'button-page'+((!disabled &&focus) ? " color-green-highlight":"")}
-        onClick={(!disabled && !hide_arrow) ?(handleClick):undefined}
-        style={{float:"right",...(disabled?{opacity:"0.5",cursor:"default"}:{})}}
-    >{children}<span style={hide_arrow?{opacity:0}:{}} className="arrow">{">"}</span></span>)
+    return (<span className={'button-page'+((!disabled &&focus) ? " color-green-highlight":"")+ (disabled&&!children?" opacity":"")}
+        onClick={disabled ? undefined : handleClick}
+        style={{float:"right",...(disabled?{cursor:"default"}:{})}}
+    >{children}<span style={(children!=null && disabled)?{opacity:0}:undefined} className="arrow">{">"}</span></span>)
 }
-export const ButtonPrevPage=({disabled,onClick=null,alert=false,children})=>{
+export const ButtonPrevPage=({disabled,onClick=null,alert=false,children})=>{ //strzalka znika gdy jest children i jest disabled, w pozostalych przypadkach sie opacituje
     const navigate = useNavigate();
     const handleClick = ()=> {
         if(!alert || window.confirm("Are you sure you want to leave?")){
@@ -54,8 +54,8 @@ export const ButtonPrevPage=({disabled,onClick=null,alert=false,children})=>{
             else navigate(-1)
         }  
     }
-    return (<span className='button-page'
-    onClick={!disabled?(handleClick):undefined}
-    style={disabled?{opacity:"0.5",cursor:"default"}:{}}
-    ><span className="arrow">{"<"}</span>{children}</span>)
+    return (<span className={'button-page'+ (disabled?" opacity":"")}
+    onClick={disabled ? undefined : handleClick}
+    style={disabled?{cursor:"default"}:undefined}
+    ><span style={(children!=null && disabled)?{opacity:0}:undefined} className="arrow">{"<"}</span>{children}</span>)
 }

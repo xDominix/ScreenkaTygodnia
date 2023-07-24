@@ -3,17 +3,17 @@ import { ButtonPaste } from './Buttons';
 import "./InputField.css"
 
 const InputField = (props ) => {
-    const  {    autofocus,reff,placeholder,readOnly=false, //h5 - nie bo umniejsza elementom
+    const  {    autofocus,reff,placeholder,readOnly=false,
                     onEnter=()=>{},onChange=()=>{},
                     isRed,isLoading,value=undefined,
-                    longer,file,paste=false} = props;
+                    longer=false,file,paste=false} = props;
 
     const [typed,setTyped] = useState(false);
 
     const handleKeyDown = (event)=>{
         if(!typed) setTyped(true);
         
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && !longer) {
             reff.current.blur();
             setTyped(false)
             if(!readOnly) onEnter();

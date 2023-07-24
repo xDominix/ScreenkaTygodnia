@@ -160,11 +160,11 @@ export const AboutApp = ({app,appType,onClose}) => {
             maxHeight>
             
             <h4>{" - " +app.description}</h4>
-            {user.preferences.friends && appType===AppType.Personalized && <h4>{" - personalized app - its uploads can be seen by interested friends only."}</h4>}
+            {/*user.preferences.friends && appType===AppType.Personalized && <h4>{" - personalized app - its uploads can be seen by interested friends only."}</h4>}
             {user.preferences.friends && appType===AppType.Popular && <h4>{" - popular app - its uploads can be seen by all of your friends."}</h4>}
             {user.preferences.friends && appType===AppType.Group && <h4>{" - group app - its uploads can be seen by group members only."}</h4>}
             {user.preferences.friends && appType===AppType.SuperPersonalized && <h4>{" - super-personalized app - its uploads can be seen by insiders only."}</h4>}
-            {user.preferences.friends && appType===AppType.SuperPopular && <h4>{" - super-popular app - its uploads can be seen by all of the host members."}</h4>}
+            {user.preferences.friends && appType===AppType.SuperPopular && <h4>{" - super-popular app - its uploads can be seen by all of the host members."}</h4>*/}
 
             <div style={{marginTop: "auto"}} className='margin'>
                 {(app.format===Format.String) && <h2 style={{textAlign:"center"}}>{contentStateForString}</h2>}  

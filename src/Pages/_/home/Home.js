@@ -27,7 +27,6 @@ const Home = ({onAboutWeekClick}) => {
 
     const {user,host,week,HostService,PostService,EventService,AppService} = useContext(AuthContext)
     const {setBottomTab,isBottomTab,getObject,} = useContext(BottomTabContext);
-
     const navigate = useNavigate();
 
     const loadApps=(me,host,week)=>{
@@ -168,10 +167,6 @@ const Home = ({onAboutWeekClick}) => {
     },[isUploadMode,homeApps])
 
     const handleAppClick=(app)=>{
-        if(!isUploadMode) setBottomTab({id:0,object:app,total_uploads: appsCountsMap.get(app.name)?appsCountsMap.get(app.name):0})
-    }
-
-    const handleAppNotificationClick=(app)=>{ 
         const getAppType = (app,host)=>{
             if(!host) return AppType.Popular;
             if(host.personalized_apps.includes(app.name)) return AppType.Personalized;
@@ -181,7 +176,8 @@ const Home = ({onAboutWeekClick}) => {
             return AppType.SuperPersonalized;
         }
 
-        if(isUploadMode) setBottomTab({id:1,object:app,app_type:getAppType(app,host)})
+        if(!isUploadMode) setBottomTab({id:0,object:app,total_uploads: appsCountsMap.get(app.name)?appsCountsMap.get(app.name):0})
+        else setBottomTab({id:1,object:app,app_type:getAppType(app,host)})
     }
 
     const handleUserClick=(user_fullname)=>{
@@ -230,7 +226,7 @@ const Home = ({onAboutWeekClick}) => {
         <div className={defaultClassName} >
             <h1 className='home-title'>
                 <span>WEEK</span> 
-                <ButtonNextPage hide_arrow={(week==null || HostService.weekNumber==null)} onClick={(week==null || HostService.weekNumber==null)?(()=>{}):onAboutWeekClick}>
+                <ButtonNextPage disabled={(week==null || HostService.weekNumber==null)} onClick={onAboutWeekClick}>
                 #{HostService.weekNumber?HostService.weekNumber:0}
                 </ButtonNextPage>
             </h1>
@@ -257,7 +253,7 @@ const Home = ({onAboutWeekClick}) => {
         
         <AppContainer 
             apps={apps} notificationCountsMap={appsCountsMap} disabled={!user.preferences.me} 
-            appHeight={height} onAppClick={handleAppClick} onAppNotificationClick={handleAppNotificationClick} appClassName='home-blur-dark-pre' 
+            appHeight={height} onAppClick={handleAppClick} appClassName='home-blur-dark-pre' 
             specialAppName={special_} notSpecialClassName='home-blur-dark'
             orangeAppName={rnAppName} isUploadMode={isUploadMode} 
         />

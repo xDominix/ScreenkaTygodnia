@@ -46,6 +46,10 @@
 .setup-apps-list>div>*{
     margin-right: 10px;
 }
+.setup-apps-list p{
+    font-weight: normal;
+    margin-top: 0;
+}
 .setup-apps-list>div>:first-child{
     margin-right: 15px;
 }
