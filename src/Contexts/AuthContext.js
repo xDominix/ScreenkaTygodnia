@@ -255,8 +255,8 @@ const AuthProvider = ({children, demo}) => {
         post.upload_date = GET_NOW();
         post.permissions = {
             me: post.permissions.me && user.preferences.me,
-            friends: post.permissions.friends && (!onlyMe && !friendsDisabled && user.preferences.friends),
-            screenka: post.permissions.screenka && (!onlyMe && !screenkaDisabled && user.preferences.screenka && ticketsRef.current>0)
+            friends: post.permissions.friends && ( !friendsDisabled && user.preferences.friends),
+            screenka: post.permissions.screenka && ( !screenkaDisabled && user.preferences.screenka && ticketsRef.current>0)
         }
 
         return postPost(user.fullname,post,file)
