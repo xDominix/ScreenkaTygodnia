@@ -5,6 +5,8 @@ import { ButtonNextPage, ButtonPrevPage } from '../Components/Buttons';
 import { Event } from '../Objects/Event/_Event';
 import { AuthContext } from '../Contexts/AuthContext';
 
+const HANDLING_EVENTS = {RnShot:"rnshot",}//and other day,shot type events
+
 const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
     const location = useLocation();
@@ -23,10 +25,6 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     const event_ = useMemo(()=>EventService.getMyInteractiveEvent(event),[event])
 
     useEffect(()=>{
-        if(event_?.isShotType() && !Event.canInteract(event_)){navigate('/'); return;}
-    },[])
-
-    useEffect(()=>{
         if(!token && event_) {navigate('/'); return;}
         if(!user_fullname || !id) {navigate('/'); return;}
     },[token, event_, user_fullname, id])
@@ -37,8 +35,13 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
         navigate(nextPages[0],{replace:true,state:{token:true,nextPages:nextPages.slice(1)}}); //showMyRefPosts:showMyRefPosts, showFriendsRefPosts:showFriendsRefPosts
     }
 
-    const handleSetView = ()=>{
-        if(event_?.isShotType()) Event.setInteraction(event_);
+    const onPostLoad = (post)=>{
+        if(event_?.isShotType())
+        {
+            let props = {}; if(event_.toString()==HANDLING_EVENTS.RnShot) props.date=post.upload_date;
+            if(!Event.canInteract(event_,props)){navigate('/'); return;}
+            else Event.setInteraction(event_);
+        }
     }
 
     return ( <div>
@@ -49,7 +52,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
             {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
         </h2>
 
-        <Post id={id} user_fullname={user_fullname} trySetView={event_!==null} onLoad={handleSetView} />
+        <Post id={id} user_fullname={user_fullname} trySetView={event_!==null} onLoad={onPostLoad} />
     </div> );
 }
  

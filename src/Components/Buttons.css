@@ -29,7 +29,7 @@ button.button-upload
     padding: 4px 0px;
     border-radius: 10px;
     align-self: center;
-    margin: 10px;
+    margin: 15px;
     width:113px;
 
     font-weight: bold;
@@ -47,9 +47,6 @@ button.paste
     height: max-content;
     align-self: center;
     font-weight: bold;
-
-    -webkit-box-shadow: inset 0 0 2px black;
-    box-shadow: inset 0 0 2px black;
 }
 
 /*PAGE*/

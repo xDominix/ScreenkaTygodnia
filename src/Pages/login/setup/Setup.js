@@ -68,13 +68,16 @@ const Setup = ({onSetup}) => {
     //username
 
     const inputRef = useRef();
-    const [isInputFieldRed,setIsInputFieldRed] = useState(false);
+    const [isUsernameInputRed,setIsUsernameInputRed] = useState(false);
+    const [isUsernameInputLoading,setIsUsernameInputLoading] = useState(false); 
+    const [isUsernameSet,setIsUsernameSet] = useState(false);
     const handleOnEnter = ()=>{
-        setIsInputLoading(true);
+        setIsUsernameInputLoading(true);
         inputRef.current.blur();
         UserService.trySetMyUsername(inputRef.current.value).then(res=>{
-            setIsInputFieldRed(!res)
-            setIsInputLoading(false);
+            setIsUsernameInputRed(!res)
+            if(res)setIsUsernameSet(true);
+            setIsUsernameInputLoading(false);
         })
     }
 
@@ -103,7 +106,7 @@ const Setup = ({onSetup}) => {
                 <img src={meSrcUrl} alt="profile"/>
                 <div>
                     <h4>Change Your Username:</h4>
-                    <InputField reff={inputRef} onEnter={handleOnEnter} isRed={isInputFieldRed} isInputLoading={isInputLoading} />
+                    <InputField reff={inputRef} readOnly={isUsernameSet} onEnter={handleOnEnter} isRed={isUsernameInputRed} isInputLoading={isUsernameInputLoading} />
                     </div>
                
             </div>

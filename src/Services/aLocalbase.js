@@ -49,7 +49,7 @@ export const Events = {//kolejnosc ma znaczenie, ustawiaj godzinami
     DayUploads: new DayEvent("Day Uploads", null, 20, 24," - przeglądnij swój dzień na koniec dnia.", EventFor.me, 0,  EventExperience.Interactive),
     //custom
     Upload: new CustomEvent("Upload","- uchwyć chwilę.",EventFor.me,0,EventExperience.Interactive,()=> !Events.DeadLine.isTime() && ( Events.ClearMind.isTime()|| !isDayToday(WeekDay.Monday) )),
-    Screenka : new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,2,EventExperience.Interactive,(props)=>props.week!=null && (Events.ClearMind.isTime() || props.week ===true || props.week.force_screenka),MAX_SCREENKA,EventViewsTill.Week),//week (week=true cheat ;))
-    RnShot : new CustomEvent("Rn-Shot","- z ostatniej chwili! Najnowszy post innego uczestnika do 15min po jego dodaniu.",EventFor.friends,0,EventExperience.Full,(props)=>props.date!=null && isLessThenMinutes(props.date,15),1,EventViewsTill.FifteenMinutes),
+    Screenka : new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,2,EventExperience.Interactive,(props)=>props && (Events.ClearMind.isTime() || props.week ===true || props.week.force_screenka),MAX_SCREENKA,EventViewsTill.Week),//week (week=true cheat ;))
+    RnShot : new CustomEvent("Rn-Shot","- z ostatniej chwili! Najnowszy post innego uczestnika do 15min po jego dodaniu.",EventFor.friends,0,EventExperience.Full,(props)=> props && isLessThenMinutes(props.date,15),1,EventViewsTill.FifteenMinutes),
     ManageUploads : new CustomEvent("Manage Uploads","- zarządzaj swoimi uploadami.",EventFor.me,0,EventExperience.Interactive,()=>true),
 }

@@ -34,9 +34,9 @@
     border-radius: 50%;
     margin-right: 10px;
 }
-.bottom-tab .head>div
+.bottom-tab .head>span
 {
-    display: flex;
+    display: inline-flex;
     align-items: center;
 }
 .bottom-tab .head h3,.bottom-tab .head h4{margin-bottom: 5px;}
@@ -46,10 +46,6 @@
     top:20px;
     right: 20px;
     position: absolute;
-}
-
-.bottom-tab .subtitle{
-    margin-left: 7px;
 }
 
 /*CONTENT*/

@@ -13,7 +13,7 @@ import { Format } from '../App/AppClass';
 const Post = ({
     post=null,
     id,user_fullname,   
-    onLoad=()=>{},
+    onLoad,
     hideNickname=false,
     setView}) =>  {
 
@@ -30,13 +30,16 @@ const Post = ({
 
         if(post) return;
 
-        const getPostPromise = setView ? PostService.getPostAndTrySetMyView(user_fullname,id) : PostService.getPost(user_fullname,id);
-        getPostPromise.then(post=>{
-            if(post) {
-                setPostState(post);
-                onLoad();
-            }
-        })
+        const timeout = setTimeout(()=> {
+            const getPostPromise = setView ? PostService.getPostAndTrySetMyView(user_fullname,id) : PostService.getPost(user_fullname,id);
+            getPostPromise.then(post=>{
+                if(post) {
+                    setPostState(post);
+                    if(onLoad) onLoad(post);
+                }
+            })
+        },200);
+        return ()=>clearTimeout(timeout);
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{

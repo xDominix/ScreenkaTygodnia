@@ -99,6 +99,7 @@ export const datesWeekDelta = (date1,date2)=>{
 }
 
 export const isLessThenMinutes = (date,minutes)=>{
+    if(date==null || minutes==null) return false;
     var diff = datesMinuteDifference(date)
     if(diff<0) return false;
     return minutes >= diff;

@@ -4,5 +4,5 @@ export const useAppService = () => AppService;
 
 const AppService = {
     getApp : (name) => Object.values(Apps).find(app=>app.name===name),
-    getBuildinApps : ()=> BUILDIN_APPS
+    getBuildInApps : ()=> BUILDIN_APPS
 };

@@ -29,18 +29,17 @@ const Home = ({onAboutWeekClick}) => {
     const {setBottomTab,isBottomTab,getObject,} = useContext(BottomTabContext);
     const navigate = useNavigate();
 
-    const loadApps=(me,host,week)=>{
-        if(!me || !host) return AppService.getBuildInApps();
-    
-        var apps = [...host.popular_apps,...me.personalized_apps,...me.super_personalized_apps];
-        
+    const isHost = host!= null;
+    const uploadApps = useMemo(()=>{
+        if(!isHost) return AppService.getBuildInApps();
+        var apps = [...host.popular_apps,...user.personalized_apps,...user.super_personalized_apps];
         if(week && week?.extra_apps!=null) apps = apps.concat(week.extra_apps);
         if(week && week?.blocked_apps!=null) apps = apps.filter( (app) => !week.blocked_apps.includes(app) );
         apps = apps.map(app=>AppService.getApp(app));
         apps.sort((a,b)=>a.label-b.label);
-        return apps;}
-    const uploadApps = useRef(loadApps(user,host,week));
-    const [homeApps,setHomeApps] = useState(uploadApps.current);//max_len = HOME_APPS_SIZE
+        return apps;
+    },[isHost])
+    const [homeApps,setHomeApps] = useState(uploadApps);//max_len = HOME_APPS_SIZE
     
     const [participantsCount,setParticipantsCount] = useState(0);
     const [friendsParticipants,setFriendsParticipants] = useState([]) //user_fullnames, + ja
@@ -50,7 +49,7 @@ const Home = ({onAboutWeekClick}) => {
 
     //buttons    
     const currDayEvent = useMemo(()=> EventService.myDayEvents
-        .filter((event)=> event.hasPage && event.isTime())?.at(0)
+        .filter((event)=> event.isInteractive() && event.isTime())?.at(0)
     ,[EventService.myDayEvents]) 
 
     const isCurrDayEventDisabled = useMemo(()=>!Event.canInteract(currDayEvent),[currDayEvent])
@@ -80,10 +79,11 @@ const Home = ({onAboutWeekClick}) => {
 
     useEffect(()=>{
         const loadRnShot = async (me_fullname,week_latest)=>{
-            if(week_latest!==null)return;
+            if(week_latest==null)return;
             let uploader = week_latest?.user;
             if(uploader==null) return;
             if(uploader===me_fullname) return;
+            
             if(!Event.canInteract(myRnShotEvent,{date:week_latest?.date})) return;
             if(!HostService.getMyFriends().includes(uploader)) return;
             PostService.getFriendLatestPost(uploader).then((post)=>{
@@ -105,7 +105,7 @@ const Home = ({onAboutWeekClick}) => {
                 return first === app;
             }
     
-            let apps = uploadApps.current;
+            let apps = uploadApps;
     
             if(apps && appsMap ) {//&& appsMap.length>0
                 //sort by notification count
@@ -163,7 +163,7 @@ const Home = ({onAboutWeekClick}) => {
     },[week,myScreenkaEvent]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const apps = useMemo(()=>{
-        return isUploadMode? uploadApps.current : homeApps.slice(0,HOME_APPS_SIZE);
+        return isUploadMode? uploadApps : homeApps.slice(0,HOME_APPS_SIZE);
     },[isUploadMode,homeApps])
 
     const handleAppClick=(app)=>{

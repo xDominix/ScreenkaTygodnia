@@ -8,8 +8,8 @@ const NotificationDot = ({value,orange,onClick=undefined}) => {
     }
 
     return (  
-        <span onClick={onClick} className={"noti-dot noselect"+(orange?" bcolor-orange":" bcolor-red"+(onClick?" clickable":""))}>
-            {isCharacter(value) &&<div  style={value==="*"?{fontSize:"27px",paddingTop:"7px"}:{fontSize:"27px",marginTop:"-1px"}} >{value}</div>}
+        <span onClick={onClick} className={"noti-dot noselect"+(orange?" bcolor-orange":" bcolor-red")+(onClick?" clickable":"")}>
+            {isCharacter(value) &&<div  style={value==="*"?{fontSize:"27px",paddingTop:"7px"}:{fontSize:"27px",marginTop:"-3px"}} >{value}</div>}
             {!isCharacter(value) &&<div>{value}</div>}
         </span>);
 }

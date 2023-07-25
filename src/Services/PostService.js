@@ -45,7 +45,7 @@ const PostService = {
     },
 
     getUserLatestPost: async (user_fullname,host_id,forFriends,okApps=[]) => {
-      if(user_fullname || host_id) return null;
+      if(user_fullname==null || host_id==null) return null;
       let docs = await getDocs(`users/${user_fullname}/posts`,where("host_id","==",host_id),orderBy("upload_date","desc"),limit(1));
       let post = PostClass.fromDoc(docs?.at(0)); 
       if(!post.permissions.me) return null;

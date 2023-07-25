@@ -21,7 +21,7 @@ const AuthProvider = ({children, demo}) => {
     const {getUserCurrentDayPosts,getUserCurrentWeekPosts,getPostTicketsUsed,changePostPermissions,postPost,getUserLatestPost,
     getUserCurrentDayRandomPost,getUserPastWeekPosts,getPost,getPostAndTrySetView,getPathPostContentUrl,getUserYesterdayRandomPost}=usePostService(demo);
     const {getAvailableDayEvents,getAvailableCustomEvents}=useEventService(demo);
-    const {getApp,getBuildinApps}=useAppService(demo);
+    const {getApp,getBuildInApps}=useAppService(demo);
 
     //states
     const [user,setUser] = useState(NONE);
@@ -95,7 +95,7 @@ const AuthProvider = ({children, demo}) => {
             return week;
             }
             if(!user || !host) return null;
-            /*1*/if(!user.preferences.me) return null;
+            //if(!user.preferences.me) return null; // i tak jest condition na dole
             /*2*/ let join_date = host.subscribers.get(user.fullname).join_date;
             /* */if(join_date==null || join_date>GET_NOW()) return null;
             let week = getWeek(host.id,null,true);
@@ -258,6 +258,7 @@ const AuthProvider = ({children, demo}) => {
             friends: post.permissions.friends && ( !friendsDisabled && user.preferences.friends),
             screenka: post.permissions.screenka && ( !screenkaDisabled && user.preferences.screenka && ticketsRef.current>0)
         }
+        post.week_tag = post.week_tag && post.week_name;
 
         return postPost(user.fullname,post,file)
             .then((post_id)=>{
@@ -349,7 +350,7 @@ const AuthProvider = ({children, demo}) => {
             getPost,getPathPostContentUrl,//no auth
         },
         AppService:{
-            getApp, getBuildinApps,//no auth
+            getApp, getBuildInApps,//no auth
         },
         EventService:{
             myDayEvents,disabledDayEvents,myCustomEvents,getMyInteractiveEvent,//me auth

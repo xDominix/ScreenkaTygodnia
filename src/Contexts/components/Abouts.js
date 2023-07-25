@@ -44,7 +44,7 @@ export const AboutScreenka = ({onClose}) => {
 
     const changePreferences = ()=>{
         setLoading(true);
-        Promise.all([UserService.changeMyPreferences({me:you,friends:(friends&&you),screenka:(screenka&&you)}),delay(1000)]).then(()=>onClose())
+        Promise.all([UserService.changeMyPreferences({me:you,friends:friends,screenka:screenka}),delay(1000)]).then(()=>onClose())
     }
 
     const getTextAboutMyGroups = ()=>{
@@ -52,32 +52,34 @@ export const AboutScreenka = ({onClose}) => {
         return <span>Your groups: <span style={{fontStyle: "italic"}}>{myGroups.current.join(", ")}</span></span>;
     }
 
+    useEffect(()=>{
+        if(!you&&friends)setFriends(false)
+        if(!you&&screenka)setScreenka(false)
+    },[you,friends,screenka])
+
     return (  
         <BottomTab maxHeight onClose={!loading?onClose:()=>{}} 
         title={title} subtitle={subtitle} >
-                <h4 style={{fontWeight:"bold",marginTop:"30px",textAlign:'center'}}>
-                    <span >
-                        {/*{!isEditMode && "\""}*/}
-                        <A 
-                            active={you}    
-                            nocolor={!isEditMode}
-                            onClick={(!loading && isEditMode)?()=>setYou(!you):()=>{}}>
-                            You.
-                        </A> 
-                        <A 
-                            active={(friends && you)}
-                            nocolor={!isEditMode || friendsDisabled} 
-                            onClick={(!loading && isEditMode)?()=>{if(!friends)setYou(true);setFriends(!friends)}:()=>{}} 
-                            disabled={friendsDisabled} > Friends.
-                        </A> 
-                        <A 
-                            active={(screenka && you)} 
-                            nocolor={!isEditMode || screenkaDisabled} 
-                            onClick={(!loading && isEditMode)?()=>{if(!screenka)setYou(true);setScreenka(!screenka)}:()=>{}} 
-                            disabled={screenkaDisabled} > and Screenka Tygodnia.
-                        </A>
-                        {/*{!isEditMode && "\""}*/}
-                     </span>
+                <h4 className={(isEditMode && !you)?"text-shine":""} style={{fontWeight:"bold",marginTop:"30px",textAlign:'center'}}>
+                    <A 
+                        active={you}    
+                        nocolor={!isEditMode}
+                        onClick={(!loading && isEditMode)?()=>setYou(!you):undefined}>
+                        You.
+                    </A> 
+                    <A 
+                        active={friends}
+                        nocolor={!isEditMode || friendsDisabled} 
+                        onClick={(!loading && isEditMode)?()=>{if(!friends)setYou(true);setFriends(!friends)}:undefined} 
+                        disabled={friendsDisabled} > Friends.
+                    </A> 
+                    <A 
+                        active={screenka} 
+                        nocolor={!isEditMode || screenkaDisabled} 
+                        onClick={(!loading && isEditMode)?()=>{if(!screenka)setYou(true);setScreenka(!screenka)}:undefined} 
+                        disabled={screenkaDisabled} > and Screenka Tygodnia.
+                    </A>
+                    {/*{!isEditMode && "\""}*/}
                 </h4>
               <div className='margin' style={{marginTop:"auto",}} >
                     <p style={!you  ? {opacity:0}:undefined}><b>You. </b> Capture the happiness. Upload posts and preview them at the end of the day.</p>
@@ -86,9 +88,9 @@ export const AboutScreenka = ({onClose}) => {
                 </div>
 
                 <footer className='center' style={{marginTop:0}}>
-                    You can change the tagline by your own.<br/>
+                    You can change the tagline by your own...<br/>
                     {isChanged() &&<A  disabled={loading} onClick={changePreferences} bold>Change </A>}
-                    <A onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}>{!isEditMode?"Edit":"Cancel"}</A>
+                    <A className={(!userRef.current.preferences.me&& !isEditMode)? "text-shine":undefined} onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}>{!isEditMode?"Edit":"Cancel"}</A>
                 </footer>
             
         </BottomTab>
@@ -112,7 +114,6 @@ export const AboutApp = ({app,appType,onClose}) => {
     const [contentStateForString,setContentStateForString] = useState();
     const contentRef = useRef();
     const contextRef = useRef();
-    const [isWeekTagged,setIsWeekTagged]=useState(false);//setting
     const [uploading,setUploading] = useState(false);
     const [ticketsState,setTicketsState] = useState(PostService.getTickets());
     const tickets = useRef(PostService.getTickets());
@@ -127,7 +128,7 @@ export const AboutApp = ({app,appType,onClose}) => {
 
         let file = app.format===Format.Path?contentRef.current:null;
         
-        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,contextRef.current.value,{me:true,friends:true,screenka:true},isWeekTagged)
+        let post = new PostClass(null,null,null,null,app.name,contentRef.current?.value,contextRef.current.value,{me:true,friends:true,screenka:true})//,isWeekTag,...
         
         Promise.all([PostService.postMyPost(post,file),delay(1500)])
             .then(()=>setTicketsState(Math.max(0,ticketsState-1)))
@@ -177,10 +178,11 @@ export const AboutApp = ({app,appType,onClose}) => {
                 
                 <InputField isLoading={uploading} reff={contextRef} placeholder="context...  " longer></InputField>
                 
-                <Checkbox hide={!week} defaultChecked={false} checked={isWeekTagged} onChange={()=>setIsWeekTagged(!isWeekTagged)} mini>add {week?<b>{week.name}</b>:"week"} tag</Checkbox>
+                {/*WEEK TAG: <Checkbox hide={!week} defaultChecked={false} checked={isWeekTagged} 
+                onChange={()=>setIsWeekTagged(!isWeekTagged)} mini>add {week?<b>{week.name}</b>:"week"} tag</Checkbox>*/}
 
                 <div style={{display:'flex',flexDirection:'column'}}>
-                    <ButtonUpload hashtaged={isWeekTagged} disabled={uploading} onClick={handleUpload} tickets={ticketsState} noTicketAnimation={ !me.preferences.screenka || screenkaDisabled} />{/*tickets.current<=0 || */}
+                    <ButtonUpload hashtaged={false} disabled={uploading} onClick={handleUpload} tickets={ticketsState} noTicketAnimation={ !me.preferences.screenka || screenkaDisabled} />{/*tickets.current<=0 || */}
                 </div>
                 
                 {(!screenkaDisabled && me.preferences.screenka && tickets.current<=0) && <footer className='light center' style={{marginBottom:"0px"}}>* - upload without ticket.</footer>}

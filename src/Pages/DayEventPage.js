@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import NothingToShow from './NothingToShow';
 import { AuthContext } from '../Contexts/AuthContext';
 import {  randomElement } from '../aFunctions';
+import { Event } from '../Objects/Event/_Event';
 
 const HANDLING_EVENTS = {DayUploads:"dayuploads",WeekUploads:"weekuploads",OneShot:"oneshot",MorningShot:"morningshot",OhPreview:"ohpreview",ThrowBack:"throwback"}
 
