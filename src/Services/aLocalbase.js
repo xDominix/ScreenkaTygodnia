@@ -25,7 +25,7 @@ export const Apps = {
     Pinterest: new AppClass("Pinterest", "post, account", "share recipes, ideas for the home, style inspiration, and other ideas to experiment with.", Format.Url, 36),
     LouisVuitton: new AppClass("Louis Vuitton", "collection", "share collections from the fashion world.", Format.Path, 37),
     //Group Apps
-    DonutekGng: new AppClass("DonutekGng","pic","share some brudy rodzinne.",Format.LongString,40),
+    DonutekGng: new AppClass("DonutekGng","pic","share some brudy rodzinne.",Format.Path,40),
     //Default
     Default: new AppClass("Default", "", "", Format.None, 100),
 };
