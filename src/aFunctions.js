@@ -9,8 +9,8 @@ export const getPath=(file)=>{
 }
 
 export const getAppFullSrc=(app_name,size=64)=>{
-    if(size<=64) return getPath("app-logos-64/"+app_name.toLowerCase().replace(" ","_")+".png")
-    return getPath("app-logos-128/"+app_name.toLowerCase().replace(" ","_")+".png")
+    if(size<=64) return getPath("app-logos-128/"+app_name.toLowerCase().replace(" ","_")+"64.jpg")//!
+    return getPath("app-logos-128/"+app_name.toLowerCase().replace(" ","_")+".jpg")
 }
 
 //ASYNC
