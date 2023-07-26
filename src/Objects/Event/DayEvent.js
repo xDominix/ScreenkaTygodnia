@@ -14,11 +14,15 @@ export class DayEvent extends Event {
     isAfterTime = ()=>isAfterTime(this.weekDay,this.toHour)
 
     getSubtitle= ()=>{
-      let day = this.weekDay? toWeekDay(this.weekDay).substring(0,3).toUpperCase() : "*";
-      return this.toHour===24 ? `${day} ${this.fromHour}` : `${day} ${this.fromHour} - ${this.toHour}`;
+      if(this.weekDay===null && this.fromHour===0 && this.toHour===24) return "*";
+      let day = this.weekDay? toWeekDay(this.weekDay).substring(0,3).toUpperCase() :"*";
+      return this.toHour===24 ?(this.fromHour===0? `${day}` :`${day} ${this.fromHour}`) : `${day} ${this.fromHour} - ${this.toHour}`;
     }
 
     getNote = ()=>{
-        return this.weekDay?null:"* - codziennie";
+      if(this.weekDay===null && this.fromHour===0 && this.toHour===24) return "* - all the time";
+      if(this.fromHour===0 && this.toHour===24) return "* - whole day";
+      if(this.weekDay===null)return "* - everyday";
+      return null;
     }
 }

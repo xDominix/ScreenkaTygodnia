@@ -33,8 +33,8 @@ const Uploads = () => {
         }
 
         let event = EventService.getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.DayUploads : (type==="day"?HANDLING_EVENTS.DayUploads:HANDLING_EVENTS.ManageUploads));
-        if(!Event.canInteract(event) || (!token && type!== "manage")) {navigate("/");return;}
 
+        if(!Event.canInteract(event) || (!token && type!== "manage")) {navigate("/");return;}
         getUploads(event).then(posts=>{setPosts(posts); if(posts?.length>0) Event.setInteraction(event);}).catch(()=>navigate("/"))
 
     },[])// eslint-disable-line react-hooks/exhaustive-deps

@@ -35,7 +35,7 @@ const App = () => {
                                 {/*<Route path={getPath("/app/:name")} element={<AppPage/>}/>*/}
                                 <Route path={getPath("/dayevent/:event")} element={<DayEventPage/>}/>
                                 <Route path={getPath("/uploads/:type")} element={<Uploads/>}/> {/*navigate with token (wyjatek: manage)*/}
-                                <Route path={getPath("/screenka/:host_id")} element={<Screenka />} /> {/*tylko gdy nalezysz do hostu, jest poniedzialek po 8, istnieje plik*/}
+                                <Route path={getPath("/screenka/:host_id")} element={<Screenka />} /> {/*tylko gdy week sie zgadza*/}
                                 
                                 <Route path={getPath("/post/:user_fullname/:id")} element={<PostPage />}/> {/* dla kazdego, o ile zna id, z mysla o sharowaniu */}
                                 <Route path={getPath("/post/:user_fullname/:id/:event")} element={<PostPage />}/> {/*navigate with token*/}

@@ -24,7 +24,7 @@ export class Event {
     isTime = ()=> false;
     toString=()=> this.name.replace("-","").replace(" ","").toLowerCase()
     getSubtitle= ()=>"";
-    getNote = ()=>"";
+    getNote = ()=>null;
 
     isAvailable = (weekNumber,for_) => !for_? false : (weekNumber>=this.fromWeekNumber && this.checkPermissions(for_));
     isInformative = ()=> [EventExperience.Informative,EventExperience.Full].includes(this.#experience);
@@ -32,6 +32,7 @@ export class Event {
     isShotType = () => this.name.toLowerCase().includes("shot");
 
     //dlaczego static? ta sama nazwa eventu bedzie traktowana tak samo 
+    //dlaczego tak chcemy robic? bo np. DeadLine, i DeadLineForMe to z definicji rozne eventy, a jednak maja wplywac na siebie (views).
     static canInteract = (event,props)=>{ //props for CustomEvents
         if(!event || !event.isInteractive()) return false;
         if(!event.isTime(props)) return false;
@@ -43,8 +44,6 @@ export class Event {
         }
         return isDiffTill(event);
     }
-
-    //dlaczego static? ta sama nazwa eventu bedzie traktowana tak samo 
     static setInteraction = (event) =>{ //returns true if newly created
         if(!event || !event.isInteractive()) return false;
         if(event.max_views) localStorage.setItem(`${event}_view`,GET_NOW());

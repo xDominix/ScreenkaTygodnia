@@ -3,7 +3,7 @@ import './Home.css';
 import { AuthContext } from '../../../Contexts/AuthContext';
 import { BottomTabContext } from '../../../Contexts/BottomTabContext';
 import { useNavigate } from 'react-router-dom';
-import { MAX_SCREENKA, datesWeekDelta, delay } from '../../../aFunctions';
+import { MAX_ST_VIEWS, datesWeekDelta, delay } from '../../../aFunctions';
 import { ButtonScreenka,ButtonPlus, ButtonText, ButtonRn } from './components/Buttons';
 import { AppClass, AppType } from '../../../Objects/App/AppClass';
 import A from '../../../Components/A';
@@ -149,12 +149,17 @@ const Home = ({onAboutWeekClick}) => {
     useEffect(()=>{tryGetMyAppsCounts(true)},[]) // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(()=>{tryGetMyAppsCounts(); },[isBottomTab()]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    const isButtonScreenkaDisabled = useMemo(()=>{
+        if(!myScreenkaEvent) return true;
+        return !Event.canInteract(myScreenkaEvent,{week:week});
+    },[host?.id, myScreenkaEvent]);
+
     useEffect(()=>{
         const loadScreenka = async (week)=>
         {
-                if( myScreenkaEvent.isTime({week:week})) 
+                if(myScreenkaEvent.isTime({week:week})) 
                 {
-                    if(Event.canInteract(myScreenkaEvent,{week:week})) await delay(2000);
+                    if(!isButtonScreenkaDisabled) await delay(2000);
                     setIsScreenka(true)
                 }
             }
@@ -198,18 +203,14 @@ const Home = ({onAboutWeekClick}) => {
     const handleDayEventClick = (event)=> {if(event) navigate(`/dayevent/${event.toString()}`)}
     const handleRnShotClick=()=>{   navigate(`/post/${rnShotData.user_fullname}/${rnShotData.post_id}/${myRnShotEvent}`,{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:false}});  }
     
-    const isButtonScreenkaDisabled = useMemo(()=>{
-        if(!myScreenkaEvent) return true;
-        return !Event.canInteract(myScreenkaEvent,{week:true});
-    },[host?.id, myScreenkaEvent]);
-
     const handleButtonScreenkaClick = ()=>{
         if(host==null) return;
 
         let count_str = localStorage.getItem("screenka_count_"+host.id);
 
         let message = "Are you sure you want to see this content?";
-        if(count_str && Number(count_str)===MAX_SCREENKA-1) message = "You will see this content for the last time. Continue?";
+        if(count_str && Number(count_str)===MAX_ST_VIEWS-1) message = "You will see this content for the last time. Continue?";
+        if(MAX_ST_VIEWS===1) message="You can see this content only once. Continue?"
 
         if(window.confirm(message)) navigate("/screenka/"+host.id)
     }
@@ -232,17 +233,18 @@ const Home = ({onAboutWeekClick}) => {
             </h1>
         </div>
 
-        {isScreenka && //#1
-        <div className={defaultClassName+" home-button-effect"} style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}} >
-            <ButtonScreenka disabled={isButtonScreenkaDisabled} onClick={handleButtonScreenkaClick} style={buttonStyle}/>
-        </div>}
-    
-        {currDayEvent && //#2
+        
+        {currDayEvent && //(!isCurrDayEventDisabled || !myScreenkaEvent.isTime({week:week})) &&
         <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
             <ButtonText disabled={isCurrDayEventDisabled} onClick={()=>handleDayEventClick(currDayEvent)} style={buttonStyle} text={currDayEvent.name.toUpperCase()}/>
         </div>}        
 
-        {rnShotData && (!isScreenka || isButtonScreenkaDisabled) && (!currDayEvent || isCurrDayEventDisabled) && //#3
+        {isScreenka&& (!currDayEvent || isCurrDayEventDisabled) &&
+        <div className={defaultClassName+" home-button-effect"} style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}} >
+            <ButtonScreenka disabled={isButtonScreenkaDisabled} onClick={handleButtonScreenkaClick} style={buttonStyle}/>
+        </div>}
+
+        {rnShotData &&
         <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
             <ButtonRn onClick={handleRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
         </div>}

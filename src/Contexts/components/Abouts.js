@@ -62,21 +62,18 @@ export const AboutScreenka = ({onClose}) => {
         title={title} subtitle={subtitle} >
                 <h4 className={(isEditMode && !you)?"text-shine":""} style={{fontWeight:"bold",marginTop:"30px",textAlign:'center'}}>
                     <A 
-                        active={you}    
-                        nocolor={!isEditMode}
+                        active={you}
                         onClick={(!loading && isEditMode)?()=>setYou(!you):undefined}>
                         You.
                     </A> 
                     <A 
                         active={friends}
-                        nocolor={!isEditMode || friendsDisabled} 
-                        onClick={(!loading && isEditMode)?()=>{if(!friends)setYou(true);setFriends(!friends)}:undefined} 
+                        onClick={(!loading && isEditMode && !friendsDisabled)?()=>{if(!friends)setYou(true);setFriends(!friends)}:undefined} 
                         disabled={friendsDisabled} > Friends.
                     </A> 
                     <A 
                         active={screenka} 
-                        nocolor={!isEditMode || screenkaDisabled} 
-                        onClick={(!loading && isEditMode)?()=>{if(!screenka)setYou(true);setScreenka(!screenka)}:undefined} 
+                        onClick={(!loading && isEditMode && !screenkaDisabled)?()=>{if(!screenka)setYou(true);setScreenka(!screenka)}:undefined} 
                         disabled={screenkaDisabled} > and Screenka Tygodnia.
                     </A>
                     {/*{!isEditMode && "\""}*/}

@@ -2,7 +2,7 @@ import { GET_NOW, dateToWeekDay, toMap } from "../aFunctions";
 
 export class Week{
     constructor(  name,start_date,  description,emoji, //required
-                            blocked_apps=[], extra_apps=[], max_tickets=null, force_screenka=false,//optional
+                            blocked_apps=[], extra_apps=[], max_tickets=null, force_st=false,//optional
                         ) 
     {
         /***/ this.name = name; //gdy bedziemy chcieli sobie wziac po week_namie z posta,
@@ -13,7 +13,7 @@ export class Week{
         /*?*/ this.blocked_apps = blocked_apps; //- np. #1 week bez person section , innego robisz zen-week itp. 
         /*?*/ this.extra_apps = extra_apps; // sa one jakby popular apps
         this.max_tickets = max_tickets;//- np. 1 (one-ticket-week), 5 (dla wiekszych kontenciarzy) / jesli nie ma weeka, i ograniczenie sie pozniej pojawi, to good for you (goscia co zapostowal juz z 3 ticketami.. prawdziwy fan co postuje juz od poczatku tygodnia!...
-        this.force_screenka = force_screenka;
+        this.force_st = force_st;
 
         //realtime
         this.today_participants = [];
@@ -66,7 +66,7 @@ export class Week{
         let latest2 = doc.latest
         if(latest2) latest2.date = latest2.date.toDate();
 
-        let res =  new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.blocked_apps,doc.extra_apps,doc.max_tickets,doc.force_screenka,);
+        let res =  new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.blocked_apps,doc.extra_apps,doc.max_tickets,doc.force_st,);
         res.latest = latest2;
         res.screenka_views = screenka_views;
         res.screenka_comments = doc.screenka_comments;

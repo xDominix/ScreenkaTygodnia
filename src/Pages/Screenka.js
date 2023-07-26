@@ -14,11 +14,13 @@ const Screenka = () => {
    
     const navigate = useNavigate();
 
-    const {user,WeekService,PostService,HostService,EventService} = useContext(AuthContext);
+    const {user,week,WeekService,PostService,HostService,EventService} = useContext(AuthContext);
 
     const onLoad= async (week_name)=>{
+      if(week_name !== week?.name) {navigate("/");return;}
+
       let event = EventService.getMyInteractiveEvent(HANDLING_EVENT);
-      if(!Event.canInteract(event,{week:week_name}))  {navigate("/");return;}
+      if(!Event.canInteract(event,{week:week}))  {navigate("/");return;}
       
       if(!user || !user.hosts?.includes(host_id))  {navigate("/");return;}
       

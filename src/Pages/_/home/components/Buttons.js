@@ -37,8 +37,8 @@ export const ButtonScreenka = ({style,onClick,disabled}) => {
 );}
 
 export const ButtonPlus = ({style, onClick,isRotate=false,disabled}) => {
-    return (  <button disabled={disabled}
-     className={"bcolor-dark-gray-solid "+((isRotate?"button-plus-red ":"")+'button-plus shadow ')}
+    return (  <button //disabled={disabled}
+     className={"bcolor-dark-gray-solid"+((isRotate?" button-plus-red":"")+' button-plus shadow'+(disabled?" opacity":""))}
       style={style} onClick={onClick}>
         <div className={isRotate?"rotate":""}>+</div>
     </button> );

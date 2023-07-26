@@ -2,7 +2,7 @@ import { AppClass, Format } from "../Objects/App/AppClass";
 import { CustomEvent } from "../Objects/Event/CustomEvent";
 import { DayEvent } from "../Objects/Event/DayEvent";
 import { EventExperience, EventFor, EventViewsTill } from "../Objects/Event/_Event";
-import { MAX_SCREENKA, WeekDay, isDayToday, isLessThenMinutes } from "../aFunctions";
+import { MAX_ST_VIEWS, WeekDay, isDayToday, isLessThenMinutes } from "../aFunctions";
 
 export const Apps = {
     //Build-in
@@ -32,26 +32,36 @@ export const Apps = {
 
 export const BUILDIN_APPS = [Apps.Notes,Apps.Safari,Apps.Photos,Apps.Contacts,Apps.Ideas]; //w tym jeden placeholder btw, (to nie event.name btw, tylko to local in object key)
 
-export const Events = {//kolejnosc ma znaczenie, ustawiaj godzinami
+export const Events = {//kolejnosc ma znaczenie (soon: sortowanie po weekDay, pozniej EventFor i potem po interactive - to wtedy bedzie git)
     //mon
-    ClearMind: new DayEvent("Clear-Mind", WeekDay.Monday,8, 24, " - oczyść swój umysł. To nowy tydzień, nowy motyw i najnowsze wydanie Screenki Tygodnia!", EventFor.screenka, 2, EventExperience.Informative),
-    ClearMindForMe: new DayEvent("Clear-Mind", WeekDay.Monday,8, 24, " - oczyść swój umysł. To nowy tydzień, nowy motyw, i nowe doznania!", EventFor.me, 1,EventExperience.Informative),
+    UploadOn: new DayEvent("Upload-On", WeekDay.Monday,8, 24, " - upload's ON! To nowy tydzień, nowy motyw i nowe doznania...", EventFor.me,1, EventExperience.Informative),
+    //wed
+    OhPreview: new DayEvent("Oh-Preview", WeekDay.Wednesday, 20, 22," - OH! To podgląd poprzedniego tygodnia jednego z uczestników.", EventFor.friends, 2,EventExperience.Full),
     //thu
-    OhPreview: new DayEvent("Oh-Preview", WeekDay.Thursday, 20, 22," - oh! Przegląd poprzedniego tygodnia jednego z uczestników.", EventFor.friends, 2,EventExperience.Full),
-    //fri
-    ThrowBack: new DayEvent("Throw-Back", WeekDay.Friday,12, 19, " - przegląd twojego poprzedniego tygodnia.", EventFor.friends, 2,EventExperience.Full,),
+    ThrowBack: new DayEvent("Throw-Back", WeekDay.Thursday,20,22, " - OW! To podgląd twojego poprzedniego tygodnia.", EventFor.friends, 2,EventExperience.Full,),
+    //sat
+    UploadOff: new DayEvent("Upload-Off", WeekDay.Saturday,20, 24, " - upload's OFF. ST już w drodze! W tym czasie możesz powspominać swój tydzień.", EventFor.screenka, 1, EventExperience.Informative),
+    UploadOffForMe: new DayEvent("Upload-Off", WeekDay.Saturday,20, 24, " - upload's OFF. W tym czasie możesz powspominać swój tydzień.", EventFor.me, 1,EventExperience.Informative),
+    WeekUploads: new DayEvent("Week Uploads", WeekDay.Saturday,20, 24, " - powspominaj swój tydzień.", EventFor.me, 1, EventExperience.Interactive),
     //sun
-    //Reset: new DayEvent("Reset", WeekDay.Sunday, 12, 19, " - re-set. Okazja na dostrojenie swoich ustawień preferencji.", EventFor.me, 1, EventExperience.None),
-    DeadLine: new DayEvent("Dead-Line", WeekDay.Sunday,20, 24, " - upload off. Screenka Tygodnia już w drodze. W tym czasie możesz powspominać swój tydzień.", EventFor.screenka, 1, EventExperience.Informative),
-    DeadLineForMe: new DayEvent("Dead-Line", WeekDay.Sunday,20, 24, " - upload off. W tym czasie możesz powspominać swój tydzień.", EventFor.me, 1,EventExperience.Informative),
-    WeekUploads: new DayEvent("Week Uploads", WeekDay.Sunday,20, 24, " - w tym czasie możesz powspominać swój tydzień.", EventFor.me, 1, EventExperience.Interactive),
+    STHere: new DayEvent("ST-Here",WeekDay.Sunday,8,24," - przeczytaj najnowsze wydanie Screenki Tygodnia! Powspominaj tydzień swój i innych. Oczyść swój umysł przed nowym...",EventFor.screenka,2,EventExperience.Informative),
+    STHereForMe: new DayEvent("ST-Here",WeekDay.Sunday,0,24," - dzień relaksu. Powspominaj ten tydzień i oczyść swój umysł przed nowym...",EventFor.me,0,EventExperience.Informative),//CHILL DAY
+    WeekUploads2: new DayEvent("Week Uploads 2", WeekDay.Sunday,0, 24, " - powspominaj swój tydzień drugi raz.", EventFor.me, 1, EventExperience.Interactive),
+   
     //everyday
     MorningShot: new DayEvent("Morning-Shot", null,8,12, " - wake up! Jeden z twoich wczorajszych postów na dzień dobry.", EventFor.me, 2,EventExperience.Full),
     OneShot: new DayEvent("One-Shot", null, 19, 20, " - szybki strzał. Jeden z dzisiejszych postów uczestników.", EventFor.friends, 1,EventExperience.Full),
-    DayUploads: new DayEvent("Day Uploads", null, 20, 24," - przeglądnij swój dzień na koniec dnia.", EventFor.me, 0,  EventExperience.Interactive),
+    DayUploads: new DayEvent("Day Uploads", null, 22, 24," - powspominaj swój dzień, na koniec dnia.", EventFor.me, 0,  EventExperience.Interactive),
+    
     //custom
-    Upload: new CustomEvent("Upload","- uchwyć chwilę.",EventFor.me,0,EventExperience.Interactive,()=> !Events.DeadLine.isTime() && ( Events.ClearMind.isTime()|| !isDayToday(WeekDay.Monday) )),
-    Screenka : new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,2,EventExperience.Interactive,(props)=>props && (Events.ClearMind.isTime() || props.week ===true || props.week.force_screenka),MAX_SCREENKA,EventViewsTill.Week),//week (week=true cheat ;))
-    RnShot : new CustomEvent("Rn-Shot","- z ostatniej chwili! Najnowszy post innego uczestnika do 15min po jego dodaniu.",EventFor.friends,0,EventExperience.Full,(props)=> props && isLessThenMinutes(props.date,15),1,EventViewsTill.FifteenMinutes),
-    ManageUploads : new CustomEvent("Manage Uploads","- zarządzaj swoimi uploadami.",EventFor.me,0,EventExperience.Interactive,()=>true),
+    Upload: new CustomEvent("Upload","- uchwyć chwilę.",EventFor.me,EventExperience.Interactive,()=> !Events.UploadOff.isTime() && !Events.STHere.isTime() && ( !isDayToday(WeekDay.Monday) || Events.UploadOn.isTime())),
+    RnShot : new CustomEvent("Rn-Shot","- z ostatniej chwili! Najnowszy post innego uczestnika do 15min po jego dodaniu.",EventFor.friends,EventExperience.Full,(props)=> props && isLessThenMinutes(props.date,15),1,EventViewsTill.FifteenMinutes),
+    ManageUploads : new CustomEvent("Manage Uploads","- zarządzaj swoimi uploadami.",EventFor.me,EventExperience.Interactive,()=>true),
+    Screenka : new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,EventExperience.Interactive,(props)=> props &&( Events.STHere.isTime() || props.week?.force_st),MAX_ST_VIEWS,EventViewsTill.Week),
+
+    //Reset: new DayEvent("Reset", WeekDay.Sunday, 12, 19, " - re-set. Okazja na dostrojenie swoich ustawień preferencji.", EventFor.me, 1, EventExperience.None),
+    //Reset + ClearMind(UploadOn) => NewMe ?  (nowy tydzien, nowy ty!)
+
+    //AboutWeek: new CustomEvent("About Week","- nowy motyw już czeka!",EventFor.me,EventExperience.Interactive,()=>(!isDayToday(WeekDay.Monday) || Events.UploadOn.isTime())),
+    //Moze kiedys... Teraz chcemy poznac week przed pojsciem spac! I obudzic sie by zaczac go uploadowac!
 }

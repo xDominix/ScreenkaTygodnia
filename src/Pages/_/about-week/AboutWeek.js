@@ -55,12 +55,12 @@ const AboutWeek = ({onClose}) => {
            <div key={day_name} >
                 <div>
                     {events.map((event,index)=> 
-                    <A key={index} active={!event.isAfterTime()} nocolor={!isDayToday(WeekDay[day_name])} onClick={isDayToday(WeekDay[day_name]) ? ()=> setBottomTab({id:3,object:event}) : undefined}>
+                    <A key={index} active={!event.isAfterTime()} onClick={isDayToday(WeekDay[day_name]) ? ()=> setBottomTab({id:3,object:event}) : undefined}>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
                     </A>)}
                     {disabled_events.map((event,index)=> 
-                    <A key={index} nocolor={!isDayToday(WeekDay[day_name])} disabled>
+                    <A key={index} disabled>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
                     </A>)}
@@ -94,7 +94,7 @@ const AboutWeek = ({onClose}) => {
             {customEvents.length>0 &&<div>
                 <ScrollDiv >
                     {customEvents.map((event,index)=> 
-                    <A key={index} nocolor className="color-orange" onClick={()=>setBottomTab({id:3,object:event})}>
+                    <A key={index} orange onClick={()=>setBottomTab({id:3,object:event})}>
                         {index!==0 && ', '}
                         {event.name.toUpperCase()}
                     </A>)}

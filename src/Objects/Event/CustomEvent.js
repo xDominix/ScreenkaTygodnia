@@ -1,8 +1,8 @@
 import { Event } from "./_Event";
 
 export class CustomEvent extends Event {
-    constructor(name,description,for_,fromWeekNumber,experience,isTimeFunction,max_views,views_till){
-        super(name,description,for_,fromWeekNumber,experience,max_views,views_till)
+    constructor(name,description,for_,experience,isTimeFunction,max_views,views_till){
+        super(name,description,for_,0,experience,max_views,views_till)
         this.isTime =  (typeof isTimeFunction === 'function')? isTimeFunction: null;
     }
     
