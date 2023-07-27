@@ -51,13 +51,13 @@ return <div className="mini-post-pre">
         <App application={AppService.getApp(post.app)} height={50}/>
         <div className='text'>
             <span><b>{post.app}</b></span>
-            {post.context && <ScrollDiv><span >{post.context} asdasnd asduas ajsidj si</span></ScrollDiv>}
+            {post.context && <ScrollDiv><span>{post.context}</span></ScrollDiv>}
         </div>
         <div className='infos abs'>
             {preview && <div><A onClick={()=>onPreview(post.id)}>Link</A></div>}
             {delete_ && <div><A red onClick={()=>onDelete(post.id)}>Delete</A></div>}
             {!no_eyes && (post.view==null || !crossed_eye_only) &&<img alt='view' style={{height:"16px",filter:"invert(0.6)"}} src={getPath(post.view!=null ?"view16.png":"no_view16.png")}/>}
-            <div className={pretty_date && hourDate && isLessThenMinutes(post.upload_date) ? "color-orange": undefined}>
+            <div className={pretty_date && hourDate && isLessThenMinutes(post.upload_date,15) ? "color-orange": undefined}>
                 {hourDate===true? dateToHourString(post.upload_date,pretty_date): (dateToWeekDay(post.upload_date)?.slice(0,3).toUpperCase())}
             </div>
         </div>

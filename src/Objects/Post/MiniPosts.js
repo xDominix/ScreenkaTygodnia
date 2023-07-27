@@ -37,7 +37,7 @@ export const MiniPosts = ({posts, title, //essentials
     return (
         <div className='miniposts'>
              
-                {<div className={'miniposts-legend'}>
+                {<div className={'miniposts-legend'} >
                     {title && <h4 style={{position:"absolute",marginTop:"0px",top:0,left:"50%",transform:"translate(-50%,0)"}}>{title}</h4>}
 
                     {!customCheckboxes &&  !hideTickets &&  <div className={"bar "+(checkboxesDisabled?"opacity":"")}>
@@ -55,7 +55,7 @@ export const MiniPosts = ({posts, title, //essentials
                 {posts?.length===0 && <NothingToShow/>}
 
                 {posts?.length>0 &&  
-                <div className='miniposts-list noscroll'>
+                <div className='miniposts-list noscroll' >
                     {posts?.map((post,i) =>( <MiniPost key={post.id} post={post} hourDate={hourDate} no_eyes={no_eyes} crossed_eye_only={crossed_eye_only} uncheckedCheckboxDisabled={checks>=maxChecks} checkboxDisabled={checkboxesDisabled || !maxChecks} defaultChecked={customCheckboxes?false:null}  onCheckboxChange={handleOnCheckboxChange} onCheckboxChangeDelay={onPostCheckboxChangeDelay} edit={edit} delete_={delete_} preview={preview} onEdit={()=>onPostEdit(post.id)} onDelete={()=>onPostDelete(post.id)} onPreview={()=>onPostPreview(post.id)} pretty_date={pretty_date}/> ))} 
                     {(!customCheckboxes && !hideFooter && !hideTickets && (crossed_eye_only || !no_crossed_eye_funny_info)) && <footer className={'center' + (checkboxesDisabled ? " opacity":"")} >Uploads with tickets will apply for<br/>Screenka Tygodnia ™</footer>}
                     {!hideFooter && !crossed_eye_only && no_crossed_eye_funny_info && <footer className={'center'} >Kto zobaczył, ten zobaczył.<br/>Teraz pójdzie w niepamięć. <span role="img" aria-label="ghost">👻</span></footer>}

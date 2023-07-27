@@ -25,14 +25,14 @@ const Uploads = () => {
     useEffect(()=>{
         const getUploads = (event)=>{
             switch(event.toString()){
-                case HANDLING_EVENTS.ManageUploads: return PostService.getMyDayUploads().then(posts=>{ posts.sort((a, b) => a.upload_date - b.upload_date); return posts; }); //desc order, from newest
+                case HANDLING_EVENTS.ManageUploads: return PostService.getMyDayUploads().then(posts=>{let a= [...posts]; a.reverse(); return a; }); //desc order, from newest
                 case HANDLING_EVENTS.DayUploads: return PostService.getMyDayUploads();
                 case HANDLING_EVENTS.WeekUploads: return PostService.getMyWeekUploads();
                 default: return Promise.reject();
             }
         }
 
-        let event = EventService.getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.DayUploads : (type==="day"?HANDLING_EVENTS.DayUploads:HANDLING_EVENTS.ManageUploads));
+        let event = EventService.getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.WeekUploads : (type==="day"?HANDLING_EVENTS.DayUploads:HANDLING_EVENTS.ManageUploads));
 
         if(!Event.canInteract(event) || (!token && type!== "manage")) {navigate("/");return;}
         getUploads(event).then(posts=>{setPosts(posts); if(posts?.length>0) Event.setInteraction(event);}).catch(()=>navigate("/"))
@@ -61,7 +61,7 @@ const Uploads = () => {
             {type==="day" && <h2> <ButtonPrevPage/>Your Day Uploads:</h2>}
             {type==="week" && <h2> <ButtonPrevPage/> Your Week Uploads:</h2>}
 
-            <MiniPosts posts={posts} 
+            <MiniPosts posts={posts}
                 checkboxesDisabled={!user.preferences.screenka || screenkaDisabled || type!=="manage"} maxChecks={type==="manage"?PostService.getMaxTickets():null} onPostCheckboxChangeDelay={handleOnPostCheckboxDelay}
                 hourDate={type==="day" || type==="manage"} pretty_date={type==="manage"}
                 preview={type==="day" || type==="week"} onPostPreview={handleOnPostPreview}

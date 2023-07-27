@@ -76,6 +76,7 @@ footer,footer>span{color: rgba(255, 255, 255, 0.4);opacity: 0.94;}
   color: rgb(98, 153, 255);
   text-shadow: 0px 0px 4px rgba(98,153,255,0.7);
 }
+.color-blue, .initial-letter::first-letter{color: rgb(98, 153, 255);}
 .bcolor-orange{background-color: rgb(255, 119, 56);}
 .color-orange{color: rgb(255, 119, 56);}
 .bcolor-red{background-color: rgb(255, 56, 56);}
@@ -147,7 +148,6 @@ footer.center {text-align: center;}
 
 
 .initial-letter::first-letter {
-  /*color:rgb(40, 255, 215,0.7);*/
   font-size: 45px;
   float: left;
   line-height: 1;

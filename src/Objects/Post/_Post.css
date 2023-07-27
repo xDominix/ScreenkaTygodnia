@@ -83,6 +83,7 @@
     padding:10px 0px;
     box-sizing: border-box;
     border-bottom: 1px rgba(255,255,255, 0.1) solid;
+    align-items: center;
 }
 
 .mini-post>*{margin-right: 10px;}

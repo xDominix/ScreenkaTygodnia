@@ -27,7 +27,7 @@
     display: inline-block;
 }
 
-.aweek h1>span {margin-left: 10px;font-size: 30px;}
+.aweek h1>span {margin-right: 10px;font-size: 30px;} /*left powinnien byc ale cos nie stykalo*/
 
 /*calendar*/
 

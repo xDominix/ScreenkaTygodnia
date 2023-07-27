@@ -14,7 +14,7 @@ const Bookmark = () => {
 
     return ( 
     <div className='flex-center' style={{alignItems:"center",textAlign:'center'}}>
-        <img alt="add to home screen" src={getPath("add_to_home_screen.png")} style={{objectFit:'cover',height:'100px',width:'100px',opacity:'0.6',marginBottom:'30px'}}/>
+        <img className='noselect opacity' alt="add to home screen" src={getPath("add_to_home_screen.png")} style={{objectFit:'cover',height:'100px',width:'100px',marginBottom:'30px'}}/>
         <div>
             <h4>1. Add to Home Screen</h4>
             <h4>2. <A onClick={()=>navigate("/login")}>Login</A></h4>
