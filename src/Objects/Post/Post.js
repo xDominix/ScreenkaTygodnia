@@ -15,7 +15,7 @@ const Post = ({
     id,user_fullname,   
     onLoad,
     hideNickname=false,
-    setView}) =>  {
+    trySetView}) =>  {
 
     const {PostService,UserService,AppService} = useContext(AuthContext);
 
@@ -31,7 +31,7 @@ const Post = ({
         if(post) return;
 
         const timeout = setTimeout(()=> {
-            const getPostPromise = setView ? PostService.getPostAndTrySetMyView(user_fullname,id) : PostService.getPost(user_fullname,id);
+            const getPostPromise = trySetView ? PostService.getPostAndTrySetMyView(user_fullname,id) : PostService.getPost(user_fullname,id);
             getPostPromise.then(post=>{
                 if(post) {
                     setPostState(post);

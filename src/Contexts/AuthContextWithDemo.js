@@ -18,7 +18,7 @@ export const AuthContextWithDemo = ({ children,onDemo }) => {
 
     useEffect(() => {
         if (isDemo.current && !location.pathname.startsWith("/demo"))
-            navigate(`/demo${location.pathname}`,{replace:true, state: {token:true}}); 
+            navigate(`/demo${location.pathname}`,{replace:true, state: {token: location.state?.token}}); 
     }, [navigate,location.pathname]);
 
     return !isDemo.current 

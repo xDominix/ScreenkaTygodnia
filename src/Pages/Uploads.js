@@ -32,10 +32,10 @@ const Uploads = () => {
             }
         }
 
-        let event = EventService.getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.WeekUploads : (type==="day"?HANDLING_EVENTS.DayUploads:HANDLING_EVENTS.ManageUploads));
+        let event = EventService.getMyInteractiveEvent(type==="week"? HANDLING_EVENTS.WeekUploads : (type==="day"?HANDLING_EVENTS.DayUploads:(type==="manage"?HANDLING_EVENTS.ManageUploads:null)));
 
-        if(!Event.canInteract(event) || (!token && type!== "manage")) {navigate("/");return;}
-        getUploads(event).then(posts=>{setPosts(posts); if(posts?.length>0) Event.setInteraction(event);}).catch(()=>navigate("/"))
+        if(!token && !Event.canInteract(event)) {navigate("/");return;}
+        getUploads(event).then(posts=>{setPosts(posts); if(posts?.length>0 && !token) Event.setInteraction(event);}).catch(()=>navigate("/"))
 
     },[])// eslint-disable-line react-hooks/exhaustive-deps
 

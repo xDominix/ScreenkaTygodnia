@@ -77,6 +77,7 @@ const Home = ({onAboutWeekClick}) => {
         loadParticipants(user,HostService.getMyFriends(),week?.today_participants)
     },[week?.today_participants]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    const isWeekLatest = week?.latest != null;
     useEffect(()=>{
         const loadRnShot = async (me_fullname,week_latest)=>{
             if(week_latest==null)return;
@@ -91,12 +92,12 @@ const Home = ({onAboutWeekClick}) => {
             }
 
         if(week?.latest && myRnShotEvent) loadRnShot(user.fullname,week.latest);
-    },[week?.latest,myRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
+    },[isWeekLatest,week?.latest,myRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
 
     const rnAppName = useMemo(()=>{
         if(myRnShotEvent && myRnShotEvent.isTime({date:week?.latest?.date})) return week?.latest?.app
         return null;
-    },[week?.latest,myRnShotEvent]) 
+    },[isWeekLatest,week?.latest,myRnShotEvent]) 
     
     useEffect(()=>{
         const sortHomeApps = (appsMap=new Map())=>{
@@ -201,7 +202,7 @@ const Home = ({onAboutWeekClick}) => {
     /* BUTTONS START */
 
     const handleDayEventClick = (event)=> {if(event) navigate(`/dayevent/${event.toString()}`)}
-    const handleRnShotClick=()=>{   navigate(`/post/${rnShotData.user_fullname}/${rnShotData.post_id}/${myRnShotEvent}`,{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:false}});  }
+    const handleRnShotClick=()=>{   navigate(`/post/${rnShotData.user_fullname}/${rnShotData.post_id}/${myRnShotEvent}`,{state:{showMyRefPosts:true,showFriendsRefPosts:false}});  }
     
     const handleButtonScreenkaClick = ()=>{
         if(host==null) return;

@@ -15,6 +15,15 @@ import Bookmark from './Pages/Bookmark';
 
 /*
 TOKEN EXPLAIN
+token - priorytet przy stronach dla eventu.
+- nie zaznacza ci interakcji
+- nie sprawdza ci czy ja masz czy nie, wpuszcza bez konsekwencji
+
+warunek eventa: token || canInteract
+wlasciwosc: token do routowania do eventu ktory ktos zapomnial wziac udzial a chce jeszcze mimo ze nie ma time.
+token ala transparency ticket for event
+
+TOKEN EXPLAIN (OLD)
 zebys se nie wpisywal nazwy uzytkownika i tygodnia zeby go konkretnego zobacyzc - teraz musi ci to stronka wygenerowac (/posts/ktos/cos)
 czyli podczas eventu taki guard
 */
@@ -34,14 +43,14 @@ const App = () => {
                                 <Route path={getPath("/bookmark")} element={<Bookmark />} />
                                 {/*<Route path={getPath("/app/:name")} element={<AppPage/>}/>*/}
                                 <Route path={getPath("/dayevent/:event")} element={<DayEventPage/>}/>
-                                <Route path={getPath("/uploads/:type")} element={<Uploads/>}/> {/*navigate with token (wyjatek: manage)*/}
-                                <Route path={getPath("/screenka/:host_id")} element={<Screenka />} /> {/*tylko gdy week sie zgadza*/}
+                                <Route path={getPath("/uploads/:type")} element={<Uploads/>}/>
+                                <Route path={getPath("/screenka/:host_id")} element={<Screenka />} />
                                 
-                                <Route path={getPath("/post/:user_fullname/:id")} element={<PostPage />}/> {/* dla kazdego, o ile zna id, z mysla o sharowaniu */}
-                                <Route path={getPath("/post/:user_fullname/:id/:event")} element={<PostPage />}/> {/*navigate with token*/}
+                                <Route path={getPath("/post/:user_fullname/:id")} element={<PostPage />}/> {/*dla kazdego, o ile zna id, z mysla o sharowaniu */}
+                                <Route path={getPath("/post/:user_fullname/:id/:event")} element={<PostPage />}/>
 
                                 <Route path={getPath("/posts/:user_fullname/:host_id/:event")} element={<MiniPostsPage/>}/> {/* tylko dla hosta */}
-                                <Route path={getPath("/posts/:user_fullname/:host_id/:week_name/:event")} element={<MiniPostsPagePlus/>}/> {/*navigate with token*/}
+                                <Route path={getPath("/posts/:user_fullname/:host_id/:week_name/:event")} element={<MiniPostsPagePlus/>}/>
 
                                 <Route path="*" element={<PageNotFound />} />
                             </Routes>

@@ -97,7 +97,7 @@ export const AboutScreenka = ({onClose}) => {
 export const AboutAppMini = ({app,onClose,totalUploads}) => {
    
     return (  
-        <BottomTab onClose={onClose} title={app.name} subtitle={app.miniDescription } footer={`Total uploads: ${totalUploads}`} >
+        <BottomTab onClose={onClose} title={app.name} subtitle={"app"} footer={`Total uploads: ${totalUploads}`} >
             <h4>{" - " +app.description}</h4>
         </BottomTab>
     );
@@ -173,7 +173,7 @@ export const AboutApp = ({app,appType,onClose}) => {
                 {(app.format===Format.Url) && <InputField isRed={isContentRed} isLoading={uploading} reff={contentRef} placeholder="content..." paste></InputField>} 
                 {(app.format===Format.Path) && <InputField isRed={isContentRed} isLoading={uploading} onChange={handleFileChange} file/>}
                 
-                <InputField isLoading={uploading} reff={contextRef} placeholder="context...  " longer></InputField>
+                <InputField isLoading={uploading} reff={contextRef} placeholder="context... (optional)" longer></InputField>
                 
                 {/*WEEK TAG: <Checkbox hide={!week} defaultChecked={false} checked={isWeekTagged} 
                 onChange={()=>setIsWeekTagged(!isWeekTagged)} mini>add {week?<b>{week.name}</b>:"week"} tag</Checkbox>*/}

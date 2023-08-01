@@ -17,8 +17,8 @@ const PostService = {
     },
     getPostAndTrySetView: async (user_fullname, id,view_fullname) => {
       if(!user_fullname || !id || !view_fullname) return null;
-      let doc = await getDoc(`users/${user_fullname}/posts`, id);
-      let post = PostClass.fromDoc(doc);
+      let doci = await getDoc(`users/${user_fullname}/posts`, id);
+      let post = PostClass.fromDoc(doci);
       if(!post.permissions.me) return null
       if(post!=null && user_fullname!==view_fullname && post.view===null ) {
         await updateDoc(doc(db, `users/${user_fullname}/posts`, id), {

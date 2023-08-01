@@ -5,7 +5,7 @@ import { ButtonNextPage, ButtonPrevPage } from '../Components/Buttons';
 import { Event } from '../Objects/Event/_Event';
 import { AuthContext } from '../Contexts/AuthContext';
 
-const HANDLING_EVENTS = {RnShot:"rnshot",}//and other day,shot type events
+const HANDLING_EVENTS = {RnShot:"rnshot",OneShot:'oneshot',MorningShot:"morningshot",}
 
 const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
@@ -14,9 +14,6 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     //const showMyRefPosts = location.state? location.state.showMyRefPosts===true : false;
     //const showFriendsRefPosts =location.state? location.state.showFriendsRefPosts===true : false;
 
-    //token
-    //bez event to nie trzeba token, nie masz i tak zadnych akcji (do sharowania potrzebne)
-    //z tokenem mozesz trySetView, komentowanie i inne akcje
     const token = location.state?.token; 
 
     const navigate = useNavigate();
@@ -25,9 +22,8 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     const event_ = useMemo(()=>EventService.getMyInteractiveEvent(event),[event])
 
     useEffect(()=>{
-        if(!token && event_) {navigate('/'); return;}
         if(!user_fullname || !id) {navigate('/'); return;}
-    },[token, event_, user_fullname, id])
+    },[user_fullname, id])
 
     const title = useMemo(()=>event_ ? event_.name.toUpperCase():"User Post:",[event_])
 
@@ -36,18 +32,31 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     }
 
     const onPostLoad = (post)=>{
-        if(event_?.isShotType())
+        if(!event) return;
+
+        let props={}; if(event_?.toString()===HANDLING_EVENTS.RnShot) props.date=post.upload_date;
+        if(!token && !Event.canInteract(event_,props)){navigate('/'); return;}
+
+        if(!token)
         {
-            let props = {}; if(event_.toString()==HANDLING_EVENTS.RnShot) props.date=post.upload_date;
-            if(!Event.canInteract(event_,props)){navigate('/'); return;}
-            else Event.setInteraction(event_);
+            switch(event_?.toString())
+            {
+                case HANDLING_EVENTS.RnShot:
+                case HANDLING_EVENTS.MorningShot:
+                case HANDLING_EVENTS.OneShot:
+                    Event.setInteraction(event_);
+                    break;
+                default:
+                    navigate('/');
+                    return;
+            }
         }
     }
 
     return ( <div>
 
         <h2>
-            <ButtonPrevPage alert={nextPages?.length>0} onClick={()=>navigate(-1,{state:{token:true}})}/>{/* cofanie do wydarzen TEMP */}
+            <ButtonPrevPage alert={nextPages?.length>0} onClick={()=>navigate(-1,{state:{token:true}})}/>
             {title}
             {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
         </h2>

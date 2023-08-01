@@ -5,7 +5,7 @@ import { AuthContext } from '../Contexts/AuthContext';
 import {  randomElement } from '../aFunctions';
 import { Event } from '../Objects/Event/_Event';
 
-const HANDLING_EVENTS = {DayUploads:"dayuploads",WeekUploads:"weekuploads",OneShot:"oneshot",MorningShot:"morningshot",OhPreview:"ohpreview",ThrowBack:"throwback"}
+const HANDLING_EVENTS = {DayUploads:"dayuploads",WeekUploads:"weekuploads",WeekUploads2:"weekuploads2",OneShot:"oneshot",MorningShot:"morningshot",OhPreview:"ohpreview",ThrowBack:"throwback"}
 
 const DayEventPage = () => { // dla day_eventow ktore maja page (isInteractive())
 
@@ -44,28 +44,29 @@ const DayEventPage = () => { // dla day_eventow ktore maja page (isInteractive()
                 if (tos.length >= 3) break;
             }
             if(tos.length===0) return null;
-            return {to:tos[0],options:{state:{token:true,nextPages: tos.slice(1),showMyRefPosts:true}}}
+            return {to:tos[0],options:{state:{nextPages: tos.slice(1),showMyRefPosts:true}}}
         }
         const getMorningShotNavigator=async ()=>{
             let post = await PostService.getMyYesterdayRandomPost(); if(!post) return null;
-            return {to:`/post/${user.fullname}/${post.id}/${HANDLING_EVENTS.MorningShot}`,options:{state:{token:true,showMyRefPosts:true,showFriendsRefPosts:true}}};//show na poprawe i zaskocznie, w koncu DayUploads ukrywaja friends interactions
+            return {to:`/post/${user.fullname}/${post.id}/${HANDLING_EVENTS.MorningShot}`,options:{state:{showMyRefPosts:true,showFriendsRefPosts:true}}};//show na poprawe i zaskocznie, w koncu DayUploads ukrywaja friends interactions
         }
         const getOhPreviewNavigator=async()=>{
             let [friends,host_id]= HostService.getMyFriendsWithHostId();
             let random_friend = randomElement(friends);
             let week_name = await WeekService.getMyHostLastWeekName();
-            return {to:`/posts/${random_friend}/${host_id}/${week_name}/${HANDLING_EVENTS.OhPreview}`,options:{state:{token:true}}}
+            return {to:`/posts/${random_friend}/${host_id}/${week_name}/${HANDLING_EVENTS.OhPreview}`}
         }
         const getThrowBackNavigator=async ()=>{
             let host_id  = HostService.getMyHostId()
             let week_name = await WeekService.getMyHostLastWeekName();
-            return {to:`/posts/${user.fullname}/${host_id}/${week_name}/${HANDLING_EVENTS.ThrowBack}`,options:{state:{token:true}}}
+            return {to:`/posts/${user.fullname}/${host_id}/${week_name}/${HANDLING_EVENTS.ThrowBack}`}
         }
 
         switch(event.toString())
         { 
-            case HANDLING_EVENTS.DayUploads: return {to:"/uploads/day",options:{state:{token:true}}}
-            case HANDLING_EVENTS.WeekUploads: return {to:"/uploads/week",options:{state:{token:true}}}
+            case HANDLING_EVENTS.DayUploads: return {to:"/uploads/day"}
+            case HANDLING_EVENTS.WeekUploads: return {to:"/uploads/week"}
+            case HANDLING_EVENTS.WeekUploads2: return {to:"/uploads/week"}
             case HANDLING_EVENTS.OneShot: return getOneShotNavigator();
             case HANDLING_EVENTS.MorningShot: return getMorningShotNavigator();
             case HANDLING_EVENTS.OhPreview: return getOhPreviewNavigator();

@@ -58,7 +58,7 @@ const AboutWeek = ({onClose}) => {
                     <A key={index} active={!event.isAfterTime()} onClick={isDayToday(WeekDay[day_name]) ? ()=> setBottomTab({id:3,object:event}) : undefined}>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
-                    </A>)}
+                    </A>)} 
                     {disabled_events.map((event,index)=> 
                     <A key={index} disabled>
                             {index!==0 && ", "}
@@ -81,7 +81,7 @@ const AboutWeek = ({onClose}) => {
                     <A key={index} active={!event.isAfterTime()} onClick={()=>setBottomTab({id:3,object:event})}>
                             {index!==0 && ', '}
                             {event.name.toUpperCase()}
-                    </A>)}
+                    </A>)} 
                     {disabledEveryDayEvents.map((event,index)=> 
                     <A key={index} disabled>
                             {index!==0 && ", "}

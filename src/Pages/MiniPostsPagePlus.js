@@ -35,8 +35,9 @@ const MiniPostsPagePlus = () => {
 
 
     useEffect(()=>{
-        if(!token) {navigate("/"); return;}
-        if(!Event.canInteract(event_) || !user_fullname || !host_id || !week_name) {navigate("/"); return;}
+        if(!user_fullname || !host_id || !week_name) {navigate("/"); return;}
+       
+        if(!token && !Event.canInteract(event_)) {navigate("/"); return;}
 
         switch(event_.toString()){
             case HANDLING_EVENTS.ThrowBack:
@@ -45,16 +46,16 @@ const MiniPostsPagePlus = () => {
             case HANDLING_EVENTS.OhPreview:
                 PostService.getFriendPastWeekPosts(user_fullname,week_name).then(posts=>posts==null?navigate("/"):setPosts(posts));
                 break;
-            default:  
-                navigate("/"); 
-                break;
+            default:
+                navigate('/');
+                return;
         }
-
     },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
+    const isPosts = posts !== null;
     useEffect(()=>{
-        if(event_ && posts && posts.length>0) Event.setInteraction(event_);
-    },[posts]) //eslint-disable-line react-hooks/exhaustive-deps
+        if(isPosts && posts.length>0 && !token) Event.setInteraction(event_);
+    },[isPosts]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnNextPageClick = ()=>{
         let tos = Array.from(postCheckboxMap.current.keys()).map(post_id=> `/post/${user_fullname}/${post_id}/${event_}`);

@@ -1,5 +1,6 @@
 //CONSTS
 export const MAX_ST_VIEWS = 1;
+export const MAX_TICKETS = 3;
 export const DAY_EVENT_POSTS = 3;
 export const GET_NOW = ()=> new Date(Date.now()) ; //new Date(2021,3,3,10,10)
 
