@@ -39,7 +39,7 @@ const AboutWeek = ({onClose}) => {
 
     return (
         <div className={"aweek "+( isBottomTab()?'noclick aweek-blur-dark':"")}>
-        <ScrollDiv>
+        <ScrollDiv >
         <h1>
             <ButtonPrevPage onClick={onClose}>{"#"+(HostService.weekNumber?HostService.weekNumber:0)}</ButtonPrevPage>
             <span className={"color-blue-highlight"}>{week? week.name.toUpperCase(): "WEEK"}</span>{/* (week?.name.length>12 ? " spansmall":" span") */}
@@ -58,7 +58,9 @@ const AboutWeek = ({onClose}) => {
                     <A key={index} active={!event.isAfterTime()} onClick={isDayToday(WeekDay[day_name]) ? ()=> setBottomTab({id:3,object:event}) : undefined}>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
-                    </A>)} 
+                            {events.length>0 && disabled_events.length>0 && ', '} 
+                    </A>)}
+                   
                     {disabled_events.map((event,index)=> 
                     <A key={index} disabled>
                             {index!==0 && ", "}
@@ -76,29 +78,26 @@ const AboutWeek = ({onClose}) => {
             </div>
             
             {(everyDayEvents.length>0 || disabledEveryDayEvents.length>0) && <div style={{maxWidth:'100%'}}>
-                <ScrollDiv >
-                    {everyDayEvents.map((event,index)=> 
+                    {everyDayEvents.map((event,index)=>
                     <A key={index} active={!event.isAfterTime()} onClick={()=>setBottomTab({id:3,object:event})}>
                             {index!==0 && ', '}
                             {event.name.toUpperCase()}
-                    </A>)} 
+                            {everyDayEvents.length>0 && disabledEveryDayEvents.length>0 && ', '}
+                    </A>)}
                     {disabledEveryDayEvents.map((event,index)=> 
                     <A key={index} disabled>
                             {index!==0 && ", "}
                             {event.name.toUpperCase()}
                     </A>)}
-                </ScrollDiv>
                 <Dot/>
             </div>}
         
             {customEvents.length>0 &&<div>
-                <ScrollDiv >
-                    {customEvents.map((event,index)=> 
+                    {customEvents.map((event,index)=>
                     <A key={index} orange onClick={()=>setBottomTab({id:3,object:event})}>
                         {index!==0 && ', '}
                         {event.name.toUpperCase()}
                     </A>)}
-                </ScrollDiv>
                 <Dot orange/>
             </div>}
         

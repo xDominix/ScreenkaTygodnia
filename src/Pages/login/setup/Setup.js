@@ -91,8 +91,16 @@ const Setup = ({onSetup}) => {
             if(checkboxes[index]) my_personalized_apps.push(app);
         });
         if(my_personalized_apps.length>0 || window.confirm("You haven't selected any app you're interested in. Continue?")) {
-            let res = await UserService.trySetMyPersonalizedApps(my_personalized_apps);
-            if(res) {UserService.saveMe();onSetup();}
+            UserService.trySetMyPersonalizedApps(my_personalized_apps).then((res)=>
+            {
+                if(res)
+                {
+                    UserService.saveMe();
+                    onSetup();
+                }
+            })
+                
+            
         }
         setIsInputLoading(false);
     }
@@ -124,7 +132,7 @@ const Setup = ({onSetup}) => {
                             <App key={appname} application={app}/>
                             <div className='setup-app-description'>
                                 <div><b>{app.name}</b></div>
-                                <p>- {app.description} </p>
+                                <span className='small'>- {app.description} </span>
                             </div>
                         </div>}
                     )}

@@ -40,7 +40,7 @@ const Post = ({
             })
         },200);
         return ()=>clearTimeout(timeout);
-    },[])// eslint-disable-line react-hooks/exhaustive-deps
+    },[post,id,user_fullname])// eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(()=>{
         const getContent = async (post)=>{

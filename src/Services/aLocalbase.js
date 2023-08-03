@@ -35,7 +35,7 @@ export const Apps = {
     Default: new AppClass("Default", "", "", Format.None, 100),
 };
 
-export const BUILDIN_APPS = [Apps.Notes,Apps.Safari,Apps.Photos,Apps.Contacts,Apps.Ideas]; //w tym jeden placeholder btw, (to nie event.name btw, tylko to local in object key)
+export const BUILDIN_APPS = [Apps.Notes,Apps.Photos,Apps.Safari,];
 
 export const Events = {//kolejnosc ma znaczenie (soon: sortowanie po weekDay, pozniej EventFor i potem po interactive - to wtedy bedzie git)
     //mon
@@ -54,7 +54,7 @@ export const Events = {//kolejnosc ma znaczenie (soon: sortowanie po weekDay, po
     WeekUploads2: new DayEvent("Week Uploads 2", WeekDay.Sunday,0, 24, " - powspominaj swój tydzień drugi raz.", EventFor.me, 1, EventExperience.Interactive),
    
     //everyday
-    MorningShot: new DayEvent("Morning-Shot", null,8,12, " - wake up! Jeden z twoich wczorajszych postów, na dzień dobry.", EventFor.me, 2,EventExperience.Full),
+    MorningShot: new DayEvent("Morning-Shot", null,8,12, " - wake up! Jeden z twoich wczorajszych postów, na dzień dobry.", EventFor.me, 1,EventExperience.Full),
     OneShot: new DayEvent("One-Shot", null, 19, 20, " - wieczorny podgląd jedenego z dzisiejszych postów uczestników.", EventFor.friends, 1,EventExperience.Full),
     DayUploads: new DayEvent("Day Uploads", null, 22, 24," - powspominaj swój dzień, na koniec dnia.", EventFor.me, 0,  EventExperience.Interactive),
     

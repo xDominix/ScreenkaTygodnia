@@ -139,10 +139,14 @@ const AuthProvider = ({children, demo}) => {
     const trySetMyPersonalizedApps = async (apps)=> trySetPersonalizedApps(userTemp.current.fullname,apps).then((res)=>{userTemp.current.personalized_apps = apps; return res;})
     const saveMe =()=>{
         if(!userTemp.current) throw new Error('Cannot save. User is null');
+
         localStorage.setItem("fullname",userTemp.current.fullname);
+        changeUserPreferences(userTemp.current.fullname,{me:true,friends:true,screenka:true})
+        userTemp.current.preferences = {me:true,friends:true,screenka:true};
+        
         setWeek(NONE); 
         setHost(NONE); 
-        setUser(userTemp.current); 
+        setUser(userTemp.current);
     }
    
     const changeMyPreferences=async(preferences)=> {
@@ -303,7 +307,8 @@ const AuthProvider = ({children, demo}) => {
     },[weekNumber, user?.preferences,friendsDisabled,screenkaDisabled])
 
     const disabledDayEvents=useMemo(()=>{
-        return getAvailableDayEvents(weekNumber,{friends: friendsDisabled, screenka:screenkaDisabled});
+        return getAvailableDayEvents(weekNumber,{friends: friendsDisabled, screenka:screenkaDisabled})
+            .filter(event=> !myDayEvents.map(event=>event.name).includes(event.name) )
     },[weekNumber, friendsDisabled,screenkaDisabled])
 
     const myCustomEvents=useMemo(()=>{

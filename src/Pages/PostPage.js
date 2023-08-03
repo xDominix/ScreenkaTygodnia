@@ -11,10 +11,10 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
     const location = useLocation();
     const nextPages = location.state?.nextPages;
+    const prevPage = location.state?.prevPage;
+    const token = location.state?.token; 
     //const showMyRefPosts = location.state? location.state.showMyRefPosts===true : false;
     //const showFriendsRefPosts =location.state? location.state.showFriendsRefPosts===true : false;
-
-    const token = location.state?.token; 
 
     const navigate = useNavigate();
     const {user_fullname,id,event} = useParams();
@@ -35,6 +35,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
         if(!event) return;
 
         let props={}; if(event_?.toString()===HANDLING_EVENTS.RnShot) props.date=post.upload_date;
+        
         if(!token && !Event.canInteract(event_,props)){navigate('/'); return;}
 
         if(!token)
@@ -56,7 +57,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     return ( <div>
 
         <h2>
-            <ButtonPrevPage alert={nextPages?.length>0} onClick={()=>navigate(-1,{state:{token:true}})}/>
+            <ButtonPrevPage alert={nextPages?.length>0} onClick={prevPage ? ()=> navigate(prevPage,{replace:true,state:{token:true,}}):undefined}/>
             {title}
             {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
         </h2>

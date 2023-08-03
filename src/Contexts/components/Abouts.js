@@ -27,7 +27,7 @@ export const AboutScreenka = ({onClose}) => {
     const myGroups = useRef(HostService.getMyGroups());
 
     const title="Screenka";
-    const subtitle="app";
+    const subtitle="app-merger";
     
     //const footer="Tap the tagline to define the app by your own. " //and set up your preferences
    
@@ -79,9 +79,9 @@ export const AboutScreenka = ({onClose}) => {
                     {/*{!isEditMode && "\""}*/}
                 </h4>
               <div className='margin' style={{marginTop:"auto",}} >
-                    <p style={!you  ? {opacity:0}:undefined}><b>You. </b> Capture the happiness. Upload posts and preview them at the end of the day.</p>
-                    {!friendsDisabled &&<p style={!(friends&&you)  ? {opacity:0}:undefined}><b>Friends. </b> Have fun with your friends. Participate in the events during the week. {getTextAboutMyGroups()}</p>}
-                    {!screenkaDisabled && <p style={!(screenka&&you)  ? {opacity:0}:undefined} ><b>Screenka Tygodnia. </b>Join the story. Submit posts to the weekly gazette.</p>}
+                    <div><span className="small" style={!you  ? {opacity:0}:undefined}><b>You. </b> Capture the happiness. Upload posts and preview them at the end of the day.</span></div>
+                    {!friendsDisabled &&<div><span className="small" style={!(friends&&you)  ? {opacity:0}:undefined}><b>Friends. </b> Have fun with your friends. Participate in the events during the week. {getTextAboutMyGroups()}</span></div>}
+                    {!screenkaDisabled &&<div> <span className="small" style={!(screenka&&you)  ? {opacity:0}:undefined} ><b>Screenka Tygodnia. </b>Join the story. Submit posts to the weekly gazette.</span></div>}
                 </div>
 
                 <footer className='center' style={{marginTop:0}}>

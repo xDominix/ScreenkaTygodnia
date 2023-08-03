@@ -143,6 +143,15 @@ const PostService = {
     },
   
     postPost: async (user_fullname, post, file = null) => { //returns id or error
+        const checkUploadPost = async ()=>{
+          if (!post?.content) throw new Error("No content");
+          if(!post.permissions.me) throw new Error("No pemissions");
+
+          let recent = localStorage.getItem("recent_upload_date")
+          if(recent === YY_MMDD_HHMM(post.upload_date)) throw new Error("Wait 1 minute before next upload...");
+          localStorage.setItem("recent_upload_date",YY_MMDD_HHMM(post.upload_date))
+        }
+
         const uploadFile = async () => {
             if (file == null) return Promise.resolve();
             if (file.size > 4e6) throw new Error("Please upload a file smaller than 4MB");
@@ -163,17 +172,15 @@ const PostService = {
             let host_id = post.host_id, week_name = post.week_name;
             if(host_id==null || !week_name) return Promise.resolve();
             let data = {};
-            if(post.permissions.friends || post.permission.screenka) data['latest'] = (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()})
+            if(post.permissions.friends || post.permissions.screenka) data['latest'] = (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()})
             data[`day_participants.${dateToWeekDay(GET_NOW())}`] = arrayUnion(user_fullname);
-            if(post.permissions.friends || post.permission.screenka) data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
+            if(post.permissions.friends || post.permissions.screenka) data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
             return updateDoc(doc(db, "hosts", host_id, "weeks", week_name), data);
         };
           
-          if (!post?.content) throw new Error();
-          if(!post.permissions.me) throw new Error();
-          var res = null;
-          return uploadFile().then(uploadPost).then(updateWeek).then(()=>res);
-        },
+        var res = null;
+        return checkUploadPost().then(uploadFile).then(uploadPost).then(updateWeek).then(()=>res);
+      },
     };
 
 const PostServiceDemo = {

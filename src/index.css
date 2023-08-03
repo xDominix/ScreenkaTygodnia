@@ -15,7 +15,7 @@ tlo - ciemne (0-127) (0.5-1)
 b{font-size: inherit;}
 span[role ="img"]{ color:white ;}
 
-p, p *{font-size: 17px;/*line-height: 19px;*/margin-top: 5px;font-weight: bold;}
+span.small, span.small *{font-size: 17px;/*line-height: 19px;*/margin-top: 5px;font-weight: bold;}
 body { margin: 0; background-color: #2F2F2F; }
 
 html,body,div#root {  height: 100%;}
@@ -104,6 +104,7 @@ h1{
   /*line-height: 37px;*/
   margin:12px 0px;
 }
+p{margin:0;}
 
 h2{
   font-size: 35px;
@@ -145,7 +146,6 @@ footer{
   font-size: 17px;
 }
 footer.center {text-align: center;}
-
 
 .initial-letter::first-letter {
   font-size: 45px;
