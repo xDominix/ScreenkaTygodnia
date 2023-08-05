@@ -15,12 +15,13 @@ const PostService = {
       if(!post.permissions.me) return null
       return post;
     },
-    getPostAndTrySetView: async (user_fullname, id,view_fullname) => {
-      if(!user_fullname || !id || !view_fullname) return null;
+    getPostAndTrySetView: async (user_fullname, id,view_fullname=null) => {
+      if(!user_fullname || !id) return null;
       let doci = await getDoc(`users/${user_fullname}/posts`, id);
       let post = PostClass.fromDoc(doci);
-      if(!post.permissions.me) return null
-      if(post!=null && user_fullname!==view_fullname && post.view===null ) {
+      if(!post.permissions.me) return null;
+      if(!view_fullname) return post;
+      if(post!=null && user_fullname!==view_fullname && post.view==null ) {
         await updateDoc(doc(db, `users/${user_fullname}/posts`, id), {
           view: view_fullname,
         });
@@ -170,11 +171,15 @@ const PostService = {
           
           const updateWeek = async () => {
             let host_id = post.host_id, week_name = post.week_name;
+            
             if(host_id==null || !week_name) return Promise.resolve();
+            if(!post.permissions.friends && !post.permissions.screenka) return Promise.resolve(); //if only me.
+            
             let data = {};
-            if(post.permissions.friends || post.permissions.screenka) data['latest'] = (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()})
+            data['latest'] = (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()})
             data[`day_participants.${dateToWeekDay(GET_NOW())}`] = arrayUnion(user_fullname);
-            if(post.permissions.friends || post.permissions.screenka) data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
+            data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
+            
             return updateDoc(doc(db, "hosts", host_id, "weeks", week_name), data);
         };
           
@@ -191,12 +196,6 @@ const PostServiceDemo = {
     getPostAndTrySetView: async (user_fullname, id,view) => {
       await delay(1000);
       let post = PostRepositoryMap.get(user_fullname).find((post) => post.id === id);
-      if(post!=null && user_fullname!==view && post.view===null) {
-        await updateDoc(doc(db, `users/${user_fullname}/posts`, id), {
-          view: view,
-        });
-        post.view = view;
-      }
       return post;
     },
 

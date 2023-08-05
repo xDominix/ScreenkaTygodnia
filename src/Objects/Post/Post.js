@@ -9,39 +9,49 @@ import { AuthContext } from '../../Contexts/AuthContext';
 import A from '../../Components/A';
 import NothingToShow from '../../Pages/NothingToShow';
 import { Format } from '../App/AppClass';
+import { ButtonClose } from '../../Components/Buttons';
 
 const Post = ({
-    post=null,
-    id,user_fullname,   
-    onLoad,
-    hideNickname=false,
-    trySetView}) =>  {
+        post=null,
+        id,user_fullname,   
+        onLoad,
+        hideNickname=false,
+        trySetView,
+        content_only, content_toggled
+    }) =>  {
 
     const {PostService,UserService,AppService} = useContext(AuthContext);
 
     const [postState,setPostState] = useState(post);
-    const [userUsername,setUserUsername] = useState(null)
-    const [isSuperHide,setIsSuperHide] = useState(false);
-    const [isHide,setIsHide] = useState(true);
-    const [content,setContent] = useState("");
-
     useEffect(()=>{
-        if(!hideNickname) UserService.getUserUsername(user_fullname).then(setUserUsername);
-
         if(post) return;
 
-        const timeout = setTimeout(()=> {
-            const getPostPromise = trySetView ? PostService.getPostAndTrySetMyView(user_fullname,id) : PostService.getPost(user_fullname,id);
-            getPostPromise.then(post=>{
-                if(post) {
-                    setPostState(post);
-                    if(onLoad) onLoad(post);
-                }
-            })
-        },200);
-        return ()=>clearTimeout(timeout);
-    },[post,id,user_fullname])// eslint-disable-line react-hooks/exhaustive-deps
+        setPostState(null);
 
+        const getPost = trySetView ? PostService.getPostAndTrySetMyView : PostService.getPost;
+        getPost(user_fullname,id).then(post=>{ if(onLoad) onLoad(post); return post;}).then(setPostState);
+
+    },[post,user_fullname,id])// eslint-disable-line react-hooks/exhaustive-deps
+
+    const [userUsername,setUserUsername] = useState(null);
+    useEffect(()=>{if(!hideNickname) UserService.getUserUsername(user_fullname).then(setUserUsername)},[hideNickname,user_fullname])
+    
+    const hideDisabled = content_only || content_toggled;
+    const [isSuperHide,setIsSuperHide] = useState(false);
+    useEffect(()=>{
+        if(!postState) return;
+        if(isSuperHide) return;
+        if(hideDisabled) return;
+
+        const timeout = setTimeout(()=>{
+            if(PostService.hideIfAppsState?.includes(postState.app)) {setIsSuperHide(true);}
+        },500)
+        return ()=> clearTimeout(timeout)
+    },[postState?.app]) //eslint-disable-line react-hooks/exhaustive-deps
+
+    const [isHide,setIsHide] = useState(!hideDisabled);
+    useEffect(()=>{  if(!hideDisabled) setIsHide(true); },[post,id,user_fullname]) //eslint-disable-line react-hooks/exhaustive-deps
+    const [content,setContent] = useState("");
     useEffect(()=>{
         const getContent = async (post)=>{
             if(!post) return null;
@@ -60,25 +70,9 @@ const Post = ({
             }
         }
 
-        if(!isHide && !isSuperHide && !content && postState) getContent(postState).then(setContent);
+        if(!isHide && !isSuperHide) getContent(postState).then(setContent);
 
     },[isHide,isSuperHide,postState]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(()=>{
-        if(postState==null) return;
-        if(isSuperHide) return;
-
-        const timeout = setTimeout(()=>{
-            if(PostService.hideIfAppsState?.includes(postState.app)) {setIsSuperHide(true);}
-        },500)
-        return ()=> clearTimeout(timeout)
-    },[postState?.app]) //eslint-disable-line react-hooks/exhaustive-deps
-
-    /*
-    useEffect(()=>{
-        if(isSuperHide && isHide) setIsHide(false);
-    },[isSuperHide]) //eslint-disable-line react-hooks/exhaustive-deps
-    */
 
     const getNotificationText = ()=>{
         if(postState?.top_number) return "#"+postState.top_number
@@ -92,32 +86,51 @@ const Post = ({
         return `${dateToWeekDay(date).toUpperCase()} ${dateToHourString(date)}`
     }
 
+    const [contentToggled,setContentToggled] = useState(content_only || content_toggled);
+
     return ( 
     <div className='pre-pre-post'>
+
         {!hideNickname &&<div className="nickname">
             <User user_fullname={user_fullname}/>
             <h4 className='color-gray'>{userUsername?userUsername:"_______"}</h4>
         </div>}
-    <div className='pre-post'>
 
-            <div className='bcolor-dark-gray post'>
-                <h3 className='date'>
-                {postState?.week_name?(postState.week_name.toUpperCase()+" | ") : ""}{getDate()}
-                </h3>
-                <div className='head'>
-                    <App application={AppService.getApp(postState?.app)} notificationText={getNotificationText()}/>
-                    {isSuperHide && <A bold onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>tap</A>}
-                </div>
-                <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
-                    <div className='body' style={isHide?{opacity:"0"}:{}}>
-                        <div className='content flex-center'>{content!==null?content:<NothingToShow/>}</div>
-                        <h4>{postState?.context}{(postState?.week_tag && postState.week_name)?` #${postState.week_name.replace(' ','')}`:""}</h4>
+        <div className='bcolor-dark-gray post'>
+
+            {contentToggled && <div className='pre-fullcontent' >
+                {!content_only &&<ButtonClose 
+                    style={{position:"absolute",top:"10px",right:"10px"}}
+                    onClick={()=>{setContentToggled(!contentToggled)}}
+                />}
+                <div className='fullcontent'>
+                    <div className='scroll'>
+                     {content!==null?content:<NothingToShow/>}
                     </div>
-                    {isHide && <A bold className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>tap</A>}
-                </div>
-            </div>
 
-    </div>
+                    
+                </div>
+            </div>}
+
+            {!content_only && <div style={!contentToggled?{}:{opacity:0,pointerEvents:'none'}}> 
+            <h3 className='date'>
+                {postState?.week_name?(postState.week_name.toUpperCase()+" | ") : ""}{getDate()}
+            </h3>
+            <div className='head'>
+                <App application={AppService.getApp(postState?.app)} notificationText={getNotificationText()}/>
+                {isSuperHide && <A bold onClick={()=>{if(isSuperHide)setIsSuperHide(false)}}>tap</A>}
+            </div>
+            <div className='pre-body' style={isSuperHide?{height:"0px"}:{}}>
+                <div className='body' style={(isHide?{opacity:"0",pointerEvents:'none'}:{})}>
+                    <div className='bcolor content flex-center noselect clickable' onClick={content_only?undefined:()=>{setContentToggled(!contentToggled)}}>
+                        {content!==null?content:<NothingToShow/>}
+                    </div>
+                    <h4>{postState?.context}{(postState?.week_tag && postState.week_name)?` #${postState.week_name.replace(' ','')}`:""}</h4>
+                </div>
+                {isHide && <A bold className='centered'  onClick={()=>{if(isHide)setIsHide(false)}}>tap</A>}
+            </div>
+            </div>}
+        </div>
     </div> );
 }
  

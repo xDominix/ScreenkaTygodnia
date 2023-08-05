@@ -280,7 +280,7 @@ const AuthProvider = ({children, demo}) => {
     }
 
     const getPostAndTrySetMyView =async (user_fullname,id)=>{ //znasz id to masz, fajne do sharowania
-        return getPostAndTrySetView(user_fullname,id,(!friendsDisabled && user?.preferences.friends) ? user.fullname : null);
+        return getPostAndTrySetView(user_fullname,id,user.fullname);
     }
 
 

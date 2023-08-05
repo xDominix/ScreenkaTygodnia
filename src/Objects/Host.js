@@ -2,7 +2,7 @@ import { MAX_TICKETS, toMap } from "../aFunctions";
 
 export class Host {
     constructor(id,fullname,start_date,popular_apps,//required
-      personalized_apps=[],group_apps=[],groups=new Map(), subscribers=new Map(),apps_change_date=null//optional
+      personalized_apps=[],group_apps=[],groups=new Map(), subscribers=new Map()//optional
       ) { 
       /***/ this.id = id; //auto
       this.fullname = fullname;
@@ -17,7 +17,6 @@ export class Host {
                                                         // w miare bedzie sie pokrywalo z host.friends
                                                         // ale jednym powodem zastosowania jest to ze na poczatku nie mozemy wszystkich friendsow poznac i to stopniowo bedziemy dodawac koleno
       this.max_tickets = MAX_TICKETS;
-      this.apps_change_date = apps_change_date//zeby moc zauktualizowac preferencje, bo defaultowo ida na off. (gdy appka idzie z popular na personalized)
     }
 
     getFriends =(fullname)=>{//return array
@@ -49,6 +48,6 @@ export class Host {
       subscribers.forEach((value,)=>value.join_date= value.join_date.toDate());
       subscribers.forEach((value,)=>value.leave_date= value.leave_date?.toDate());
 
-      return new Host(doc.id, doc.fullname,doc.start_date.toDate(),doc.popular_apps,doc.personalized_apps,doc.group_apps,toMap(doc.groups),subscribers,doc.apps_change_date);
+      return new Host(doc.id, doc.fullname,doc.start_date.toDate(),doc.popular_apps,doc.personalized_apps,doc.group_apps,toMap(doc.groups),subscribers);
   }
 }

@@ -33,7 +33,7 @@ const MiniPostsPage = () => { //current week posts page
     },[]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOnPostPreview = (post_id)=>{
-        navigate(`/post/${user_fullname}/${post_id}`,{state:{prevPage:location.pathname,showMyRefPosts:true,showFriendsRefPosts:true}})
+        navigate(`/post/${user_fullname}/${post_id}`,{state:{tokenizePage:location.pathname,showMyRefPosts:true,showFriendsRefPosts:true}})
     }
 
     return (

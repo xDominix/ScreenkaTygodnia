@@ -14,6 +14,7 @@ import MiniPostsPagePlus from './Pages/MiniPostsPagePlus';
 import Bookmark from './Pages/Bookmark';
 
 /*
+
 TOKEN EXPLAIN
 token - priorytet przy stronach dla eventu.
 - nie zaznacza ci interakcji
@@ -23,10 +24,13 @@ warunek eventa: token || canInteract
 wlasciwosc: token do routowania do eventu ktory ktos zapomnial wziac udzial a chce jeszcze mimo ze nie ma time.
 token ala transparency ticket for event
 
-TOKEN EXPLAIN (OLD)
-zebys se nie wpisywal nazwy uzytkownika i tygodnia zeby go konkretnego zobacyzc - teraz musi ci to stronka wygenerowac (/posts/ktos/cos)
-czyli podczas eventu taki guard
+funkcjonalosc implementuje rownize "tokenizePage", czyli:
+jesli znajdziesz token to bedzie mogl wrocic do tej strony.
+Narazie token jest przyznawany hardcodowo.
+Docelowo np. 10 tokenow na jedno wejscie do aplikacji. (albo inna, lepsza polityka)
+
 */
+
 const App = () => {
 
     const [isDemo,setIsDemo] = useState(false);

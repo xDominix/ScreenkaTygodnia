@@ -11,7 +11,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
     const location = useLocation();
     const nextPages = location.state?.nextPages;
-    const prevPage = location.state?.prevPage;
+    const tokenizePage = location.state?.tokenizePage;
     const token = location.state?.token; 
     //const showMyRefPosts = location.state? location.state.showMyRefPosts===true : false;
     //const showFriendsRefPosts =location.state? location.state.showFriendsRefPosts===true : false;
@@ -57,7 +57,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
     return ( <div>
 
         <h2>
-            <ButtonPrevPage alert={nextPages?.length>0} onClick={prevPage ? ()=> navigate(prevPage,{replace:true,state:{token:true,}}):undefined}/>
+            <ButtonPrevPage alert={nextPages?.length>0} onClick={tokenizePage ? ()=> navigate(tokenizePage,{replace:true,state:{token:true,}}):undefined}/>
             {title}
             {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
         </h2>

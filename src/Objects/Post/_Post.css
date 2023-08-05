@@ -1,25 +1,12 @@
-.pre-pre-post {   margin-bottom: 5px;}
-.pre-pre-post .nickname , .pre-pre-post .nickname2
+.pre-pre-post {   margin-bottom: 5px;position:relative}
+.pre-pre-post .nickname
 {
     display: flex; align-items: center;
 }
 
-.pre-pre-post .nickname>* , .pre-pre-post .nickname2>*
+.pre-pre-post .nickname>* 
 {
     margin: 5px;
-}
-
-.pre-post{
-    border-radius: 20px;/*takie jakie nickname src*/
-}
-.pre-post .nickname2
-{
-    padding:10px;
-    height: 30px;/*20 + 10*/
-    opacity: 1;
-    overflow: hidden;
-    transition: height 0.5s ease-in-out,opacity 0.3s ease-in-out;
-    will-change: height, opacity;
 }
 
 .post{
@@ -27,6 +14,7 @@
     border-radius: 20px;/*takie jakie nickname src*/
 
     padding: 10px;
+    overflow: hidden;
 }
 
 .post .date
@@ -58,7 +46,6 @@
 .post .pre-body
 {
     position: relative;
-
     overflow: hidden;
     height: 200px;
     transition: height ease-in-out 1s;
@@ -144,20 +131,53 @@ background: linear-gradient(0deg, rgba(0, 0, 0, 0.35), transparent);
 .post .content{
     position: relative;
     height: 100%;
+    width: 100%;
     overflow: hidden;
-    background-color: rgba(255, 255, 255, 0.055);
     border-radius: 10px;
     text-align: center;
 }
+.post .pre-fullcontent{
+    position: absolute;
+    top:0;
+    left:0;
+    height: 100%;
+    width: 100%;
+}
+.post .fullcontent
+{    
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 
-.post .content>img{
+    text-align: justify;
+    justify-content: center;
+    align-items: center;
+}
+
+.post .fullcontent .scroll
+{
+    max-height: 100%;
+    overflow:auto;
+    max-width: 100%;
+}
+
+/*imgs*/
+.post .content img{
   max-height: 100%;
   max-width:  100%;
   object-fit:scale-down;
-  align-self: center;
 
   min-width: 20px;
   min-height: 20px;
+}
+
+.post .fullcontent .scroll>*{padding: 15px;}
+.post .fullcontent .scroll>img
+{
+    object-fit: cover;
+    max-width: 100%;
+    padding: 0px;
 }
 
 /*MINIPOSTS*/

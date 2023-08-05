@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import "./Buttons.css"
 import React from 'react';
 
-export const ButtonClose = ({onClick}) =>{
+export const ButtonClose = ({onClick,style}) =>{
 
     return (
-    <button className="button-close bcolor-dark-gray" onClick={onClick}>
+    <button className="button-close bcolor-dark-gray" style={style} onClick={onClick}>
         <div className="noselect">+</div>
     </button>)
 }

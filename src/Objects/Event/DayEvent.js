@@ -16,7 +16,7 @@ export class DayEvent extends Event {
     getSubtitle= ()=>{
       if(this.weekDay===null && this.fromHour===0 && this.toHour===24) return "*";
       let day = this.weekDay? toWeekDay(this.weekDay).substring(0,3).toUpperCase() :"*";
-      return this.toHour===24 ?(this.fromHour===0? `${day}` :`${day} ${this.fromHour}`) : `${day} ${this.fromHour} - ${this.toHour}`;
+      return this.toHour===24 ?(this.fromHour===0? `${day}` :`${day} ${this.fromHour}:00`) : `${day} ${this.fromHour} - ${this.toHour}`;
     }
 
     getNote = ()=>{

@@ -52,7 +52,7 @@ const Uploads = () => {
     }
 
     const handleOnPostPreview = (post_id)=>{
-        navigate(`/post/${user.fullname}/${post_id}`,{state:{prevPage:location.pathname,showMyRefPosts:type!=="manage",showFriendsRefPosts:type==="week"}})
+        navigate(`/post/${user.fullname}/${post_id}`,{state:{tokenizePage:location.pathname,showMyRefPosts:type!=="manage",showFriendsRefPosts:type==="week"}})
     }
 
     return (

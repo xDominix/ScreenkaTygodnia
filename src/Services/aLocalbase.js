@@ -22,6 +22,7 @@ export const Apps = {
     Ideas: new AppClass("Ideas","idea","suggest a new week motive, new app to add, a special event or an additional app features.",Format.LongString,19), //logo to tips z iphone, wiec mozna w przyszlosci podmienic
     //Specially Designed
     Diary: new AppClass("Diary", "note", "describe your day. Your thoughts about how it is now.", Format.LongString, 21),
+    Dreams: new AppClass("Dreams","story","confess your dreams.",Format.LongString,22),
     //TM
     Spotify: new AppClass("Spotify", "song, podcast", "share your favorite song or podcast.", Format.Url, 22),
     Youtube: new AppClass("Youtube", "video, short", "share a video that makes you happy!", Format.Url, 23),
