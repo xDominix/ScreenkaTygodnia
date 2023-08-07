@@ -92,7 +92,7 @@ const Home = ({onAboutWeekClick}) => {
                 if(post) setMyRnShotEventData({user_fullname:uploader,post_id:post.id,app: post.app})})
             }
 
-        if(myRnShotEvent) loadRnShot(user.fullname,week.latest_post);
+        if(myRnShotEvent) loadRnShot(user.fullname,week?.latest_post);
     },[week?.latest_post,myRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
 
     const nowAppNames = useMemo(()=>{
