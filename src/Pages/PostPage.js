@@ -18,7 +18,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
     const navigate = useNavigate();
     const {user_fullname,id,event} = useParams();
-    const {EventService} = useContext(AuthContext);
+    const {EventService,PostService} = useContext(AuthContext);
     const event_ = useMemo(()=>EventService.getMyInteractiveEvent(event),[event])
 
     useEffect(()=>{
@@ -45,8 +45,11 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
                 case HANDLING_EVENTS.RnShot:
                 case HANDLING_EVENTS.MorningShot:
                 case HANDLING_EVENTS.OneShot:
+                    Event.setInteraction(event_);
+                    break;
                 case HANDLING_EVENTS.UploadNow:
                     Event.setInteraction(event_);
+                    PostService.resetMyRecentlyAddedPosts();
                     break;
                 default:
                     navigate('/');

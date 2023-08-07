@@ -85,9 +85,9 @@ export const AboutScreenka = ({onClose}) => {
                 </div>
 
                 <footer className='center' style={{marginTop:0}}>
-                    You can change the tagline by your own.<br/>
-                    {isChanged() &&<A  disabled={loading} onClick={changePreferences} bold>Change </A>}
-                    <A className={(!userRef.current.preferences.me&& !isEditMode)? "text-shine":undefined} onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}>{!isEditMode?"Edit":"Cancel"}</A>
+                    You can change the tagline by your own.
+                    {isChanged() &&<A  disabled={loading} onClick={changePreferences} bold><br/> Change </A>}
+                    <A className={(!userRef.current.preferences.me&& !isEditMode)? "text-shine":undefined} onClick={()=>setIsEditMode(!isEditMode)} disabled={loading}> {!isEditMode?"Edit":"Cancel"}</A>
                 </footer>
             
         </BottomTab>

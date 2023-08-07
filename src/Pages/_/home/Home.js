@@ -242,7 +242,7 @@ const Home = ({onAboutWeekClick}) => {
         </div>
 
         {myUploadNowEventData && <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
-            <ButtonNow onClick={handleUploadNowClick} style={buttonStyle} text="UPLOAD NOW!"/>
+            <ButtonNow onClick={handleUploadNowClick} style={buttonStyle} text="UPLOAD NOW"/>
         </div>}
 
         
