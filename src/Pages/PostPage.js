@@ -5,7 +5,7 @@ import { ButtonNextPage, ButtonPrevPage } from '../Components/Buttons';
 import { Event } from '../Objects/Event/_Event';
 import { AuthContext } from '../Contexts/AuthContext';
 
-const HANDLING_EVENTS = {RnShot:"rnshot",OneShot:'oneshot',MorningShot:"morningshot",}
+const HANDLING_EVENTS = {RnShot:"rnshot",OneShot:'oneshot',MorningShot:"morningshot",UploadNow:"uploadnow"}
 
 const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
 
@@ -45,6 +45,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
                 case HANDLING_EVENTS.RnShot:
                 case HANDLING_EVENTS.MorningShot:
                 case HANDLING_EVENTS.OneShot:
+                case HANDLING_EVENTS.UploadNow:
                     Event.setInteraction(event_);
                     break;
                 default:
@@ -62,7 +63,7 @@ const PostPage = () => { //state: nextPage, showMyRefPosts, showFriendsRefPosts
             {nextPages?.length>0 && <ButtonNextPage focus onClick={handleOnNextClick}/>}
         </h2>
 
-        <Post id={id} user_fullname={user_fullname} trySetView={event_!==null} onLoad={onPostLoad} />
+        <Post id={id} user_fullname={user_fullname} trySetView={event_!==null && event_?.toString()!==HANDLING_EVENTS.UploadNow} onLoad={onPostLoad} />
     </div> );
 }
  

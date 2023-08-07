@@ -1,12 +1,12 @@
 import React from 'react';
-import App from '../../../../Objects/App/App';
-import "./Container.css"
+import "./styles/Containers.css"
+import App from '../Objects/App/App';
 
 const AppContainer = ({
     apps,notificationCountsMap= new Map(), disabled,
     appHeight=70, onAppClick=null,  appClassName="",
     specialAppName=null,specialClassName="", notSpecialClassName="",
-    orangeAppName=null, isUploadMode=false, 
+    orangeAppNames=[], isUploadMode=false, 
     }) => {
 
     const getAppClassName = (app_name)=>{
@@ -24,7 +24,7 @@ const AppContainer = ({
             onClick={onAppClick?()=>onAppClick(app):undefined}
             isUploadMode={isUploadMode}
             notificationText = {notificationCountsMap.get(app.name)}
-            notificationOrange={orangeAppName === app.name}
+            notificationOrange={orangeAppNames.includes(app.name)}
             application={app} 
             height={appHeight} />
         </div>

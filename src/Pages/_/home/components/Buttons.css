@@ -5,6 +5,7 @@
 
     width: 100%;
     position: relative;
+    font-weight: normal;
 }
 
 .button-plus-red{
@@ -45,7 +46,6 @@
     position: relative;
 
     width: 100%;
-    padding-top:2px ;
 
     animation: shine 1.5s ease-out;
 }

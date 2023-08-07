@@ -156,14 +156,17 @@ footer.center {text-align: center;}
 
 button{
   border: none;
+  border-radius: 10px;
   cursor: pointer;
-  transition: scale 0.2s linear;
-  will-change: scale;
 
   background: none;
 	color: inherit;
-	padding: 0;
+	padding: 7px 10px;
+  font-weight: bold;
 	outline: inherit;
+}
+button:hover{
+  opacity: 0.8;
 }
 button[disabled]{
   opacity: 0.4;

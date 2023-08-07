@@ -9,7 +9,7 @@ export const ButtonText = ({style,disabled, onClick,text}) => {
         <h2  style={{margin:"5px",fontSize:"30px",lineHeight:"28px",color:"white"}}>{text.toUpperCase()}</h2>
     </button> );
 }
-export const ButtonRn = ({style, onClick,text}) => {
+export const ButtonNow = ({style, onClick,text}) => {
     return (  <button
      className={"bcolor-orange button-week-uploads shadow"}
       style={style} onClick={onClick}>
@@ -37,7 +37,7 @@ export const ButtonScreenka = ({style,onClick,disabled}) => {
 );}
 
 export const ButtonPlus = ({style, onClick,isRotate=false,disabled}) => {
-    return (  <button //disabled={disabled}
+    return (  <button disabled={disabled}
      className={"bcolor-dark-gray-solid"+((isRotate?" button-plus-red":"")+' button-plus shadow'+(disabled?" opacity":""))}
       style={style} onClick={onClick}>
         <div className={isRotate?"rotate":""}>+</div>

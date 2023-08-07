@@ -1,6 +1,6 @@
 import React from 'react';
-import "./Container.css"
-import User from '../../../../Objects/User/User';
+import "./styles/Containers.css"
+import User from '../Objects/User/User';
 
 const UserContainer = ({
     user_fullnames, more=0,
@@ -8,7 +8,7 @@ const UserContainer = ({
     specialUserFullname=null,specialClassName="",notSpecialClassName="",
 }) => {
 
-    const getUserClassName = (user_fullname)=>{
+    const getUserClassName = (user_fullname=null)=>{
         if(specialUserFullname===null) return "";
         if(specialUserFullname === user_fullname) return specialClassName;
         return notSpecialClassName;
@@ -17,7 +17,7 @@ const UserContainer = ({
     return ( 
     <div className={'home-user-conteiner'}>
         {more>0 && 
-        <div className={userClassName} >
+        <div className={userClassName+" "+getUserClassName()} >
             <User count={more} height={userHeight}/>
         </div>}
         {user_fullnames.map((fullname) => (

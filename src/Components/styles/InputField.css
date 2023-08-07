@@ -34,3 +34,10 @@ input[type=file]::file-selector-button {
     border-radius: 7px;
     cursor: pointer;
 }
+
+button.paste
+{
+    width: max-content;
+    height: max-content;
+    align-self: center;
+}

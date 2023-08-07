@@ -1,7 +1,7 @@
 import { AppClass, Format } from "../Objects/App/AppClass";
 import { CustomEvent } from "../Objects/Event/CustomEvent";
 import { DayEvent } from "../Objects/Event/DayEvent";
-import { EventExperience, EventFor, EventViewsTill } from "../Objects/Event/_Event";
+import { EventExperience, EventFor, EventResetViewsAfter } from "../Objects/Event/_Event";
 import { MAX_ST_VIEWS, WeekDay, isDayToday, isLessThenMinutes } from "../aFunctions";
 
 //ogolny sort: string, long, path, url, none
@@ -61,9 +61,10 @@ export const Events = {//kolejnosc ma znaczenie (soon: sortowanie po weekDay, po
     
     //custom
     Upload: new CustomEvent("Upload","- uchwyć chwilę.",EventFor.me,EventExperience.Interactive,()=> !Events.DeadLine.isTime() && !Events.STHere.isTime() && ( !isDayToday(WeekDay.Monday) || Events.ClearMind.isTime())),
-    RnShot : new CustomEvent("Rn-Shot","- z ostatniej chwili! Najnowszy post innego uczestnika do 15min po jego dodaniu.",EventFor.friends,EventExperience.Full,(props)=> props && isLessThenMinutes(props.date,15),1,EventViewsTill.FifteenMinutes),
+    UploadNow: new CustomEvent("Upload-Now","- przejrzyj to, co właśnie dodałeś.",EventFor.me,EventExperience.Interactive,()=>Events.Upload.isTime(),1,EventResetViewsAfter.Now),
+    RnShot : new CustomEvent("Rn-Shot","- z ostatniej chwili! Najnowszy post innego uczestnika do 15min po jego dodaniu.",EventFor.friends,EventExperience.Full,(props)=> props && isLessThenMinutes(props.date,15),1,EventResetViewsAfter.FifteenMinutes),
     ManageUploads : new CustomEvent("Manage Uploads","- zarządzaj swoimi uploadami.",EventFor.me,EventExperience.Interactive,()=>true),
-    Screenka : new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,EventExperience.Interactive,(props)=> props &&( Events.STHere.isTime() || props.week?.force_st),MAX_ST_VIEWS,EventViewsTill.Week),
+    Screenka : new CustomEvent("Screenka Tygodnia","- w skórcie ST, lokalna gazeta cotygodniowych wspomnień.",EventFor.screenka,EventExperience.Interactive,(props)=> props &&( Events.STHere.isTime() || props.week?.force_st),MAX_ST_VIEWS,EventResetViewsAfter.Week),
 
     //Reset: new DayEvent("Reset", WeekDay.Sunday, 12, 19, " - re-set. Okazja na dostrojenie swoich ustawień preferencji.", EventFor.me, 1, EventExperience.None),
     //Reset + ClearMind => NewMe ?  (nowy tydzien, nowy ty!)

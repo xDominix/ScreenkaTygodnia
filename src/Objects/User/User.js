@@ -12,29 +12,32 @@ const User = ({user_fullname,count=null,onClick, height=32,disabled}) => {
 
     if(count!=null)
     return ( 
-        <div className={'fromdown '+(disabled ? "opacity":"")} onClick={(onClick&&!disabled)?onClick:()=>{}}>
-        <span className='bcolor-dark-gray shadow'  style={{
-            display:"block",
+    <span className={'fromdown clickable '+(disabled ? "opacity":"")} >
+        <div 
+        onClick={(!disabled)?onClick:undefined}
+        className={"shadow bcolor-dark-gray text"}
+        style={{
             height:height+"px",width:height+"px",
-            borderRadius:Math.floor(height/2)+"px",
-            }}>
-            <div
-            style={{
-                fontSize:"18px",paddingTop:"6px",textAlign:"center",fontWeight:"bold"
-                }}
-            >+{count}</div>
+            borderRadius:Math.floor(height/2)+"px"}}>
+            
+        <span style={{position:'absolute',fontSize:"18px",top:"10px",left:"10px",fontWeight:"bold"}}>
+        +{count}
         </span>
-        </div> );
+        </div>
+       
+    </span>)
 
     return ( 
-    <button className={'fromdown '+(disabled ? "opacity":"")} onClick={(onClick&&!disabled)?onClick:()=>{}}>
-        <img alt={"user"}
+    <span className={'fromdown clickable '+(disabled ? "opacity":"")} >
+        <img 
+        alt={"user"}
+        onClick={(!disabled)?onClick:undefined}
         className={"shadow"}
         style={{
             height:height+"px",width:height+"px",
             borderRadius:Math.floor(height/2)+"px"}}
         src={srcUrl} />
-    </button> );
+    </span> );
 }
  
 export default User;

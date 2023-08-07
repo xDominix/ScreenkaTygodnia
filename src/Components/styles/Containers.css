@@ -14,8 +14,6 @@
     justify-content: flex-end;
 }
 
-.home-user-conteiner img, .home-user-conteiner span{
-    width: 40px;
-    height: 40px;
+.home-user-conteiner img, .home-user-conteiner .text{
     margin: 5px;
 }

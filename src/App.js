@@ -12,6 +12,7 @@ import MiniPostsPage from './Pages/MiniPostsPage';
 import  DayEventPage from './Pages/DayEventPage';
 import MiniPostsPagePlus from './Pages/MiniPostsPagePlus';
 import Bookmark from './Pages/Bookmark';
+import Playground from './Pages/Playground';
 
 /*
 
@@ -43,8 +44,11 @@ const App = () => {
                         <AuthContextWithDemo onDemo={()=>setIsDemo(true)}>
                             <Routes>
                                 <Route exact path={getPath("/")} element={<Start />}/>
+                                
                                 <Route path={getPath("/login")} element={<Prestart />} />
                                 <Route path={getPath("/bookmark")} element={<Bookmark />} />
+                                <Route path={getPath("/playground")} element={<Playground />}/>
+
                                 {/*<Route path={getPath("/app/:name")} element={<AppPage/>}/>*/}
                                 <Route path={getPath("/dayevent/:event")} element={<DayEventPage/>}/>
                                 <Route path={getPath("/uploads/:type")} element={<Uploads/>}/>

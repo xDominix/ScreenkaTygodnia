@@ -176,7 +176,7 @@ const PostService = {
             if(!post.permissions.friends && !post.permissions.screenka) return Promise.resolve(); //if only me.
             
             let data = {};
-            data['latest'] = (post.permissions.friends?{user:user_fullname,app:post.app,date:GET_NOW()}:{app:post.app,date:GET_NOW()})
+            data['latest_post'] = {user:user_fullname,date:GET_NOW()}
             data[`day_participants.${dateToWeekDay(GET_NOW())}`] = arrayUnion(user_fullname);
             data[`day_apps_counts.${dateToWeekDay(GET_NOW())}.${post.app}`] = increment(1);
             

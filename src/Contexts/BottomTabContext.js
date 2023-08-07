@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AboutApp, AboutAppMini, AboutEvent, AboutScreenka, AboutUserMini } from "./components/Abouts";
+import { AboutApp, AboutAppMini, AboutEvent, AboutScreenka, AboutUserMini } from "./aAbouts";
 
 export const BottomTabContext = React.createContext();
 

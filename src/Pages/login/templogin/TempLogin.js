@@ -20,10 +20,11 @@ const TempLogin = ({onTempLogin}) => {
     useEffect(()=>{
 
         const timeout = setTimeout(()=>{
-            let funnyname = UserService.getMyFunnyname();
-            if(funnyname) inputRef.current.value=funnyname; 
 
+            inputRef.current.value=localStorage.getItem("funnyname");
+            
             if(user) UserService.getUserSrcUrl(user.fullname).then(setMeSrc);
+        
         },500);
     
         return ()=> clearTimeout(timeout);

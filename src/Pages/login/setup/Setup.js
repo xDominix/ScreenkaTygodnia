@@ -91,7 +91,7 @@ const Setup = ({onSetup}) => {
             if(checkboxes[index]) my_personalized_apps.push(app);
         });
         if(my_personalized_apps.length>0 || window.confirm("You haven't selected any app you're interested in. Continue?")) {
-            UserService.trySetMyPersonalizedApps(my_personalized_apps).then((res)=>
+            await UserService.trySetMyPersonalizedApps(my_personalized_apps).then((res)=>
             {
                 if(res)
                 {
@@ -99,8 +99,6 @@ const Setup = ({onSetup}) => {
                     onSetup();
                 }
             })
-                
-            
         }
         setIsInputLoading(false);
     }

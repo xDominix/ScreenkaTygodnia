@@ -1,5 +1,5 @@
 import React from 'react';
-import "./A.css"
+import "./styles/A.css"
 
 const A = ({
         className="", bold,underline,red=false,orange=false,nocolor=false,

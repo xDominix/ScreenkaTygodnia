@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ButtonPaste } from './Buttons';
-import "./InputField.css"
+import "./styles/InputField.css"
 
 const InputField = (props ) => {
     const  {    autofocus,reff,placeholder,readOnly=false,
@@ -67,3 +66,10 @@ const InputField = (props ) => {
 }
  
 export default InputField;
+
+const ButtonPaste = ({onClick,disabled}) =>{
+    return (
+    <button disabled={disabled} className="paste" onClick={onClick}>
+        PASTE
+    </button>)
+}

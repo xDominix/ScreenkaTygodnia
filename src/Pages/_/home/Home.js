@@ -4,17 +4,17 @@ import { AuthContext } from '../../../Contexts/AuthContext';
 import { BottomTabContext } from '../../../Contexts/BottomTabContext';
 import { useNavigate } from 'react-router-dom';
 import { MAX_ST_VIEWS, datesWeekDelta, delay } from '../../../aFunctions';
-import { ButtonScreenka,ButtonPlus, ButtonText, ButtonRn } from './components/Buttons';
+import { ButtonScreenka,ButtonPlus, ButtonText, ButtonNow } from './components/Buttons';
 import { AppClass, AppType } from '../../../Objects/App/AppClass';
 import A from '../../../Components/A';
 import { ButtonNextPage } from '../../../Components/Buttons';
-import AppContainer from './components/AppContainer';
-import UserContainer from './components/UserContainer';
 import { Event } from '../../../Objects/Event/_Event'
 import { UserClass } from '../../../Objects/User/UserClass';
+import AppContainer from '../../../Components/AppContainer';
+import UserContainer from '../../../Components/UserContainer';
 
 
-const HANDLING_EVENTS = {RnShot:"rnshot",ScreenkaTygodnia:"screenkatygodnia",Upload:"upload",ManageUploads:"manageuploads"}
+const HANDLING_EVENTS = {RnShot:"rnshot",UploadNow:"uploadnow",ScreenkaTygodnia:"screenkatygodnia",Upload:"upload",ManageUploads:"manageuploads"}
 
 const height = 70;
 const userHeight=32;
@@ -54,12 +54,14 @@ const Home = ({onAboutWeekClick}) => {
 
     const isCurrDayEventDisabled = useMemo(()=>!Event.canInteract(currDayEvent),[currDayEvent])
 
-    const [rnShotData,setRnShotData] = useState();
+    const [myRnShotEventData,setMyRnShotEventData] = useState(null);//{user_fullname,post_id}
+    const myUploadNowEventData = PostService.myRecentlyAddedPosts.length > 0 ? [...PostService.myRecentlyAddedPosts] : null; //{[post]}
 
     const [isScreenka,setIsScreenka] = useState(false);
 
     //event
     const myRnShotEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.RnShot),[EventService.getMyInteractiveEvent])
+    const myUploadNowEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.UploadNow),[EventService.getMyInteractiveEvent])
     const myScreenkaEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.ScreenkaTygodnia),[EventService.getMyInteractiveEvent])
     const myUploadEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.Upload),[EventService.getMyInteractiveEvent])
     const myManageUploadsEvent = useMemo(()=>EventService.getMyInteractiveEvent(HANDLING_EVENTS.ManageUploads),[EventService.getMyInteractiveEvent])
@@ -77,27 +79,27 @@ const Home = ({onAboutWeekClick}) => {
         loadParticipants(user,HostService.getMyFriends(),week?.today_participants)
     },[week?.today_participants]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const isWeekLatest = week?.latest != null;
     useEffect(()=>{
-        const loadRnShot = async (me_fullname,week_latest)=>{
-            if(week_latest==null)return;
-            let uploader = week_latest?.user;
+        const loadRnShot = async (me_fullname,latest_post)=>{
+            if(latest_post==null)return;
+            let uploader = latest_post?.user;
             if(uploader==null) return;
             if(uploader===me_fullname) return;
             
-            if(!Event.canInteract(myRnShotEvent,{date:week_latest?.date})) return;
+            if(!Event.canInteract(myRnShotEvent,{date:latest_post?.date})) return;
             if(!HostService.getMyFriends().includes(uploader)) return;
             PostService.getFriendLatestPost(uploader).then((post)=>{
-                if(post) setRnShotData({user_fullname:uploader,post_id:post.id})})
+                if(post) setMyRnShotEventData({user_fullname:uploader,post_id:post.id,app: post.app})})
             }
 
-        if(week?.latest && myRnShotEvent) loadRnShot(user.fullname,week.latest);
-    },[isWeekLatest,week?.latest,myRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
+        if(myRnShotEvent) loadRnShot(user.fullname,week.latest_post);
+    },[week?.latest_post,myRnShotEvent])// eslint-disable-line react-hooks/exhaustive-deps
 
-    const rnAppName = useMemo(()=>{
-        if(myRnShotEvent && myRnShotEvent.isTime({date:week?.latest?.date})) return week?.latest?.app
-        return null;
-    },[isWeekLatest,week?.latest,myRnShotEvent]) 
+    const nowAppNames = useMemo(()=>{
+        if(myUploadNowEventData) return myUploadNowEventData.map(post=>post.app);
+        else if (myRnShotEventData) return [myRnShotEventData.app];
+        return [];
+    },[myRnShotEventData,myUploadNowEventData]) 
     
     useEffect(()=>{
         const sortHomeApps = (appsMap=new Map())=>{
@@ -202,8 +204,13 @@ const Home = ({onAboutWeekClick}) => {
     /* BUTTONS START */
 
     const handleDayEventClick = (event)=> {if(event) navigate(`/dayevent/${event.toString()}`)}
-    const handleRnShotClick=()=>{   navigate(`/post/${rnShotData.user_fullname}/${rnShotData.post_id}/${myRnShotEvent}`,{state:{showMyRefPosts:true,showFriendsRefPosts:false}});  }
-    
+    const handleRnShotClick=()=>{   navigate(`/post/${myRnShotEventData.user_fullname}/${myRnShotEventData.post_id}/${myRnShotEvent}`,{state:{showMyRefPosts:true,showFriendsRefPosts:false}});  }
+    const handleUploadNowClick=()=>{
+        if(!user && myUploadNowEvent) return;
+        let pages = myUploadNowEventData.map(post=> `/post/${user.fullname}/${post.id}/${myUploadNowEvent}`);
+        navigate(pages[0],{state:{nextPages:pages.slice(1),showMyRefPosts:true,showFriendsRefPosts:false}})
+    }
+
     const handleButtonScreenkaClick = ()=>{
         if(host==null) return;
 
@@ -234,6 +241,10 @@ const Home = ({onAboutWeekClick}) => {
             </h1>
         </div>
 
+        {myUploadNowEventData && <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
+            <ButtonNow onClick={handleUploadNowClick} style={buttonStyle} text="UPLOAD NOW!"/>
+        </div>}
+
         
         {currDayEvent && //(!isCurrDayEventDisabled || !myScreenkaEvent.isTime({week:week})) &&
         <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
@@ -245,20 +256,20 @@ const Home = ({onAboutWeekClick}) => {
             <ButtonScreenka disabled={isButtonScreenkaDisabled} onClick={handleButtonScreenkaClick} style={buttonStyle}/>
         </div>}
 
-        {rnShotData &&
+        {myRnShotEventData &&
         <div className={defaultClassName+" home-button-effect"}  style={(!isBottomTab() && !isUploadMode)?{height:height+"px"}:{height:"0px",marginBottom:"0px",overflow:"hidden"}}>
-            <ButtonRn onClick={handleRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
+            <ButtonNow onClick={handleRnShotClick} style={buttonStyle} text="RIGHT NOW!"/>
         </div>}
 
         <div className={defaultClassName} >
             <ButtonPlus disabled={!myUploadEvent || !myUploadEvent.isTime()} style={buttonStyle} onClick={()=>setIsUploadMode(!isUploadMode)} isRotate={isUploadMode}/>
         </div>
         
-        <AppContainer 
+        <AppContainer
             apps={apps} notificationCountsMap={appsCountsMap} disabled={!user.preferences.me} 
             appHeight={height} onAppClick={handleAppClick} appClassName='home-blur-dark-pre' 
             specialAppName={special_} notSpecialClassName='home-blur-dark'
-            orangeAppName={rnAppName} isUploadMode={isUploadMode} 
+            orangeAppNames={nowAppNames} isUploadMode={isUploadMode} 
         />
     
         {user.preferences.me && !isUploadMode && <UserContainer

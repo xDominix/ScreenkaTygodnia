@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthProvider from "./AuthContext";
-import { DEMONAME } from '../Services/aDemobase';
+import { DEMOFUNNYNAME } from '../Services/aDemobase';
 
 export const AuthContextWithDemo = ({ children,onDemo }) => {
     const location = useLocation();
@@ -11,7 +11,7 @@ export const AuthContextWithDemo = ({ children,onDemo }) => {
     useEffect(()=>{ if(isDemo.current) {
         onDemo();
         const timeout = setTimeout(()=>{
-            localStorage.setItem("fullname",DEMONAME)
+            localStorage.setItem("funnyname",DEMOFUNNYNAME)
         },500)
         return ()=>clearTimeout(timeout);
     } },[]) //eslint-disable-line react-hooks/exhaustive-deps

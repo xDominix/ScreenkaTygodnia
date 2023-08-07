@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./Buttons.css"
+import "./styles/Buttons.css"
 import React from 'react';
 
 export const ButtonClose = ({onClick,style}) =>{
@@ -15,23 +15,6 @@ export const ButtonNext = ({onClick,disabled}) =>{
     return (
     <button disabled={disabled} className="button-next focus" onClick={onClick}>
         NEXT
-    </button>)
-}
-
-export const ButtonUpload = ({onClick,disabled,tickets,noTicketAnimation=false,hashtaged}) =>{
-    let init_text = hashtaged ? "UPLO#D":"UPLOAD";
-    return (
-    <button disabled={disabled} className={"button-upload"+(!disabled?" focus":(noTicketAnimation ? " focus opacity ":" bcolor-gray"))} onClick={onClick}>
-        {noTicketAnimation &&  (init_text)}
-        {!noTicketAnimation && !disabled && (init_text + (tickets>0 ?  "" :"*"))}
-        {!noTicketAnimation && disabled &&  <h5><span role="img" aria-label="ticket" >🎟️</span>x{tickets}</h5>/*style={{fontSize:"17px"}} */} 
-    </button>)
-}
-
-export const ButtonPaste = ({onClick,disabled}) =>{
-    return (
-    <button disabled={disabled} className="paste" onClick={onClick}>
-        PASTE
     </button>)
 }
 

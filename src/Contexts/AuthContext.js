@@ -41,7 +41,6 @@ const AuthProvider = ({children, demo}) => {
 
     //refs , ala half classes, infos which can be known even if the main ref is null
     const userTemp = useRef(null); const getTempMe = ()=>userTemp.current; // used for temp login
-    const userFunnynameRef = useRef(null); const getMyFunnyname = ()=>userFunnynameRef.current;
     const hostIdRef = useRef(null); const getMyHostId = ()=> hostIdRef.current;
     const hostPopularAppsRef = useRef(null);
     const hostFriendsRef = useRef([]); const getMyFriends = ()=> hostFriendsRef.current;
@@ -61,9 +60,8 @@ const AuthProvider = ({children, demo}) => {
 
     useEffect(()=>{
         const _getUser= async ()=>{
-            let fullname = localStorage.getItem("fullname");
-            let user = await getUser(fullname);
-            if(user) userFunnynameRef.current = user.funnyname;
+            let funnyname = localStorage.getItem("funnyname");
+            let user = await getUserByFunnyname(funnyname);
             if(!user || !user.preferences.me) return null;
             return user;
         }
@@ -140,7 +138,7 @@ const AuthProvider = ({children, demo}) => {
     const saveMe =()=>{
         if(!userTemp.current) throw new Error('Cannot save. User is null');
 
-        localStorage.setItem("fullname",userTemp.current.fullname);
+        localStorage.setItem("funnyname",userTemp.current.funnyname);
         changeUserPreferences(userTemp.current.fullname,{me:true,friends:true,screenka:true})
         userTemp.current.preferences = {me:true,friends:true,screenka:true};
         
@@ -253,6 +251,9 @@ const AuthProvider = ({children, demo}) => {
         })
     }
 
+    const [myRecentlyAddedPosts,setMyRecentlyAddedPosts] = useState([]);
+    const resetMyRecentlyAddedPosts = ()=> setMyRecentlyAddedPosts([]);
+
     const postMyPost = async (post, file)=>{
         if(host) post.host_id = host.id;
         if(week) post.week_name = week.name;
@@ -268,8 +269,9 @@ const AuthProvider = ({children, demo}) => {
             .then((post_id)=>{
                 ticketsRef.current = Math.max(ticketsRef.current-1,0);
                 post.id = post_id;
-                if(dayUploads.current!=null) dayUploads.current.push(post)
-                if(weekUploads.current!=null) weekUploads.current.push(post)
+                if(dayUploads.current!=null) dayUploads.current.push(post);
+                if(weekUploads.current!=null) weekUploads.current.push(post);
+                setMyRecentlyAddedPosts([...myRecentlyAddedPosts,post]);
             })
     }
 
@@ -333,7 +335,7 @@ const AuthProvider = ({children, demo}) => {
         AM_I_HOST,GET_HOST_ID,
 
         UserService:{
-            getMyFunnyname,getTempMe,//me auth
+            getTempMe,//me auth
             trySetMyUsername,trySetMyPersonalizedApps,changeMyPreferences,tryLogMeInTemporarly,saveMe, //me auth (setters)
             getFriend,getFriendSrcUrl, //friends auth
             getUserUsername,getUserSrcUrl,//no auth
@@ -348,8 +350,9 @@ const AuthProvider = ({children, demo}) => {
             getWeekAppsCounts,//no auth
         },
         PostService:{
-            getMyPastWeekPosts, getMyDayUploads,getMyWeekUploads,getMyYesterdayRandomPost,hideIfAppsState,getTickets,getMaxTickets, getMyAppsCounts,getPostAndTrySetMyView,//me auth
-            setHideIfAppsState,postMyPost,changeMyPostPermissions, //me auth (setters)
+            getMyPastWeekPosts, getMyDayUploads,getMyWeekUploads,getMyYesterdayRandomPost,//me auth
+            hideIfAppsState,getTickets,getMaxTickets, getMyAppsCounts,getPostAndTrySetMyView,myRecentlyAddedPosts,//me auth 2
+            setHideIfAppsState,postMyPost,changeMyPostPermissions,resetMyRecentlyAddedPosts, //me auth (setters)
             getFriendLatestPost, getFriendCurrentDayRandomPost,getFriendPastWeekPosts,//friends auth
             getUserCurrentDayPostsHOST,getUserCurrentWeekPostsHOST, //HOST auth
             getPost,getPathPostContentUrl,//no auth

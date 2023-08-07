@@ -20,7 +20,7 @@ export class Week{
         this.today_apps_counts = new Map(); //map
         this.apps_counts = new Map(); //map, total counts for app, ala week_apps_counts
         this.total_uploads = 0; // ala week_total_uploads
-        this.latest = {}; // {date, user, app}
+        this.latest_post = {}; // {date, user}
         this.screenka_views = new Map(); // user_fullname => view_date
         
         //realtime references
@@ -63,11 +63,11 @@ export class Week{
         let screenka_views = toMap(doc.screenka_views);
         screenka_views.forEach((value,)=>value.view_date= value.view_date.toDate());
 
-        let latest2 = doc.latest
+        let latest2 = doc.latest_post
         if(latest2) latest2.date = latest2.date.toDate();
 
         let res =  new Week(doc.id,doc.start_date.toDate(),doc.description,doc.emoji,doc.blocked_apps,doc.extra_apps,doc.max_tickets,doc.force_st,);
-        res.latest = latest2;
+        res.latest_post = latest2;
         res.screenka_views = screenka_views;
         res.screenka_comments = doc.screenka_comments;
         res.events = doc.events;

@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { AppType, Format } from '../../Objects/App/AppClass';
-import BottomTab from './BottomTab';
-import { ButtonUpload } from '../../Components/Buttons';
-import InputField from '../../Components/InputField';
-import useUnload from '../../Hooks/useUnload';
-import { PostClass } from '../../Objects/Post/PostClass';
-import { AuthContext } from '../AuthContext';
-import { delay, getPath, shortenFullname } from '../../aFunctions';
+import { AppType, Format } from '../Objects/App/AppClass';
+import InputField from '../Components/InputField';
+import useUnload from '../Hooks/useUnload';
+import { PostClass } from '../Objects/Post/PostClass';
+import { AuthContext } from './AuthContext';
+import { delay, getPath, shortenFullname } from '../aFunctions';
 
-import A from '../../Components/A';
+import A from '../Components/A';
 import { useNavigate } from 'react-router-dom';
-import Checkbox from '../../Components/Checkbox';
+import Checkbox from '../Components/Checkbox';
+import BottomTab from './components/BottomTab';
+import UploadButton from './components/UploadButton';
 
 export const AboutScreenka = ({onClose}) => {
 
@@ -179,7 +179,11 @@ export const AboutApp = ({app,appType,onClose}) => {
                 onChange={()=>setIsWeekTagged(!isWeekTagged)} mini>add {week?<b>{week.name}</b>:"week"} tag</Checkbox>*/}
 
                 <div style={{display:'flex',flexDirection:'column'}}>
-                    <ButtonUpload hashtaged={false} disabled={uploading} onClick={handleUpload} tickets={ticketsState} noTicketAnimation={ !me.preferences.screenka || screenkaDisabled} />{/*tickets.current<=0 || */}
+                    <UploadButton 
+                        onClick={handleUpload} disabled={uploading}
+                        tickets={ticketsState} noTicketAnimation={ !me.preferences.screenka || screenkaDisabled}
+                        options={{}}
+                    />
                 </div>
                 
                 {(!screenkaDisabled && me.preferences.screenka && tickets.current<=0) && <footer className='light center' style={{marginBottom:"0px"}}>* - upload without ticket.</footer>}

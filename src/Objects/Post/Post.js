@@ -58,7 +58,7 @@ const Post = ({
 
             let app = AppService.getApp(post.app), content = post.content;
             switch(app?.format){
-                case Format.LongString: return <h4 style={{padding: "3px"}} >{content}</h4>
+                case Format.LongString: return <h4 >{content}</h4>
                 case Format.String: return <h3 >{content}</h3>
                 case Format.Url: 
                     if(content?.startsWith("https://")) return <a href={content} target="_blank" rel="noreferrer">OPEN LINK</a>
